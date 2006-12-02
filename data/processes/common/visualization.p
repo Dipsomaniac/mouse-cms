@@ -65,7 +65,7 @@ $result[<strong>^if($b){true}{false}</strong>^if(!def $shash){ (bool)}]
 
 @debugShowVoid[v;shash]
 ###################################################################################################
-$result[^if(!def $shash){<strong>Значение не присвоено</strong> (void)}]
+$result[^if(!def $shash){<strong>Р—РЅР°С‡РµРЅРёРµ РЅРµ РїСЂРёСЃРІРѕРµРЅРѕ</strong> (void)}]
 #end @debugShowVoid[]
 
 
@@ -75,25 +75,25 @@ $result[^if(!def $shash){<strong>Значение не присвоено</strong> (void)}]
 ###################################################################################################
 ^try{
 	$_f[^file::stat[$f.name]]
-	$result[Файл <strong>^file:fullpath[$f.name]</strong><br />
-	Размер: <strong>$_f.size байт</strong><br />
-	Создан: <strong>${_f.cdate.day}.${_f.cdate.month}.${_f.cdate.year} в 
-	${_f.cdate.hour}ч.${_f.cdate.minute}мин</strong><br />
-	Изменен: <strong>${_f.mdate.day}.${_f.mdate.month}.${_f.mdate.year} в 
-	${_f.mdate.hour}ч.${_f.mdate.minute}мин</strong><br />
-	Последний раз обращение к файлу производилось <strong>${_f.adate.day}.${_f.adate.month}.${_f.adate.year} в 
-	${_f.adate.hour}ч.${_f.adate.minute}мин.</strong><br />
-	MIME-тип файла: <strong>$_f.content-type</strong><br />
+	$result[Р¤Р°Р№Р» <strong>^file:fullpath[$f.name]</strong><br />
+	Р Р°Р·РјРµСЂ: <strong>$_f.size Р±Р°Р№С‚</strong><br />
+	РЎРѕР·РґР°РЅ: <strong>${_f.cdate.day}.${_f.cdate.month}.${_f.cdate.year} РІ 
+	${_f.cdate.hour}С‡.${_f.cdate.minute}РјРёРЅ</strong><br />
+	РР·РјРµРЅРµРЅ: <strong>${_f.mdate.day}.${_f.mdate.month}.${_f.mdate.year} РІ 
+	${_f.mdate.hour}С‡.${_f.mdate.minute}РјРёРЅ</strong><br />
+	РџРѕСЃР»РµРґРЅРёР№ СЂР°Р· РѕР±СЂР°С‰РµРЅРёРµ Рє С„Р°Р№Р»Сѓ РїСЂРѕРёР·РІРѕРґРёР»РѕСЃСЊ <strong>${_f.adate.day}.${_f.adate.month}.${_f.adate.year} РІ 
+	${_f.adate.hour}С‡.${_f.adate.minute}РјРёРЅ.</strong><br />
+	MIME-С‚РёРї С„Р°Р№Р»Р°: <strong>$_f.content-type</strong><br />
 	^if(${_f.content-type} eq "text/plain" || ${_f.content-type} eq "text/html"){
-	Первые 100 символов файла:<br />
+	РџРµСЂРІС‹Рµ 100 СЃРёРјРІРѕР»РѕРІ С„Р°Р№Р»Р°:<br />
 	<strong><i>^f.text.left(100)...</i></strong><br />
-	Последние 100 символов файла:<br />
+	РџРѕСЃР»РµРґРЅРёРµ 100 СЃРёРјРІРѕР»РѕРІ С„Р°Р№Р»Р°:<br />
 	<strong><i>...^f.text.right(100)</i></strong><br />
 	}
 	]
 }{
 	$exception.handled(1)
-	$result[<font color="red"><strong>^file:fullpath[$f.name]</strong> (file) не найден!</font>]
+	$result[<font color="red"><strong>^file:fullpath[$f.name]</strong> (file) РЅРµ РЅР°Р№РґРµРЅ!</font>]
 }
 #end @debugShowFile[]
 
@@ -102,7 +102,7 @@ $result[^if(!def $shash){<strong>Значение не присвоено</strong> (void)}]
 
 @debugShowDate[d]
 ###################################################################################################
-$result[<strong>${d.day}.${d.month}.${d.year}, ${d.hour}час ${d.minute}мин ${d.second}сек. $d.yearday день года</strong>]
+$result[<strong>${d.day}.${d.month}.${d.year}, ${d.hour}С‡Р°СЃ ${d.minute}РјРёРЅ ${d.second}СЃРµРє. $d.yearday РґРµРЅСЊ РіРѕРґР°</strong>]
 #end @debugShowDate[]
 
 
@@ -110,9 +110,9 @@ $result[<strong>${d.day}.${d.month}.${d.year}, ${d.hour}час ${d.minute}мин ${d.s
 
 @debugShowImage[i]
 ###################################################################################################
-$result[^if(def $i.src){<strong>^i.html[]</strong>}{<strong>Графический объект созданный Parser3.</strong>}<br />
-Высота изображения^: ${i.height}px, ширина^: ${i.width}px<br />
-^if(def $i.exif){^debugShowHash[$i.exif]}{EXIF информация в файле отсутствует!<br />}]
+$result[^if(def $i.src){<strong>^i.html[]</strong>}{<strong>Р“СЂР°С„РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚ СЃРѕР·РґР°РЅРЅС‹Р№ Parser3.</strong>}<br />
+Р’С‹СЃРѕС‚Р° РёР·РѕР±СЂР°Р¶РµРЅРёСЏ^: ${i.height}px, С€РёСЂРёРЅР°^: ${i.width}px<br />
+^if(def $i.exif){^debugShowHash[$i.exif]}{EXIF РёРЅС„РѕСЂРјР°С†РёСЏ РІ С„Р°Р№Р»Рµ РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚!<br />}]
 #end @debugShowImage[]
 
 
@@ -125,7 +125,7 @@ $result[^if(def $i.src){<strong>^i.html[]</strong>}{<strong>Графический объект с
 	^t.save[$_path]
 	$_t[^table::load[$_path]]
 	^file:delete[$_path]
-	Объект является <strong>nameless</strong> таблицей!<br />
+	РћР±СЉРµРєС‚ СЏРІР»СЏРµС‚СЃСЏ <strong>nameless</strong> С‚Р°Р±Р»РёС†РµР№!<br />
 	^debugShowTable[$_t]
 }{
 	$_tcol[^t.columns[]]

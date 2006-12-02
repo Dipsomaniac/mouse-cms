@@ -17,18 +17,18 @@ $hRequest[^form:fields.foreach[field;value]{$.[^self._decode[$field]][^self._dec
 $_hParams[^hash::create[$hParams]]
 ^if(def $_hParams.oAuth){$oAuth[$_hParams.oAuth]}{^throw[ajax;Initialization failure. ^$.oAuth option MUST be specified.]}
 ^if(def $_hParams.oSql){$oSql[$_hParams.oSql]}{^throw[ajax;Initialization failure. ^$.oSql option MUST be specified.]}
-# выполнен ли вход
+# РІС‹РїРѕР»РЅРµРЅ Р»Рё РІС…РѕРґ
 ^if($oAuth.is_logon){
-# 	проверка на права администратора
+# 	РїСЂРѕРІРµСЂРєР° РЅР° РїСЂР°РІР° Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°
 	^if(^oAuth.user.groups.locate[name;Admins]){
-		# 		получаем параметры запроса
+		# 		РїРѕР»СѓС‡Р°РµРј РїР°СЂР°РјРµС‚СЂС‹ Р·Р°РїСЂРѕСЃР°
 		$_sTableName[$hRequest.table_name]
 		$_sAction[$hRequest.action]
 		$_sWhere[$hRequest.where]
 		$_sConnectTableName[$hRequest.connect]
-# 		очистка кэша SQL
+# 		РѕС‡РёСЃС‚РєР° РєСЌС€Р° SQL
 		^if(def $hRequest.cache){^oSql.clear[] }
-# 		и удаляем их и лишнее
+# 		Рё СѓРґР°Р»СЏРµРј РёС… Рё Р»РёС€РЅРµРµ
 		^hRequest.delete[where]
 		^hRequest.delete[action]
 		^hRequest.delete[table_name]
@@ -47,7 +47,7 @@ $_hParams[^hash::create[$hParams]]
 @go[][_sRequest][_hTables;_tWhere]
 $_hTables[^getStrToHash[$hRequest.tables]]
 ^hRequest.delete[tables]
-# составляем запрос
+# СЃРѕСЃС‚Р°РІР»СЏРµРј Р·Р°РїСЂРѕСЃ
 $_sRequest[
 ^taint[# -----------------------------------------------------------------------------------------------]
 ^taint[# ^MAIN:dtNow.sql-string[]]
@@ -70,13 +70,13 @@ $_sRequest[
 			^oSql.void{$_sRequest}
 		}
 }
-# если есть зависимая таблица, выполняем действие и в ней
-$result[Запрос выполнен.]
+# РµСЃР»Рё РµСЃС‚СЊ Р·Р°РІРёСЃРёРјР°СЏ С‚Р°Р±Р»РёС†Р°, РІС‹РїРѕР»РЅСЏРµРј РґРµР№СЃС‚РІРёРµ Рё РІ РЅРµР№
+$result[Р—Р°РїСЂРѕСЃ РІС‹РїРѕР»РЅРµРЅ.]
 #end go[]
 
 
 #################################################################################################
-# ну что вставим? - вставим!
+# РЅСѓ С‡С‚Рѕ РІСЃС‚Р°РІРёРј? - РІСЃС‚Р°РІРёРј!
 @insert[hRequest;sTableName;sWhere][_hRequest;names;values]
 $_hRequest[^hash::create[$hRequest]]
 $names[^_hRequest.foreach[field;value]{$field}[,]]
@@ -122,73 +122,73 @@ $result[^taint[^sText.replace[$tDecode]]]
 #################################################################################################
 @_getDecodeTable[]
 $result[^table::create{from	to
-%u2116	№
-%u0430	а
-%u0431	б
-%u0432	в
-%u0433	г
-%u0434	д
-%u0435	е
-%u0451	ё
-%u0436	ж
-%u0437	з
-%u0438	и
-%u0439	й
-%u043A	к
-%u043B	л
-%u043C	м
-%u043D	н
-%u043E	о
-%u043F	п
-%u0440	р
-%u0441	с
-%u0442	т
-%u0443	у
-%u0444	ф
-%u0445	х
-%u0446	ц
-%u0447	ч
-%u0448	ш
-%u0449	щ
-%u044A	ъ
-%u044B	ы
-%u044C	ь
-%u044D	э
-%u044E	ю
-%u044F	я
-%u0410	А
-%u0411	Б
-%u0412	В
-%u0413	Г
-%u0414	Д
-%u0415	Е
-%u0401	Ё
-%u0416	Ж
-%u0417	З
-%u0418	И
-%u0419	Й
-%u041A	К
-%u041B	Л
-%u041C	М
-%u041D	Н
-%u041E	О
-%u041F	П
-%u0420	Р
-%u0421	С
-%u0422	Т
-%u0423	У
-%u0424	Ф
-%u0425	Х
-%u0426	Ц
-%u0427	Ч
-%u0428	Ш
-%u0429	Щ
-%u042A	Ъ
-%u042B	Ы
-%u042C	Ь
-%u042D	Э
-%u042E	Ю
-%u042F	Я
+%u2116	в„–
+%u0430	Р°
+%u0431	Р±
+%u0432	РІ
+%u0433	Рі
+%u0434	Рґ
+%u0435	Рµ
+%u0451	С‘
+%u0436	Р¶
+%u0437	Р·
+%u0438	Рё
+%u0439	Р№
+%u043A	Рє
+%u043B	Р»
+%u043C	Рј
+%u043D	РЅ
+%u043E	Рѕ
+%u043F	Рї
+%u0440	СЂ
+%u0441	СЃ
+%u0442	С‚
+%u0443	Сѓ
+%u0444	С„
+%u0445	С…
+%u0446	С†
+%u0447	С‡
+%u0448	С€
+%u0449	С‰
+%u044A	СЉ
+%u044B	С‹
+%u044C	СЊ
+%u044D	СЌ
+%u044E	СЋ
+%u044F	СЏ
+%u0410	Рђ
+%u0411	Р‘
+%u0412	Р’
+%u0413	Р“
+%u0414	Р”
+%u0415	Р•
+%u0401	РЃ
+%u0416	Р–
+%u0417	Р—
+%u0418	Р
+%u0419	Р™
+%u041A	Рљ
+%u041B	Р›
+%u041C	Рњ
+%u041D	Рќ
+%u041E	Рћ
+%u041F	Рџ
+%u0420	Р 
+%u0421	РЎ
+%u0422	Рў
+%u0423	РЈ
+%u0424	Р¤
+%u0425	РҐ
+%u0426	Р¦
+%u0427	Р§
+%u0428	РЁ
+%u0429	Р©
+%u042A	РЄ
+%u042B	Р«
+%u042C	Р¬
+%u042D	Р­
+%u042E	Р®
+%u042F	РЇ
 %20	^#20
 %21	!
 %22	"

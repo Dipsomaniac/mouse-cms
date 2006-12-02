@@ -1,25 +1,25 @@
-^rem{ вызываем загрузчик данных админки }
+^rem{ РІС‹Р·С‹РІР°РµРј Р·Р°РіСЂСѓР·С‡РёРє РґР°РЅРЅС‹С… Р°РґРјРёРЅРєРё }
 ^executeSystemProcess[$.id[1]]
-# обрабатываем запрос
+# РѕР±СЂР°Р±Р°С‚С‹РІР°РµРј Р·Р°РїСЂРѕСЃ
 <block_content>
 	$lparams.body
-#	если вызван не режим "picker" выводим набор кнопок админки
+#	РµСЃР»Рё РІС‹Р·РІР°РЅ РЅРµ СЂРµР¶РёРј "picker" РІС‹РІРѕРґРёРј РЅР°Р±РѕСЂ РєРЅРѕРїРѕРє Р°РґРјРёРЅРєРё
 	^if($form:mode ne 'picker'){
 	<buttons>
-			<button image="24_sites.gif"      name="sites"     alt="Управление сайтами"        onClick="Go('$OBJECTS_HASH.80.full_path?type=sites','#container')" />
-			<button image="24_objects.gif"    name="objects"   alt="Управление объектами"      onClick="Go('$OBJECTS_HASH.80.full_path?type=objects','#container')" />
-			<button image="24_blocks.gif"     name="blocks"    alt="Управление блоками"        onClick="Go('$OBJECTS_HASH.80.full_path?type=blocks','#container')" />
-			<button image="24_process.gif"    name="process"   alt="Управление обработчиками"  onClick="Go('$OBJECTS_HASH.80.full_path?type=process','#container')" />
-			<button image="24_templates.gif"  name="templates" alt="Управление шаблонами"      onClick="Go('$OBJECTS_HASH.80.full_path?type=templates','#container')" />
-			<button image="24_users.gif"      name="users"     alt="Управление пользователями и группами" onClick="Go('$OBJECTS_HASH.80.full_path?type=users','#container')" />
-			<button image="24_rights.gif"     name="rigths"    alt="Назначение прав"           onClick="Go('$OBJECTS_HASH.80.full_path?type=rights','#container')" />
-			<button image="24_configure.gif"  name="configure" alt="Обслуживание системы"      onClick="Go('$OBJECTS_HASH.80.full_path?type=config','#container')" />
-			<button image="24_files.gif"      name="files"     alt="Загрузка файлов"           onClick="Go('$OBJECTS_HASH.80.full_path?type=files','#container')" />
+			<button image="24_sites.gif"      name="sites"     alt="РЈРїСЂР°РІР»РµРЅРёРµ СЃР°Р№С‚Р°РјРё"        onClick="Go('$OBJECTS_HASH.80.full_path?type=sites','#container')" />
+			<button image="24_objects.gif"    name="objects"   alt="РЈРїСЂР°РІР»РµРЅРёРµ РѕР±СЉРµРєС‚Р°РјРё"      onClick="Go('$OBJECTS_HASH.80.full_path?type=objects','#container')" />
+			<button image="24_blocks.gif"     name="blocks"    alt="РЈРїСЂР°РІР»РµРЅРёРµ Р±Р»РѕРєР°РјРё"        onClick="Go('$OBJECTS_HASH.80.full_path?type=blocks','#container')" />
+			<button image="24_process.gif"    name="process"   alt="РЈРїСЂР°РІР»РµРЅРёРµ РѕР±СЂР°Р±РѕС‚С‡РёРєР°РјРё"  onClick="Go('$OBJECTS_HASH.80.full_path?type=process','#container')" />
+			<button image="24_templates.gif"  name="templates" alt="РЈРїСЂР°РІР»РµРЅРёРµ С€Р°Р±Р»РѕРЅР°РјРё"      onClick="Go('$OBJECTS_HASH.80.full_path?type=templates','#container')" />
+			<button image="24_users.gif"      name="users"     alt="РЈРїСЂР°РІР»РµРЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏРјРё Рё РіСЂСѓРїРїР°РјРё" onClick="Go('$OBJECTS_HASH.80.full_path?type=users','#container')" />
+			<button image="24_rights.gif"     name="rigths"    alt="РќР°Р·РЅР°С‡РµРЅРёРµ РїСЂР°РІ"           onClick="Go('$OBJECTS_HASH.80.full_path?type=rights','#container')" />
+			<button image="24_configure.gif"  name="configure" alt="РћР±СЃР»СѓР¶РёРІР°РЅРёРµ СЃРёСЃС‚РµРјС‹"      onClick="Go('$OBJECTS_HASH.80.full_path?type=config','#container')" />
+			<button image="24_files.gif"      name="files"     alt="Р—Р°РіСЂСѓР·РєР° С„Р°Р№Р»РѕРІ"           onClick="Go('$OBJECTS_HASH.80.full_path?type=files','#container')" />
 			<button image="24_divider.gif" />
 		^if(def $form:action && $form:action ne 'config'){
-			<button image="24_save.gif"    name="save"      alt="Сохранить" onClick="saveForm('form_content','${OBJECTS_HASH.80.full_path}?type=$form:type','#container')" />
-			<button image="24_retype.gif"  name="retype"    alt="Сбросить"  onClick="resetForm()" />
-			<button image="24_cancel.gif"  name="cancel"    alt="Отменить"  onClick="Cancel('$OBJECTS_HASH.80.full_path?type=$form:type')" />
+			<button image="24_save.gif"    name="save"      alt="РЎРѕС…СЂР°РЅРёС‚СЊ" onClick="saveForm('form_content','${OBJECTS_HASH.80.full_path}?type=$form:type','#container')" />
+			<button image="24_retype.gif"  name="retype"    alt="РЎР±СЂРѕСЃРёС‚СЊ"  onClick="resetForm()" />
+			<button image="24_cancel.gif"  name="cancel"    alt="РћС‚РјРµРЅРёС‚СЊ"  onClick="Cancel('$OBJECTS_HASH.80.full_path?type=$form:type')" />
 		}
 	</buttons>
 	}
@@ -28,34 +28,34 @@
 </block_content>
 #################################################################################################
 #                                                                                               #
-#                                    ОБХОД ТИПОВ                                                #
+#                                    РћР‘РҐРћР” РўРРџРћР’                                                #
 #                                                                                               #
 #################################################################################################
 
 # -----------------------------------------------------------------------------------------------
-#                                    УПРАВЛЕНИЕ САЙТАМИ
+#                                    РЈРџР РђР’Р›Р•РќРР• РЎРђР™РўРђРњР
 # -----------------------------------------------------------------------------------------------
 #################################################################################################
-# Управление сайтами
+# РЈРїСЂР°РІР»РµРЅРёРµ СЃР°Р№С‚Р°РјРё
 @sites[]
 ^if(def $form:action){
-	^if($form:action eq 'edit'){$_iR($_iR + 1) $_sLabel[Редатирование ]}
-	^if($form:action eq 'copy'){$_iR($_iR + 2) $_sLabel[Копирование ]}
-	^if($form:action eq 'add'){ $_iR($_iR + 4) $_sLabel[Добавление ]}
+	^if($form:action eq 'edit'){$_iR($_iR + 1) $_sLabel[Р РµРґР°С‚РёСЂРѕРІР°РЅРёРµ ]}
+	^if($form:action eq 'copy'){$_iR($_iR + 2) $_sLabel[РљРѕРїРёСЂРѕРІР°РЅРёРµ ]}
+	^if($form:action eq 'add'){ $_iR($_iR + 4) $_sLabel[Р”РѕР±Р°РІР»РµРЅРёРµ ]}
 	<form method="post" action="" name="form_content" id="form_content" enctype="multipart/form-data" 
-	label="MOUSE CMS | Сайты | $_sLabel | $SITES_HASH.[$form:id].name ">
+	label="MOUSE CMS | РЎР°Р№С‚С‹ | $_sLabel | $SITES_HASH.[$form:id].name ">
 	<tabs>
-	<tab id="section-1" name="Основное">
-		<field type="text"   name="name"           label="Название"   description="Имя сайта"              class="long">$SITES_HASH.[$form:id].name</field>
-		<field type="text"   name="domain"         label="Домен"      description="Доменное имя"           class="medium">$SITES_HASH.[$form:id].domain</field>
-		<field type="select" name="lang_id"        label="Язык"       description="Язык сайта"             class="short"><option value="1">Русский</option></field>
+	<tab id="section-1" name="РћСЃРЅРѕРІРЅРѕРµ">
+		<field type="text"   name="name"           label="РќР°Р·РІР°РЅРёРµ"   description="РРјСЏ СЃР°Р№С‚Р°"              class="long">$SITES_HASH.[$form:id].name</field>
+		<field type="text"   name="domain"         label="Р”РѕРјРµРЅ"      description="Р”РѕРјРµРЅРЅРѕРµ РёРјСЏ"           class="medium">$SITES_HASH.[$form:id].domain</field>
+		<field type="select" name="lang_id"        label="РЇР·С‹Рє"       description="РЇР·С‹Рє СЃР°Р№С‚Р°"             class="short"><option value="1">Р СѓСЃСЃРєРёР№</option></field>
 	^if($_iR & 1){
-		<field type="select" name="e404_object_id" label="Ошибки"     description="Страница ошибок"        class="medium">
+		<field type="select" name="e404_object_id" label="РћС€РёР±РєРё"     description="РЎС‚СЂР°РЅРёС†Р° РѕС€РёР±РѕРє"        class="medium">
 			<system:method name="list">name[OBJECTS]added[select="$SITES_HASH.[$form:id].e404_object_id"]tag[option]</system:method>
 		</field>
 	}
-		<field type="text"   name="cache_time"     label="Кэш"        description="Время кэширования (сек)" class="short">$SITES_HASH.[$form:id].cache_time</field>
-		<field type="text"   name="sort_order"     label="Сортировка" description="Порядок сортировки"      class="short">$SITES_HASH.[$form:id].sort_order</field>
+		<field type="text"   name="cache_time"     label="РљСЌС€"        description="Р’СЂРµРјСЏ РєСЌС€РёСЂРѕРІР°РЅРёСЏ (СЃРµРє)" class="short">$SITES_HASH.[$form:id].cache_time</field>
+		<field type="text"   name="sort_order"     label="РЎРѕСЂС‚РёСЂРѕРІРєР°" description="РџРѕСЂСЏРґРѕРє СЃРѕСЂС‚РёСЂРѕРІРєРё"      class="short">$SITES_HASH.[$form:id].sort_order</field>
 	^if($_iR & 6){
 		<field type="hidden" name="action">insert</field>
 	}
@@ -76,14 +76,14 @@
 		$.data[$SITES]
 		$.names[^table::create{name	id	object
 ID	id	
-Название	name	
-Домен	domain	
-Время кэша	cache_time	
-Страница Ошибок	e404_object_id	OBJECTS_HASH
+РќР°Р·РІР°РЅРёРµ	name	
+Р”РѕРјРµРЅ	domain	
+Р’СЂРµРјСЏ РєСЌС€Р°	cache_time	
+РЎС‚СЂР°РЅРёС†Р° РћС€РёР±РѕРє	e404_object_id	OBJECTS_HASH
 }]
 		$.description[
-			Язык: $SITES.lang_id <br />
-			Сортировка: $SITES.sort_order
+			РЇР·С‹Рє: $SITES.lang_id <br />
+			РЎРѕСЂС‚РёСЂРѕРІРєР°: $SITES.sort_order
 		]
 		$.added[
 			<field type="hidden" name="where">site_id</field>
@@ -94,26 +94,26 @@ ID	id
 			</field>
 		]
 		$.where[site_id]
-		$.label[Mouse CMS | Сайты]
+		$.label[Mouse CMS | РЎР°Р№С‚С‹]
 	]
 }
 #end @sites[]
 
 # -----------------------------------------------------------------------------------------------
-#                                    УПРАВЛЕНИЕ ОБЪЕКТАМИ
+#                                    РЈРџР РђР’Р›Р•РќРР• РћР‘РЄР•РљРўРђРњР
 # -----------------------------------------------------------------------------------------------
 #################################################################################################
-# Управление объектами
+# РЈРїСЂР°РІР»РµРЅРёРµ РѕР±СЉРµРєС‚Р°РјРё
 @objects[][_iR;path;is_published;description;name;document_name;window_name;parent_id]
 ^if(def $form:action){
 	^if($form:action eq 'blocks'){$result[
 		<form method="post" action="" name="form_content" id="form_content" enctype="multipart/form-data"
-		label="MOUSE CMS | Объекты | Управление блоками объекта | $OBJECTS_HASH.[$form:id].name ">
+		label="MOUSE CMS | РћР±СЉРµРєС‚С‹ | РЈРїСЂР°РІР»РµРЅРёРµ Р±Р»РѕРєР°РјРё РѕР±СЉРµРєС‚Р° | $OBJECTS_HASH.[$form:id].name ">
 		<tabs>
-		<tab id="section-1" name="Блоки объекта $OBJECTS_HASH.[$form:id].name">
+		<tab id="section-1" name="Р‘Р»РѕРєРё РѕР±СЉРµРєС‚Р° $OBJECTS_HASH.[$form:id].name">
 			$BLOCK_TO_OBJECT[^getBLOCK_TO_OBJECT[$.where[ m_block_to_object.object_id='$form:id' ]]]
-			<field type="none" label="$OBJECTS_HASH.[$form:id].name" description="Блоки объекта">
-				<img src="/themes/mouse/icons/16_add_block.gif" title="Добавить" alt="^BLOCK_TO_OBJECT.count[]" id="add_button" class="input-image" onClick="add_line('blocks')" />
+			<field type="none" label="$OBJECTS_HASH.[$form:id].name" description="Р‘Р»РѕРєРё РѕР±СЉРµРєС‚Р°">
+				<img src="/themes/mouse/icons/16_add_block.gif" title="Р”РѕР±Р°РІРёС‚СЊ" alt="^BLOCK_TO_OBJECT.count[]" id="add_button" class="input-image" onClick="add_line('blocks')" />
 				<br/><br/>
 			</field>
 			<div id="blocks">
@@ -121,7 +121,7 @@ ID	id
 				$iCount(1)
 				^BLOCK_TO_OBJECT.menu{
 				<div id="block_to_object_$iCount">
-					<input name="mode_$iCount" value="$BLOCK_TO_OBJECT.mode" class="input-text-short"/><input name="sort_order_$iCount" value="$BLOCK_TO_OBJECT.sort_order" class="input-text-short"/><input type="hidden" name="block_id_$iCount" value="$BLOCK_TO_OBJECT.id"/><input name="block_id_${iCount}_title"  value="$BLOCK_TO_OBJECT.name" class="input-text-medium"/><img src="/themes/mouse/icons/16_select.gif"    title="Выбрать"       alt="x" class="input-image" onClick="pickObject('$OBJECTS_HASH.84.full_path?type=blocks&amp^;mode=picker&amp^;elem=block_id_$iCount')" /><img src="/themes/mouse/icons/16_del_block.gif" title="Убрать"        alt="x" class="input-image" onClick="remove_line($iCount)" />
+					<input name="mode_$iCount" value="$BLOCK_TO_OBJECT.mode" class="input-text-short"/><input name="sort_order_$iCount" value="$BLOCK_TO_OBJECT.sort_order" class="input-text-short"/><input type="hidden" name="block_id_$iCount" value="$BLOCK_TO_OBJECT.id"/><input name="block_id_${iCount}_title"  value="$BLOCK_TO_OBJECT.name" class="input-text-medium"/><img src="/themes/mouse/icons/16_select.gif"    title="Р’С‹Р±СЂР°С‚СЊ"       alt="x" class="input-image" onClick="pickObject('$OBJECTS_HASH.84.full_path?type=blocks&amp^;mode=picker&amp^;elem=block_id_$iCount')" /><img src="/themes/mouse/icons/16_del_block.gif" title="РЈР±СЂР°С‚СЊ"        alt="x" class="input-image" onClick="remove_line($iCount)" />
 				</div>
 				^iCount.inc(1);
 				}
@@ -132,9 +132,9 @@ ID	id
 		</tabs>
 		</form>
 	]}
-	^if($form:action eq 'edit'){$_iR($_iR + 1) $_sLabel[Редатирование ]}
-	^if($form:action eq 'copy'){$_iR($_iR + 2) $_sLabel[Копирование ]}
-	^if($form:action eq 'add'){ $_iR($_iR + 4) $_sLabel[Добавление ]}
+	^if($form:action eq 'edit'){$_iR($_iR + 1) $_sLabel[Р РµРґР°С‚РёСЂРѕРІР°РЅРёРµ ]}
+	^if($form:action eq 'copy'){$_iR($_iR + 2) $_sLabel[РљРѕРїРёСЂРѕРІР°РЅРёРµ ]}
+	^if($form:action eq 'add'){ $_iR($_iR + 4) $_sLabel[Р”РѕР±Р°РІР»РµРЅРёРµ ]}
 	^if($_iR & 1){
 		$path[$OBJECTS_HASH.[$form:id].path]
 		$is_published[$OBJECTS_HASH.[$form:id].is_published]
@@ -148,73 +148,73 @@ ID	id
 	}
 	^if($_iR & 4){$parent_id[$form:id]}
 	<form method="post" action="" name="form_content" id="form_content" enctype="multipart/form-data"
-	label="MOUSE CMS | Объекты | $_sLabel | $OBJECTS_HASH.[$form:id].name ">
+	label="MOUSE CMS | РћР±СЉРµРєС‚С‹ | $_sLabel | $OBJECTS_HASH.[$form:id].name ">
 		<tabs>
-			<tab id="section-1" name="Основное">
+			<tab id="section-1" name="РћСЃРЅРѕРІРЅРѕРµ">
 				^if($_iR & 1){
-					<field type="none"     name="object_id"     label="ID"           description="ID объекта">$OBJECTS_HASH.[$form:id].id</field>
+					<field type="none"     name="object_id"     label="ID"           description="ID РѕР±СЉРµРєС‚Р°">$OBJECTS_HASH.[$form:id].id</field>
 				}
-				<field type="text"     name="name"          label="Имя"          description=" Имя объекта "           class="medium">
+				<field type="text"     name="name"          label="РРјСЏ"          description=" РРјСЏ РѕР±СЉРµРєС‚Р° "           class="medium">
 					$name
 				</field>
-				<field type="text"     name="document_name" label="Название"     description=" Имя документа "         class="long"  >
+				<field type="text"     name="document_name" label="РќР°Р·РІР°РЅРёРµ"     description=" РРјСЏ РґРѕРєСѓРјРµРЅС‚Р° "         class="long"  >
 					$document_name
 				</field>
-				<field type="text"     name="window_name"   label="Окно"         description=" Оконное имя: "          class="long"  >
+				<field type="text"     name="window_name"   label="РћРєРЅРѕ"         description=" РћРєРѕРЅРЅРѕРµ РёРјСЏ: "          class="long"  >
 					$window_name
 				</field>
-				<field type="text"     name="path"          label="Путь"         description="Имя файла/каталога (example, example.html)" class="medium">
+				<field type="text"     name="path"          label="РџСѓС‚СЊ"         description="РРјСЏ С„Р°Р№Р»Р°/РєР°С‚Р°Р»РѕРіР° (example, example.html)" class="medium">
 					$path
 				</field>
-				<field type="text"     name="cache_time"    label="Кэш"          description="Время кэширования (сек)" class="short" >
+				<field type="text"     name="cache_time"    label="РљСЌС€"          description="Р’СЂРµРјСЏ РєСЌС€РёСЂРѕРІР°РЅРёСЏ (СЃРµРє)" class="short" >
 					$OBJECTS_HASH.[$form:id].cache_time
 				</field>
-				<field type="text"     name="sort_order"    label="Порядок"      description="Порядок сортировки"      class="short" >
+				<field type="text"     name="sort_order"    label="РџРѕСЂСЏРґРѕРє"      description="РџРѕСЂСЏРґРѕРє СЃРѕСЂС‚РёСЂРѕРІРєРё"      class="short" >
 					$OBJECTS_HASH.[$form:id].sort_order
 				</field>
-				<field type="checkbox" name="is_published"  label="Опубликовать" description="">$is_published</field>
-				<field type="select" name="parent_id"       label="Предок"       description="Родительский объект"     class="medium">
-					<option id="0" select="$parent_id">Корневое пространство</option>
+				<field type="checkbox" name="is_published"  label="РћРїСѓР±Р»РёРєРѕРІР°С‚СЊ" description="">$is_published</field>
+				<field type="select" name="parent_id"       label="РџСЂРµРґРѕРє"       description="Р РѕРґРёС‚РµР»СЊСЃРєРёР№ РѕР±СЉРµРєС‚"     class="medium">
+					<option id="0" select="$parent_id">РљРѕСЂРЅРµРІРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ</option>
 					<system:method name="list">name[OBJECTS]added[select="$parent_id"]tag[option]</system:method>
 				</field>
-				<field type="select" name="template_id" label="Шаблон" description="Шаблон дизайна объекта" class="medium">
+				<field type="select" name="template_id" label="РЁР°Р±Р»РѕРЅ" description="РЁР°Р±Р»РѕРЅ РґРёР·Р°Р№РЅР° РѕР±СЉРµРєС‚Р°" class="medium">
 					<system:method name="list">name[TEMPLATES]added[select="$OBJECTS_HASH.[$form:id].template_id"]tag[option]</system:method>
 				</field>
-				<field type="textarea" name="description"   label="Описание"     description="Описание объекта">$description</field>
+				<field type="textarea" name="description"   label="РћРїРёСЃР°РЅРёРµ"     description="РћРїРёСЃР°РЅРёРµ РѕР±СЉРµРєС‚Р°">$description</field>
 			</tab>
-			<tab id="section-2" name="Дополнительное">
+			<tab id="section-2" name="Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕРµ">
 				^if($_iR & 1){
-					<field type="none" name="full_path" label="Полный путь" description="От корня сайта">$OBJECTS_HASH.[$form:id].full_path</field>
+					<field type="none" name="full_path" label="РџРѕР»РЅС‹Р№ РїСѓС‚СЊ" description="РћС‚ РєРѕСЂРЅСЏ СЃР°Р№С‚Р°">$OBJECTS_HASH.[$form:id].full_path</field>
 				}
-				<field name="thread_id" label="Ветвь объекта" description="" type="none">$OBJECTS_HASH.[$OBJECTS_HASH.[$form:id].thread_id].name</field>
-				<field type="checkbox" name="is_show_on_sitemap" label="Карта" description="Показывать на карте сайта">$OBJECTS_HASH.[$form:id].is_show_on_sitemap	</field>
-				<field type="checkbox" name="is_show_in_menu" label="Меню" description="Показывать в меню">$OBJECTS_HASH.[$form:id].is_show_in_menu</field>
-				<field type="text" name="url" label="URL" description="Объект ссылка" class="long">$OBJECTS_HASH.[$form:id].url</field>
-				<field type="select" name="site_id" description="Сайт объекта" label="Сайт" class="medium">
+				<field name="thread_id" label="Р’РµС‚РІСЊ РѕР±СЉРµРєС‚Р°" description="" type="none">$OBJECTS_HASH.[$OBJECTS_HASH.[$form:id].thread_id].name</field>
+				<field type="checkbox" name="is_show_on_sitemap" label="РљР°СЂС‚Р°" description="РџРѕРєР°Р·С‹РІР°С‚СЊ РЅР° РєР°СЂС‚Рµ СЃР°Р№С‚Р°">$OBJECTS_HASH.[$form:id].is_show_on_sitemap	</field>
+				<field type="checkbox" name="is_show_in_menu" label="РњРµРЅСЋ" description="РџРѕРєР°Р·С‹РІР°С‚СЊ РІ РјРµРЅСЋ">$OBJECTS_HASH.[$form:id].is_show_in_menu</field>
+				<field type="text" name="url" label="URL" description="РћР±СЉРµРєС‚ СЃСЃС‹Р»РєР°" class="long">$OBJECTS_HASH.[$form:id].url</field>
+				<field type="select" name="site_id" description="РЎР°Р№С‚ РѕР±СЉРµРєС‚Р°" label="РЎР°Р№С‚" class="medium">
 					<system:method name="list">name[SITES]added[select="$OBJECTS_HASH.[$form:id].site_id"]tag[option]</system:method>
 				</field>
-				<field type="select" name="object_type_id" description="Тип объекта" label="Тип" class="long">
+				<field type="select" name="object_type_id" description="РўРёРї РѕР±СЉРµРєС‚Р°" label="РўРёРї" class="long">
 					<system:method name="list">name[TYPES]added[select="$OBJECTS_HASH.[$form:id].object_type_id"]tag[option]</system:method>
 				</field>
-				<field type="select" name="data_process_id" description="Обработчик объекта" label="Обработчик" class="medium">
-					<option id="0" select="$OBJECTS_HASH.[$form:id].data_process_id">отсутствует</option>
+				<field type="select" name="data_process_id" description="РћР±СЂР°Р±РѕС‚С‡РёРє РѕР±СЉРµРєС‚Р°" label="РћР±СЂР°Р±РѕС‚С‡РёРє" class="medium">
+					<option id="0" select="$OBJECTS_HASH.[$form:id].data_process_id">РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚</option>
 					<system:method name="list">name[PROCESSES]added[select="$OBJECTS_HASH.[$form:id].data_process_id"]tag[option]</system:method>
 				</field>
-				<field type="select" name="link_to_object_id" description="Подменить содержимое, содержимым выбранного объекта" label="Ссылка"  class="medium">
-					<option id="0" select="$OBJECTS_HASH.[$form:id].link_to_object_id">не подменять</option>
+				<field type="select" name="link_to_object_id" description="РџРѕРґРјРµРЅРёС‚СЊ СЃРѕРґРµСЂР¶РёРјРѕРµ, СЃРѕРґРµСЂР¶РёРјС‹Рј РІС‹Р±СЂР°РЅРЅРѕРіРѕ РѕР±СЉРµРєС‚Р°" label="РЎСЃС‹Р»РєР°"  class="medium">
+					<option id="0" select="$OBJECTS_HASH.[$form:id].link_to_object_id">РЅРµ РїРѕРґРјРµРЅСЏС‚СЊ</option>
 					<system:method name="list">name[OBJECTS]added[select="$OBJECTS_HASH.[$form:id].link_to_object_id"]tag[option]</system:method>
 				</field>
 			</tab>
-			<tab id="section-3" name="Атрибуты">
+			<tab id="section-3" name="РђС‚СЂРёР±СѓС‚С‹">
 				^if($_iR & 1){
-					<field name="dt_update" label="Изменен" description="Дата последнего редактирования" type="none">$OBJECTS_HASH.[$form:id].dt_update</field>
-					<field name="auser_id" label="Владелец" description="Логин редактировавшего" type="none">$USERS_HASH.[$OBJECTS_HASH.[$form:id].auser_id].name</field>
+					<field name="dt_update" label="РР·РјРµРЅРµРЅ" description="Р”Р°С‚Р° РїРѕСЃР»РµРґРЅРµРіРѕ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёСЏ" type="none">$OBJECTS_HASH.[$form:id].dt_update</field>
+					<field name="auser_id" label="Р’Р»Р°РґРµР»РµС†" description="Р›РѕРіРёРЅ СЂРµРґР°РєС‚РёСЂРѕРІР°РІС€РµРіРѕ" type="none">$USERS_HASH.[$OBJECTS_HASH.[$form:id].auser_id].name</field>
 				}
 				$hRights[^getHashRights($OBJECTS_HASH.[$form:id].rights)]
-				<field type="checkbox" name="rights_read" label="Просмотр" description="Права по умолчанию">$hRights.read</field>
-				<field type="checkbox" name="rights_edit" label="Правка" description="Права по умолчанию">$hRights.edit</field>
-				<field type="checkbox" name="rights_delete" label="Удаление" description="Права по умолчанию">$hRights.delete</field>
-#				<field type="text" name="rights" label="rights" description="Маска прав на объект" class="short">$OBJECTS_HASH.[$form:id].rights</field>
+				<field type="checkbox" name="rights_read" label="РџСЂРѕСЃРјРѕС‚СЂ" description="РџСЂР°РІР° РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ">$hRights.read</field>
+				<field type="checkbox" name="rights_edit" label="РџСЂР°РІРєР°" description="РџСЂР°РІР° РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ">$hRights.edit</field>
+				<field type="checkbox" name="rights_delete" label="РЈРґР°Р»РµРЅРёРµ" description="РџСЂР°РІР° РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ">$hRights.delete</field>
+#				<field type="text" name="rights" label="rights" description="РњР°СЃРєР° РїСЂР°РІ РЅР° РѕР±СЉРµРєС‚" class="short">$OBJECTS_HASH.[$form:id].rights</field>
 				<field type="hidden" name="dt_update">^MAIN:dtNow.sql-string[]</field>
 				<field type="hidden" name="auser_id">$MAIN:objAuth.user.[$form:id]</field>
 				^if($_iR & 6){
@@ -233,36 +233,36 @@ ID	id
 		</tabs>
 	</form>
 	}{
-		<button image="24_object_blocks.gif"   name="object_blocks"   alt="Блоки объекта" onClick="CopyChecked('$OBJECTS_HASH.80.full_path?type=$form:type&amp^;action=blocks')" />
+		<button image="24_object_blocks.gif"   name="object_blocks"   alt="Р‘Р»РѕРєРё РѕР±СЉРµРєС‚Р°" onClick="CopyChecked('$OBJECTS_HASH.80.full_path?type=$form:type&amp^;action=blocks')" />
 		^drawList[
 			$.data[$OBJECTS]
 			$.names[^table::create{name	id	object
 ID	id
-Название	name
-Тип	object_type_id	TYPES_HASH
-Полный путь	full_path	
-Сайт	site_id	SITES_HASH
-Родитель	parent_id	OBJECTS_HASH
-Обработчик	data_process_id	PROCESSES_HASH
-Шаблон	template_id	TEMPLATES_HASH
-Время кэша	cache_time
+РќР°Р·РІР°РЅРёРµ	name
+РўРёРї	object_type_id	TYPES_HASH
+РџРѕР»РЅС‹Р№ РїСѓС‚СЊ	full_path	
+РЎР°Р№С‚	site_id	SITES_HASH
+Р РѕРґРёС‚РµР»СЊ	parent_id	OBJECTS_HASH
+РћР±СЂР°Р±РѕС‚С‡РёРє	data_process_id	PROCESSES_HASH
+РЁР°Р±Р»РѕРЅ	template_id	TEMPLATES_HASH
+Р’СЂРµРјСЏ РєСЌС€Р°	cache_time
 }]
 			$.description{
-				Имя документа: $_tData.document_name <br />
-				Оконное имя: $_tData.window_name <br />
-				Описание: $_tData.description <br />
+				РРјСЏ РґРѕРєСѓРјРµРЅС‚Р°: $_tData.document_name <br />
+				РћРєРѕРЅРЅРѕРµ РёРјСЏ: $_tData.window_name <br />
+				РћРїРёСЃР°РЅРёРµ: $_tData.description <br />
 				<hr/>
-				Ветвь объекта: $OBJECTS_HASH.[$_tData.thread_id].name,
-				rights: $_tData.rights, Порядок сортировки: $_tData.sort_order,
-				Путь: $_tData.path <br/>
-				Флажки: 
+				Р’РµС‚РІСЊ РѕР±СЉРµРєС‚Р°: $OBJECTS_HASH.[$_tData.thread_id].name,
+				rights: $_tData.rights, РџРѕСЂСЏРґРѕРє СЃРѕСЂС‚РёСЂРѕРІРєРё: $_tData.sort_order,
+				РџСѓС‚СЊ: $_tData.path <br/>
+				Р¤Р»Р°Р¶РєРё: 
 					^if(^_tData.is_show_on_sitemap.int(0)){SM }
 					^if(^_tData.is_show_in_menu.int(0)){Mn }
 					^if(^_tData.is_published.int(0)){Pb } 
-				Изменен: $_tData.dt_update <br/>
-				Владелец: $USERS_HASH.[$_tData.auser_id].name <br/>
-				^if(def $_tData.url){Объект-ссылка: $_tData.url }
-				^if(^_tData.link_to_object_id.int(0)){Блоки объекта: $_tData.link_to_object_id }
+				РР·РјРµРЅРµРЅ: $_tData.dt_update <br/>
+				Р’Р»Р°РґРµР»РµС†: $USERS_HASH.[$_tData.auser_id].name <br/>
+				^if(def $_tData.url){РћР±СЉРµРєС‚-СЃСЃС‹Р»РєР°: $_tData.url }
+				^if(^_tData.link_to_object_id.int(0)){Р‘Р»РѕРєРё РѕР±СЉРµРєС‚Р°: $_tData.link_to_object_id }
 			}
 			$.added[
 				<field type="hidden" name="cache_time">0</field>
@@ -275,7 +275,7 @@ ID	id
 				</field>
 			]
 			$.where[object_id]
-			$.label[Mouse CMS | Объекты]
+			$.label[Mouse CMS | РћР±СЉРµРєС‚С‹]
 		]
 }
 
@@ -283,41 +283,41 @@ ID	id
 #end @objects[]
 
 # -----------------------------------------------------------------------------------------------
-#                                    УПРАВЛЕНИЕ БЛОКАМИ
+#                                    РЈРџР РђР’Р›Р•РќРР• Р‘Р›РћРљРђРњР
 # -----------------------------------------------------------------------------------------------
 #################################################################################################
-# Управление блоками
+# РЈРїСЂР°РІР»РµРЅРёРµ Р±Р»РѕРєР°РјРё
 @blocks[]
 ^if(def $form:action){
-	^if($form:action eq 'edit'){$_iR($_iR + 1) $_sLabel[Редатирование ]}
-	^if($form:action eq 'copy'){$_iR($_iR + 2) $_sLabel[Копирование ]}
-	^if($form:action eq 'add'){ $_iR($_iR + 4) $_sLabel[Добавление ]}
+	^if($form:action eq 'edit'){$_iR($_iR + 1) $_sLabel[Р РµРґР°С‚РёСЂРѕРІР°РЅРёРµ ]}
+	^if($form:action eq 'copy'){$_iR($_iR + 2) $_sLabel[РљРѕРїРёСЂРѕРІР°РЅРёРµ ]}
+	^if($form:action eq 'add'){ $_iR($_iR + 4) $_sLabel[Р”РѕР±Р°РІР»РµРЅРёРµ ]}
 	<form method="post" action="" name="form_content" id="form_content" enctype="multipart/form-data"
-	label="MOUSE CMS | Блоки | $_sLabel | $BLOCKS_HASH.[$form:id].name ">
+	label="MOUSE CMS | Р‘Р»РѕРєРё | $_sLabel | $BLOCKS_HASH.[$form:id].name ">
 		<tabs>
-			<tab id="section-1" name="Основное">
+			<tab id="section-1" name="РћСЃРЅРѕРІРЅРѕРµ">
 				^if($_iR & 1){
-					<field type="none"  name="block_id" label="ID" description="ID блока">$BLOCKS_HASH.[$form:id].id</field>
+					<field type="none"  name="block_id" label="ID" description="ID Р±Р»РѕРєР°">$BLOCKS_HASH.[$form:id].id</field>
 				}
-				<field type="text"     name="name"          label="Имя"          description="Название блока" class="medium">
+				<field type="text"     name="name"          label="РРјСЏ"          description="РќР°Р·РІР°РЅРёРµ Р±Р»РѕРєР°" class="medium">
 					$BLOCKS_HASH.[$form:id].name
 				</field>
-				<field type="checkbox" name="is_published"  label="Опубликовать">$BLOCKS_HASH.[$form:id].is_published</field>
-				<field type="select" name="data_process_id" label="Обработчик" description="Обработчик блока">
-					<option id="0" select="$BLOCKS_HASH.[$form:id].data_process_id">отсутствует</option>
+				<field type="checkbox" name="is_published"  label="РћРїСѓР±Р»РёРєРѕРІР°С‚СЊ">$BLOCKS_HASH.[$form:id].is_published</field>
+				<field type="select" name="data_process_id" label="РћР±СЂР°Р±РѕС‚С‡РёРє" description="РћР±СЂР°Р±РѕС‚С‡РёРє Р±Р»РѕРєР°">
+					<option id="0" select="$BLOCKS_HASH.[$form:id].data_process_id">РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚</option>
 					<system:method name="list">name[PROCESSES]added[select="$BLOCKS_HASH.[$form:id].data_process_id"]tag[option]</system:method>
 				</field>
-				<field type="textarea" name="description"   label="Описание"  description="Описание блока" >$BLOCKS_HASH.[$form:id].description</field>
+				<field type="textarea" name="description"   label="РћРїРёСЃР°РЅРёРµ"  description="РћРїРёСЃР°РЅРёРµ Р±Р»РѕРєР°" >$BLOCKS_HASH.[$form:id].description</field>
 			</tab>
-			<tab id="section-2" name="Дополнительное">
-				<field type="checkbox" name="is_parsed_manual" label="Ручной вызов">$BLOCKS_HASH.[$form:id].is_parsed_manual</field>
-				<field type="checkbox" name="is_shared" label="Общий блок">$BLOCKS_HASH.[$form:id].is_parsed_manual</field>
-				<field type="textarea" name="attr" label="Атрибуты" description="Атрибуты блока">$BLOCKS_HASH.[$form:id].attr</field>
-				<field type="select" name="data_type_id" label="Данные" description="Тип данных блока">
+			<tab id="section-2" name="Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕРµ">
+				<field type="checkbox" name="is_parsed_manual" label="Р СѓС‡РЅРѕР№ РІС‹Р·РѕРІ">$BLOCKS_HASH.[$form:id].is_parsed_manual</field>
+				<field type="checkbox" name="is_shared" label="РћР±С‰РёР№ Р±Р»РѕРє">$BLOCKS_HASH.[$form:id].is_parsed_manual</field>
+				<field type="textarea" name="attr" label="РђС‚СЂРёР±СѓС‚С‹" description="РђС‚СЂРёР±СѓС‚С‹ Р±Р»РѕРєР°">$BLOCKS_HASH.[$form:id].attr</field>
+				<field type="select" name="data_type_id" label="Р”Р°РЅРЅС‹Рµ" description="РўРёРї РґР°РЅРЅС‹С… Р±Р»РѕРєР°">
 					<system:method name="list">name[DATA_TYPES]added[select="$BLOCKS_HASH.[$form:id].data_type_id"]tag[option]</system:method>
 				</field>
 			</tab>
-			<tab id="section-3" name="Данные">
+			<tab id="section-3" name="Р”Р°РЅРЅС‹Рµ">
 				^use[/fckeditor/fckeditor.p]
 				$oFCKeditorData[^fckeditor::Init[data]]
 				$oFCKeditorData.Height[500]
@@ -342,25 +342,25 @@ ID	id
 	</form>
 }{
 $IS_SHARED[
-	$.1[$.name[общий]]
+	$.1[$.name[РѕР±С‰РёР№]]
 	$.0[$.name[]]
 ]
 	^drawList[
 		$.data[$BLOCKS]
 		$.names[^table::create{name	id	object
 ID	id
-Название	name
-^if($form:mode ne 'picker'){Тип	is_shared	IS_SHARED
-Обработчик	data_process_id	PROCESSES_HASH
-Тип данных	data_type_id	DATA_TYPES_HASH
-}{Описание:	description}
+РќР°Р·РІР°РЅРёРµ	name
+^if($form:mode ne 'picker'){РўРёРї	is_shared	IS_SHARED
+РћР±СЂР°Р±РѕС‚С‡РёРє	data_process_id	PROCESSES_HASH
+РўРёРї РґР°РЅРЅС‹С…	data_type_id	DATA_TYPES_HASH
+}{РћРїРёСЃР°РЅРёРµ:	description}
 }]
 		$.description{
-			Описание: $_tData.description <br/>
-			^if($_tData.is_not_empty){Содержит данные <br/>}
-			^if($_tData.is_published){Опубликован <br/>}
-			Изменен: $_tData.dt_update <br/>
-			Атрибуты: $_tData.attr <br/>
+			РћРїРёСЃР°РЅРёРµ: $_tData.description <br/>
+			^if($_tData.is_not_empty){РЎРѕРґРµСЂР¶РёС‚ РґР°РЅРЅС‹Рµ <br/>}
+			^if($_tData.is_published){РћРїСѓР±Р»РёРєРѕРІР°РЅ <br/>}
+			РР·РјРµРЅРµРЅ: $_tData.dt_update <br/>
+			РђС‚СЂРёР±СѓС‚С‹: $_tData.attr <br/>
 		}
 		$.added[
 			<field type="hidden" name="cache_time">0</field>
@@ -373,35 +373,35 @@ ID	id
 			</field>
 		]
 		$.where[block_id]
-		$.label[Mouse CMS | Блоки]
+		$.label[Mouse CMS | Р‘Р»РѕРєРё]
 	]
 }
 #end @blocks[]
 
 # -----------------------------------------------------------------------------------------------
-#                                    УПРАВЛЕНИЕ ОБРАБОТЧИКАМИ
+#                                    РЈРџР РђР’Р›Р•РќРР• РћР‘Р РђР‘РћРўР§РРљРђРњР
 # -----------------------------------------------------------------------------------------------
 #################################################################################################
-# Управление обработчиками
+# РЈРїСЂР°РІР»РµРЅРёРµ РѕР±СЂР°Р±РѕС‚С‡РёРєР°РјРё
 @process[]
 ^if(def $form:action){
-	^if($form:action eq 'edit'){$_iR($_iR + 1) $_sLabel[Редатирование ]}
-	^if($form:action eq 'copy'){$_iR($_iR + 2) $_sLabel[Копирование ]}
-	^if($form:action eq 'add'){ $_iR($_iR + 4) $_sLabel[Добавление ]}
+	^if($form:action eq 'edit'){$_iR($_iR + 1) $_sLabel[Р РµРґР°С‚РёСЂРѕРІР°РЅРёРµ ]}
+	^if($form:action eq 'copy'){$_iR($_iR + 2) $_sLabel[РљРѕРїРёСЂРѕРІР°РЅРёРµ ]}
+	^if($form:action eq 'add'){ $_iR($_iR + 4) $_sLabel[Р”РѕР±Р°РІР»РµРЅРёРµ ]}
 	<form method="post" action="" name="form_content" id="form_content" enctype="multipart/form-data"
-	label="MOUSE CMS | Обработчики | $_sLabel | $PROCESSES_HASH.[$form:id].name ">
+	label="MOUSE CMS | РћР±СЂР°Р±РѕС‚С‡РёРєРё | $_sLabel | $PROCESSES_HASH.[$form:id].name ">
 	<tabs>
-		<tab id="section-1" name="Основное">
+		<tab id="section-1" name="РћСЃРЅРѕРІРЅРѕРµ">
 			^if($_iR & 1){
-				<field type="none"  name="data_process_id" label="ID" description="ID обработчика">$PROCESSES_HASH.[$form:id].id</field>
+				<field type="none"  name="data_process_id" label="ID" description="ID РѕР±СЂР°Р±РѕС‚С‡РёРєР°">$PROCESSES_HASH.[$form:id].id</field>
 			}
-			<field type="text" name="name" label="Имя" description="Имя обработчика">$PROCESSES_HASH.[$form:id].name</field>
-			<field type="text" name="filename" label="Процесс" description=" Имя файла обработчика">$PROCESSES_HASH.[$form:id].filename</field>
-			<field type="text" name="sort_order" label="Порядок" description="Сортировка">$PROCESSES_HASH.[$form:id].sort_order</field>
-			<field type="select" name="data_process_type_id" label="Тип" description="Тип обработчика">
+			<field type="text" name="name" label="РРјСЏ" description="РРјСЏ РѕР±СЂР°Р±РѕС‚С‡РёРєР°">$PROCESSES_HASH.[$form:id].name</field>
+			<field type="text" name="filename" label="РџСЂРѕС†РµСЃСЃ" description=" РРјСЏ С„Р°Р№Р»Р° РѕР±СЂР°Р±РѕС‚С‡РёРєР°">$PROCESSES_HASH.[$form:id].filename</field>
+			<field type="text" name="sort_order" label="РџРѕСЂСЏРґРѕРє" description="РЎРѕСЂС‚РёСЂРѕРІРєР°">$PROCESSES_HASH.[$form:id].sort_order</field>
+			<field type="select" name="data_process_type_id" label="РўРёРї" description="РўРёРї РѕР±СЂР°Р±РѕС‚С‡РёРєР°">
 				<system:method name="list">name[DATA_PROCESS_TYPES]tag[option]added[select="$PROCESSES_HASH.[$form:id].data_process_type_id"]</system:method>
 			</field>
-			<field type="textarea" name="description" label="Описание" description="Функциональность обработчика">$PROCESSES_HASH.[$form:id].description</field>
+			<field type="textarea" name="description" label="РћРїРёСЃР°РЅРёРµ" description="Р¤СѓРЅРєС†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ РѕР±СЂР°Р±РѕС‚С‡РёРєР°">$PROCESSES_HASH.[$form:id].description</field>
 			^if($_iR & 6){
 				<field type="hidden" name="action">insert</field>
 			}
@@ -422,9 +422,9 @@ ID	id
 	^drawList[
 		$.names[^table::create{name	id	object
 ID	id
-Название	name
-Имя файла	filename
-Тип данных	data_process_type_id	DATA_PROCESS_TYPES_HASH
+РќР°Р·РІР°РЅРёРµ	name
+РРјСЏ С„Р°Р№Р»Р°	filename
+РўРёРї РґР°РЅРЅС‹С…	data_process_type_id	DATA_PROCESS_TYPES_HASH
 }]
 		$.data[$PROCESSES]
 		$.added[
@@ -438,36 +438,36 @@ ID	id
 		]
 		$.where[data_process_id]
 		$.description{
-			Описание: $_tData.description <br/>
-			Изменен: $_tData.dt_update <br/>
+			РћРїРёСЃР°РЅРёРµ: $_tData.description <br/>
+			РР·РјРµРЅРµРЅ: $_tData.dt_update <br/>
 		}
-		$.label[Mouse CMS | Обработчики]
+		$.label[Mouse CMS | РћР±СЂР°Р±РѕС‚С‡РёРєРё]
 	]
 }
 #end @process[]
 
 # -----------------------------------------------------------------------------------------------
-#                                    УПРАВЛЕНИЕ ШАБЛОНАМИ
+#                                    РЈРџР РђР’Р›Р•РќРР• РЁРђР‘Р›РћРќРђРњР
 # -----------------------------------------------------------------------------------------------
 #################################################################################################
-# Управление шаблонами
+# РЈРїСЂР°РІР»РµРЅРёРµ С€Р°Р±Р»РѕРЅР°РјРё
 @templates[]
 ^if(def $form:action){
-	^if($form:action eq 'edit'){$_iR($_iR + 1) $_sLabel[Редатирование ]}
-	^if($form:action eq 'copy'){$_iR($_iR + 2) $_sLabel[Копирование ]}
-	^if($form:action eq 'add'){ $_iR($_iR + 4) $_sLabel[Добавление ]}
+	^if($form:action eq 'edit'){$_iR($_iR + 1) $_sLabel[Р РµРґР°С‚РёСЂРѕРІР°РЅРёРµ ]}
+	^if($form:action eq 'copy'){$_iR($_iR + 2) $_sLabel[РљРѕРїРёСЂРѕРІР°РЅРёРµ ]}
+	^if($form:action eq 'add'){ $_iR($_iR + 4) $_sLabel[Р”РѕР±Р°РІР»РµРЅРёРµ ]}
 	<form method="post" action="" name="form_content" id="form_content" enctype="multipart/form-data"
-	label="MOUSE CMS | Шаблоны | $_sLabel | $TEMPLATES_HASH.[$form:id].name ">
+	label="MOUSE CMS | РЁР°Р±Р»РѕРЅС‹ | $_sLabel | $TEMPLATES_HASH.[$form:id].name ">
 	<tabs>
-		<tab id="section-1" name="Основное">
+		<tab id="section-1" name="РћСЃРЅРѕРІРЅРѕРµ">
 			^if($_iR & 1){
-				<field type="none"  name="template_id" label="ID" description="ID шаблона">$TEMPLATES_HASH.[$form:id].id</field>
+				<field type="none"  name="template_id" label="ID" description="ID С€Р°Р±Р»РѕРЅР°">$TEMPLATES_HASH.[$form:id].id</field>
 			}
-			<field type="text" name="name"       label="Имя"        description="Имя шаблона">$TEMPLATES_HASH.[$form:id].name</field>
-			<field type="text" name="filename"   label="Шаблон"     description=" Имя файла шаблона"  class="medium">$TEMPLATES_HASH.[$form:id].filename</field>
-			<field type="text" name="params"     label="Файл стиля" description=" Имя файла стиля"  class="medium">$TEMPLATES_HASH.[$form:id].params</field>
-			<field type="text" name="sort_order" label="Порядок"    description="Сортировка" class="short">$TEMPLATES_HASH.[$form:id].sort_order</field>
-			<field type="textarea" name="description" label="Описание" description="Функциональность шаблона">$TEMPLATES_HASH.[$form:id].description</field>
+			<field type="text" name="name"       label="РРјСЏ"        description="РРјСЏ С€Р°Р±Р»РѕРЅР°">$TEMPLATES_HASH.[$form:id].name</field>
+			<field type="text" name="filename"   label="РЁР°Р±Р»РѕРЅ"     description=" РРјСЏ С„Р°Р№Р»Р° С€Р°Р±Р»РѕРЅР°"  class="medium">$TEMPLATES_HASH.[$form:id].filename</field>
+			<field type="text" name="params"     label="Р¤Р°Р№Р» СЃС‚РёР»СЏ" description=" РРјСЏ С„Р°Р№Р»Р° СЃС‚РёР»СЏ"  class="medium">$TEMPLATES_HASH.[$form:id].params</field>
+			<field type="text" name="sort_order" label="РџРѕСЂСЏРґРѕРє"    description="РЎРѕСЂС‚РёСЂРѕРІРєР°" class="short">$TEMPLATES_HASH.[$form:id].sort_order</field>
+			<field type="textarea" name="description" label="РћРїРёСЃР°РЅРёРµ" description="Р¤СѓРЅРєС†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊ С€Р°Р±Р»РѕРЅР°">$TEMPLATES_HASH.[$form:id].description</field>
 			^if($_iR & 6){
 				<field type="hidden" name="action">insert</field>
 			}
@@ -488,9 +488,9 @@ ID	id
 	^drawList[
 		$.names[^table::create{name	id	object
 ID	id
-Название	name
-Имя файла	filename
-Имя файла стиля	params
+РќР°Р·РІР°РЅРёРµ	name
+РРјСЏ С„Р°Р№Р»Р°	filename
+РРјСЏ С„Р°Р№Р»Р° СЃС‚РёР»СЏ	params
 }]
 		$.data[$TEMPLATES]
 		$.added[
@@ -504,58 +504,58 @@ ID	id
 		]
 		$.where[template_id]
 		$.description{
-			Описание: $_tData.description <br/>
-			Изменен: $_tData.dt_update <br/>
+			РћРїРёСЃР°РЅРёРµ: $_tData.description <br/>
+			РР·РјРµРЅРµРЅ: $_tData.dt_update <br/>
 		}
-		$.label[Mouse CMS | Шаблоны]
+		$.label[Mouse CMS | РЁР°Р±Р»РѕРЅС‹]
 	]
 }
 #end @templates[]
 
 # -----------------------------------------------------------------------------------------------
-#                                    УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ
+#                                    РЈРџР РђР’Р›Р•РќРР• РџРћР›Р¬Р—РћР’РђРўР•Р›РЇРњР
 # -----------------------------------------------------------------------------------------------
 #################################################################################################
-# Управление пользователями
+# РЈРїСЂР°РІР»РµРЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏРјРё
 @users[]
 ^if(def $form:action){
-	^if($form:action eq 'edit'){$_iR($_iR + 1) $_sLabel[Редатирование ]}
-	^if($form:action eq 'copy'){$_iR($_iR + 2) $_sLabel[Копирование ]}
-	^if($form:action eq 'add'){ $_iR($_iR + 4) $_sLabel[Добавление ]}
+	^if($form:action eq 'edit'){$_iR($_iR + 1) $_sLabel[Р РµРґР°С‚РёСЂРѕРІР°РЅРёРµ ]}
+	^if($form:action eq 'copy'){$_iR($_iR + 2) $_sLabel[РљРѕРїРёСЂРѕРІР°РЅРёРµ ]}
+	^if($form:action eq 'add'){ $_iR($_iR + 4) $_sLabel[Р”РѕР±Р°РІР»РµРЅРёРµ ]}
 	^if($_iR & 2){$USERS_HASH.[$form:id].name[]}
 	<form method="post" action="" name="form_content" id="form_content" enctype="multipart/form-data"
-	label="MOUSE CMS | Пользователи и группы | $_sLabel | $USERS_HASH.[$form:id].name ">
+	label="MOUSE CMS | РџРѕР»СЊР·РѕРІР°С‚РµР»Рё Рё РіСЂСѓРїРїС‹ | $_sLabel | $USERS_HASH.[$form:id].name ">
 	<tabs>
-		<tab id="section-1" name="Основное">
+		<tab id="section-1" name="РћСЃРЅРѕРІРЅРѕРµ">
 			^if($_iR & 1){
-				<field type="none"  name="auser_id" label="ID" description="ID пользователя" class="short">$USERS_HASH.[$form:id].id</field>
+				<field type="none"  name="auser_id" label="ID" description="ID РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ" class="short">$USERS_HASH.[$form:id].id</field>
 			}
-			<field type="text" name="name" label="Имя" description="Имя пользователя" class="medium">
+			<field type="text" name="name" label="РРјСЏ" description="РРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ" class="medium">
 				$USERS_HASH.[$form:id].name
 			</field>
-			<field type="select" name="auser_type_id" label="Тип" description="Тип пользователя" class="medium">
-				<option value="0" select="$USERS_HASH.[$form:id].auser_type_id">Пользователь</option>
-				<option value="1" select="$USERS_HASH.[$form:id].auser_type_id">Группа</option>
-				<option value="2" select="$USERS_HASH.[$form:id].auser_type_id">Владелец</option>
+			<field type="select" name="auser_type_id" label="РўРёРї" description="РўРёРї РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ" class="medium">
+				<option value="0" select="$USERS_HASH.[$form:id].auser_type_id">РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ</option>
+				<option value="1" select="$USERS_HASH.[$form:id].auser_type_id">Р“СЂСѓРїРїР°</option>
+				<option value="2" select="$USERS_HASH.[$form:id].auser_type_id">Р’Р»Р°РґРµР»РµС†</option>
 			</field>
-			<field type="text" name="email" label="E-Mail" description="Электронная почта" class="medium">$USERS_HASH.[$form:id].email</field>
-			<field type="checkbox" name="is_published" label="Опубликовать" description="" class="medium">$USERS_HASH.[$form:id].is_published</field>
-			<field type="textarea" name="description" label="Описание" description="Описание пользователя">$USERS_HASH.[$form:id].description</field>
-			<field type="text" name="passwd" label="Пароль" description="Установить (сменить) пароль" class="medium"></field>
+			<field type="text" name="email" label="E-Mail" description="Р­Р»РµРєС‚СЂРѕРЅРЅР°СЏ РїРѕС‡С‚Р°" class="medium">$USERS_HASH.[$form:id].email</field>
+			<field type="checkbox" name="is_published" label="РћРїСѓР±Р»РёРєРѕРІР°С‚СЊ" description="" class="medium">$USERS_HASH.[$form:id].is_published</field>
+			<field type="textarea" name="description" label="РћРїРёСЃР°РЅРёРµ" description="РћРїРёСЃР°РЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ">$USERS_HASH.[$form:id].description</field>
+			<field type="text" name="passwd" label="РџР°СЂРѕР»СЊ" description="РЈСЃС‚Р°РЅРѕРІРёС‚СЊ (СЃРјРµРЅРёС‚СЊ) РїР°СЂРѕР»СЊ" class="medium"></field>
 		</tab>
-		<tab id="section-3" name="Атрибуты">
-			<field type="select" name="auth_parent_id" label="Группа" description="Группа пользователя" class="medium">
+		<tab id="section-3" name="РђС‚СЂРёР±СѓС‚С‹">
+			<field type="select" name="auth_parent_id" label="Р“СЂСѓРїРїР°" description="Р“СЂСѓРїРїР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ" class="medium">
 				<option value="0" select="$GROUPS_HASH.[$form:id].parent_id">none</option>
 				^USERS.menu{^if($USERS.auser_type_id == 1){
 					<option value="$USERS.id" select="$GROUPS_HASH.[$form:id].parent_id">$USERS.name</option>
 				}}
 			</field>
 			$hRights[^getHashRights($USERS_HASH.[$form:id].rights)]
-			<field type="checkbox" name="rights_read" label="Просмотр" description="Права по умолчанию">$hRights.read</field>
-			<field type="checkbox" name="rights_edit" label="Правка" description="Права по умолчанию">$hRights.edit</field>
-			<field type="checkbox" name="rights_delete" label="Удаление" description="Права по умолчанию">$hRights.delete</field>
-			<field type="checkbox" name="rights_comment" label="Комментарии" description="Права по умолчанию">$hRights.comment</field>
-			<field type="checkbox" name="rights_supervisory" label="Может все" description="Права по умолчанию">$hRights.supervisory</field>
+			<field type="checkbox" name="rights_read" label="РџСЂРѕСЃРјРѕС‚СЂ" description="РџСЂР°РІР° РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ">$hRights.read</field>
+			<field type="checkbox" name="rights_edit" label="РџСЂР°РІРєР°" description="РџСЂР°РІР° РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ">$hRights.edit</field>
+			<field type="checkbox" name="rights_delete" label="РЈРґР°Р»РµРЅРёРµ" description="РџСЂР°РІР° РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ">$hRights.delete</field>
+			<field type="checkbox" name="rights_comment" label="РљРѕРјРјРµРЅС‚Р°СЂРёРё" description="РџСЂР°РІР° РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ">$hRights.comment</field>
+			<field type="checkbox" name="rights_supervisory" label="РњРѕР¶РµС‚ РІСЃРµ" description="РџСЂР°РІР° РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ">$hRights.supervisory</field>
 			^if($_iR & 6){
 			<field type="hidden" name="action">insert</field>
 			<field type="hidden" name="dt_register">^MAIN:dtNow.sql-string[]</field>
@@ -576,13 +576,13 @@ ID	id
 		^drawList[
 		$.names[^table::create{name	id	object
 ID	id
-Имя	name
-Тип	auser_type_id	USERS_TYPES_HASH
-Права	rights
+РРјСЏ	name
+РўРёРї	auser_type_id	USERS_TYPES_HASH
+РџСЂР°РІР°	rights
 E-mail	email
-Вход	dt_logon
-Выход	dt_logout
-Событие	event_type
+Р’С…РѕРґ	dt_logon
+Р’С‹С…РѕРґ	dt_logout
+РЎРѕР±С‹С‚РёРµ	event_type
 }]
 		$.data[$USERS]
 		$.added[
@@ -599,26 +599,26 @@ E-mail	email
 		]
 		$.where[auser_id]
 		$.description{
-			Описание: $_tData.description <br/>
-			Зарегистрировался: $_tData.dt_register <br/>
-			Последний доступ: $_tData.dt_access <br/>
+			РћРїРёСЃР°РЅРёРµ: $_tData.description <br/>
+			Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°Р»СЃСЏ: $_tData.dt_register <br/>
+			РџРѕСЃР»РµРґРЅРёР№ РґРѕСЃС‚СѓРї: $_tData.dt_access <br/>
 		}
-		$.label[Mouse CMS | Пользователи и группы]
+		$.label[Mouse CMS | РџРѕР»СЊР·РѕРІР°С‚РµР»Рё Рё РіСЂСѓРїРїС‹]
 	]
 }
 #end @users[]
 
 # -----------------------------------------------------------------------------------------------
-#                                    УПРАВЛЕНИЕ ПРАВАМИ
+#                                    РЈРџР РђР’Р›Р•РќРР• РџР РђР’РђРњР
 # -----------------------------------------------------------------------------------------------
 #################################################################################################
-# Управление правами
+# РЈРїСЂР°РІР»РµРЅРёРµ РїСЂР°РІР°РјРё
 @rights[]
 ^drawList[
 		$.names[^table::create{name	id	object
-Объект	id	OBJECTS_HASH
-Пользователь	id	USERS_HASH
-Права	rights
+РћР±СЉРµРєС‚	id	OBJECTS_HASH
+РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ	id	USERS_HASH
+РџСЂР°РІР°	rights
 }]
 		$.data[$ACL]
 		$.added[
@@ -634,37 +634,37 @@ E-mail	email
 			</field>
 		]
 		$.where[auser_id]
-		$.label[Mouse CMS | Управление правами ]
+		$.label[Mouse CMS | РЈРїСЂР°РІР»РµРЅРёРµ РїСЂР°РІР°РјРё ]
 	]
 #end @rights[]
 
 # -----------------------------------------------------------------------------------------------
-#                                    ОТЛАДКА СИСТЕМЫ
+#                                    РћРўР›РђР”РљРђ РЎРРЎРўР•РњР«
 # -----------------------------------------------------------------------------------------------
 #################################################################################################
-# Строим таблицу запрошенных объектов
+# РЎС‚СЂРѕРёРј С‚Р°Р±Р»РёС†Сѓ Р·Р°РїСЂРѕС€РµРЅРЅС‹С… РѕР±СЉРµРєС‚РѕРІ
 @config[]
-<button image="24_clear.gif"  name="clear"    alt="Очистить кэш"  onClick="saveForm('form_content','${OBJECTS_HASH.80.full_path}?type=$form:type','#container')" />
+<button image="24_clear.gif"  name="clear"    alt="РћС‡РёСЃС‚РёС‚СЊ РєСЌС€"  onClick="saveForm('form_content','${OBJECTS_HASH.80.full_path}?type=$form:type','#container')" />
 <form method="post" action="" name="form_content" id="form_content" enctype="multipart/form-data" 
-label="MOUSE CMS | Отладка системы ">
+label="MOUSE CMS | РћС‚Р»Р°РґРєР° СЃРёСЃС‚РµРјС‹ ">
 	<field type="hidden" name="cache">all</field>
 	<field type="hidden" name="cache_time">all</field>
 </form>
 #end @config[]
 
 # -----------------------------------------------------------------------------------------------
-#                                    ЗАГРУЗКА ФАЙЛОВ
+#                                    Р—РђР“Р РЈР—РљРђ Р¤РђР™Р›РћР’
 # -----------------------------------------------------------------------------------------------
 #################################################################################################
-# Загружаем файлы
+# Р—Р°РіСЂСѓР¶Р°РµРј С„Р°Р№Р»С‹
 @files[]
 <form method="post" action="" name="form_content" id="form_content" enctype="multipart/form-data"
-	label="MOUSE CMS | Загрузка файлов ">
+	label="MOUSE CMS | Р—Р°РіСЂСѓР·РєР° С„Р°Р№Р»РѕРІ ">
 	<tabs>
-		<tab id="section-1" name="Загрузка файлов">
+		<tab id="section-1" name="Р—Р°РіСЂСѓР·РєР° С„Р°Р№Р»РѕРІ">
 			<field type="hidden" name="object_id" />
 			<input type="text" name="object_name" class="input-text-medium" />
-			<img src="/themes/mouse/icons/16_select.gif"    title="Выбрать" alt="x" class="input-image" onClick="pickObject('$OBJECTS_HASH.84.full_path?type=blocks&amp^;mode=picker&amp^;elem=block_id_$BLOCK_TO_OBJECT.id')" />
+			<img src="/themes/mouse/icons/16_select.gif"    title="Р’С‹Р±СЂР°С‚СЊ" alt="x" class="input-image" onClick="pickObject('$OBJECTS_HASH.84.full_path?type=blocks&amp^;mode=picker&amp^;elem=block_id_$BLOCK_TO_OBJECT.id')" />
 		</tab>
 	</tabs>
 </form>
@@ -672,14 +672,14 @@ label="MOUSE CMS | Отладка системы ">
 
 #################################################################################################
 #                                                                                               #
-#                                    ВЫВОД ДАННЫХ                                               #
+#                                    Р’Р«Р’РћР” Р”РђРќРќР«РҐ                                               #
 #                                                                                               #
 #################################################################################################
 # -----------------------------------------------------------------------------------------------
-#                                  СПИСОК ОБЪЕКТОВ
+#                                  РЎРџРРЎРћРљ РћР‘РЄР•РљРўРћР’
 # -----------------------------------------------------------------------------------------------
 #################################################################################################
-# Строим таблицу запрошенных объектов
+# РЎС‚СЂРѕРёРј С‚Р°Р±Р»РёС†Сѓ Р·Р°РїСЂРѕС€РµРЅРЅС‹С… РѕР±СЉРµРєС‚РѕРІ
 @drawList[hParams]
 ^if(def $form:find){$hParams.data[^hParams.data.select(^hParams.data.name.match[$form:find][i])]}
 ^if(def $form:order){
@@ -711,9 +711,9 @@ $scroller[^scroller::create[
 ]]
 $_tData[^table::create[$hParams.data;$.limit($scroller.limit) $.offset($scroller.offset)]]
 <form name="form_content" method="post" action="" label="$hParams.label">
-	<button image="24_add.gif"    name="add"    alt="Добавить"   onClick="Go('$OBJECTS_HASH.80.full_path?type=$form:type&amp^;action=add','#container')" />
-	<button image="24_copy.gif"   name="copy"   alt="Копировать" onClick="CopyChecked('$OBJECTS_HASH.80.full_path?type=$form:type&amp^;action=copy')" />
-	<button image="24_delete.gif" name="delete" alt="Удалить"    onClick="DeleteChecked('$hParams.where','${OBJECTS_HASH.80.full_path}?type=$form:type','#container')" />
+	<button image="24_add.gif"    name="add"    alt="Р”РѕР±Р°РІРёС‚СЊ"   onClick="Go('$OBJECTS_HASH.80.full_path?type=$form:type&amp^;action=add','#container')" />
+	<button image="24_copy.gif"   name="copy"   alt="РљРѕРїРёСЂРѕРІР°С‚СЊ" onClick="CopyChecked('$OBJECTS_HASH.80.full_path?type=$form:type&amp^;action=copy')" />
+	<button image="24_delete.gif" name="delete" alt="РЈРґР°Р»РёС‚СЊ"    onClick="DeleteChecked('$hParams.where','${OBJECTS_HASH.80.full_path}?type=$form:type','#container')" />
 <table class="table-builder-spreadsheet">
 	<thead class="table-builder-spreadsheet">
 		<tr>
@@ -770,28 +770,28 @@ $_tData[^table::create[$hParams.data;$.limit($scroller.limit) $.offset($scroller
 			<tr id="perpage">
 				<td colspan="100">
 					<div class="form">
-    						<label for="sys-perpage">Объектов на страницу:</label>
+    						<label for="sys-perpage">РћР±СЉРµРєС‚РѕРІ РЅР° СЃС‚СЂР°РЅРёС†Сѓ:</label>
     						<input type="text" id="sys-perpage" name="sys_perpage" value="$scroller.limit" class="input-text-short" size="2" />
-   						<![CDATA[<input type="button" value="Показать" class="input-button" onClick="Go('$SYSTEM.path?^form:fields.foreach[key;value]{^if($key ne 'number'){$key=$value&}}number=' + document.getElementsByName('sys_perpage')[0].value , '#container')" />]]>
+   						<![CDATA[<input type="button" value="РџРѕРєР°Р·Р°С‚СЊ" class="input-button" onClick="Go('$SYSTEM.path?^form:fields.foreach[key;value]{^if($key ne 'number'){$key=$value&}}number=' + document.getElementsByName('sys_perpage')[0].value , '#container')" />]]>
 					</div>
-					<div class="total">Общее количество: $scroller.offset $_iTemp($scroller.offset + $scroller.limit) - $_iTemp (^hParams.data.count[]) </div>
+					<div class="total">РћР±С‰РµРµ РєРѕР»РёС‡РµСЃС‚РІРѕ: $scroller.offset $_iTemp($scroller.offset + $scroller.limit) - $_iTemp (^hParams.data.count[]) </div>
 				</td>
 			</tr>
 			<tr id="search">
 				<td colspan="100">
 					<div>
-						<label for="sys-search">Поиск:</label>
+						<label for="sys-search">РџРѕРёСЃРє:</label>
     					<input type="text" id="sys-search" name="sys_svalue" value="$form:find" class="input-text-long" size="50" />
-    					<![CDATA[<input type="button" class="input-button" value="Показать" 
+    					<![CDATA[<input type="button" class="input-button" value="РџРѕРєР°Р·Р°С‚СЊ" 
 						onClick="Go('$SYSTEM.path?^form:fields.foreach[key;value]{^if($key eq 'find' || $key eq 'filter'){}{$key=$value&}}find=' + escape(document.getElementsByName('sys_svalue')[0].value) + '&filter=' + document.getElementsByName('fquery')[0].value, '#container')" />]]>
 					</div>
 					<div>
-    					<label for="sys-filter">Фильтр:</label>
+    					<label for="sys-filter">Р¤РёР»СЊС‚СЂ:</label>
     					<input type="text" name="fquery" value="$form:filter" class="input-text-long" size="30" readonly="readonly" />
     					<input type="hidden" name="sys_ffield" value="" />
     					<input type="hidden" name="sys_fvalue" value="" />
     					<img src="/themes/mouse/buttons/clear.gif" alt="x" class="input-image" onClick="clearFilter()" />
-    					(чтобы установить фильтр нажмите на значение в таблице)
+    					(С‡С‚РѕР±С‹ СѓСЃС‚Р°РЅРѕРІРёС‚СЊ С„РёР»СЊС‚СЂ РЅР°Р¶РјРёС‚Рµ РЅР° Р·РЅР°С‡РµРЅРёРµ РІ С‚Р°Р±Р»РёС†Рµ)
 				</div>
 			</td>
 		</tr>

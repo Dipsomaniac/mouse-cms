@@ -5,27 +5,27 @@
 scroller
 
 #################################################################################################
-# Конструктор @create[] задаёт основные параметры скроллера
+# РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ @create[] Р·Р°РґР°С‘С‚ РѕСЃРЅРѕРІРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ СЃРєСЂРѕР»Р»РµСЂР°
 #
 # $scroller[^scroller::create[
-#$.path_param[переменная_запроса]
+#$.path_param[РїРµСЂРµРјРµРЅРЅР°СЏ_Р·Р°РїСЂРѕСЃР°]
 #$.request[]
-#$.table_count(число_записей_в_таблице)
-#$.number_per_section[количество_элементов_секции]
-#$.section_per_page[число_секций_на_странице]
-#$.type[page/page_end/пусто]
-#$.r_selector[правый_селектор_по_умолчанию_>>]
-#$.l_selector[левый_селектор_по_умолчанию_<<]
-#$.divider[разделитель_секций_по_умолчанию_пробел]
-#$.r_divider[правый_разделитель_по_умолчанию_пусто]
-#$.l_divider[левый_разделитель_по_умолчанию_пусто]
+#$.table_count(С‡РёСЃР»Рѕ_Р·Р°РїРёСЃРµР№_РІ_С‚Р°Р±Р»РёС†Рµ)
+#$.number_per_section[РєРѕР»РёС‡РµСЃС‚РІРѕ_СЌР»РµРјРµРЅС‚РѕРІ_СЃРµРєС†РёРё]
+#$.section_per_page[С‡РёСЃР»Рѕ_СЃРµРєС†РёР№_РЅР°_СЃС‚СЂР°РЅРёС†Рµ]
+#$.type[page/page_end/РїСѓСЃС‚Рѕ]
+#$.r_selector[РїСЂР°РІС‹Р№_СЃРµР»РµРєС‚РѕСЂ_РїРѕ_СѓРјРѕР»С‡Р°РЅРёСЋ_>>]
+#$.l_selector[Р»РµРІС‹Р№_СЃРµР»РµРєС‚РѕСЂ_РїРѕ_СѓРјРѕР»С‡Р°РЅРёСЋ_<<]
+#$.divider[СЂР°Р·РґРµР»РёС‚РµР»СЊ_СЃРµРєС†РёР№_РїРѕ_СѓРјРѕР»С‡Р°РЅРёСЋ_РїСЂРѕР±РµР»]
+#$.r_divider[РїСЂР°РІС‹Р№_СЂР°Р·РґРµР»РёС‚РµР»СЊ_РїРѕ_СѓРјРѕР»С‡Р°РЅРёСЋ_РїСѓСЃС‚Рѕ]
+#$.l_divider[Р»РµРІС‹Р№_СЂР°Р·РґРµР»РёС‚РµР»СЊ_РїРѕ_СѓРјРѕР»С‡Р°РЅРёСЋ_РїСѓСЃС‚Рѕ]
 # ]
 # ]
 #
 #################################################################################################
 
 #################################################################################################
-# Конструктор класса
+# РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєР»Р°СЃСЃР°
 @create[params][path_param;field;value]
 ^try{
 ^if(def $params && $params is "hash"){
@@ -35,33 +35,33 @@ $path_param[$params.path_param]
 ^throw[scroller;path_param;^$.path_param must be defined]
 }
 
-^rem{* Проверяем значение количества записей в таблице *}
+^rem{* РџСЂРѕРІРµСЂСЏРµРј Р·РЅР°С‡РµРЅРёРµ РєРѕР»РёС‡РµСЃС‚РІР° Р·Р°РїРёСЃРµР№ РІ С‚Р°Р±Р»РёС†Рµ *}
 ^if(def $params.table_count && ^params.table_count.int(0) > 0){
 $table_count(^params.table_count.int(1))
 }{
 ^throw[scroller;table_count;^$.table_count must be > 0]
 }
 
-^rem{* Возвращаем на место все поля формы *}
+^rem{* Р’РѕР·РІСЂР°С‰Р°РµРј РЅР° РјРµСЃС‚Рѕ РІСЃРµ РїРѕР»СЏ С„РѕСЂРјС‹ *}
 ^if(def $params.request){
 $path[$MAIN:sPath?^params.request.foreach[field;value]{^if($field ne $path_param){$field=^taint[uri][$value]&amp^;}}$path_param=]
 }{
 $path[$MAIN:sPath?^form:fields.foreach[field;value]{^if($field ne $path_param){$field=^taint[uri][$value]&amp^;}}$path_param=]
 }
 
-^rem{* Определяем тип скроллера page/page_end/пусто *}
+^rem{* РћРїСЂРµРґРµР»СЏРµРј С‚РёРї СЃРєСЂРѕР»Р»РµСЂР° page/page_end/РїСѓСЃС‚Рѕ *}
 $type[$params.type]
 
-^rem{* Определяем сколько записей отображать *}
+^rem{* РћРїСЂРµРґРµР»СЏРµРј СЃРєРѕР»СЊРєРѕ Р·Р°РїРёСЃРµР№ РѕС‚РѕР±СЂР°Р¶Р°С‚СЊ *}
 $number_per_section(^params.number_per_section.int(1))
 ^if($number_per_section < 1){$number_per_section(1)}
 
-^rem{* Определяем текущее положение скроллера и делаем защиту от шаловливых рук *}
+^rem{* РћРїСЂРµРґРµР»СЏРµРј С‚РµРєСѓС‰РµРµ РїРѕР»РѕР¶РµРЅРёРµ СЃРєСЂРѕР»Р»РµСЂР° Рё РґРµР»Р°РµРј Р·Р°С‰РёС‚Сѓ РѕС‚ С€Р°Р»РѕРІР»РёРІС‹С… СЂСѓРє *}
 $record_number(^form:$path_param.int(1))
 ^if($record_number < 1){$record_number(1)}
 ^if($record_number > $table_count){$record_number($table_count)}
 
-^rem{* Определяем количество секций на странице *}
+^rem{* РћРїСЂРµРґРµР»СЏРµРј РєРѕР»РёС‡РµСЃС‚РІРѕ СЃРµРєС†РёР№ РЅР° СЃС‚СЂР°РЅРёС†Рµ *}
 ^if(def $params.section_per_page){
 $section_per_page(^params.section_per_page.int(1))
 ^if($section_per_page < 1){$section_per_page(1)}
@@ -69,7 +69,7 @@ $section_per_page(^params.section_per_page.int(1))
 
 $max_section(^math:ceiling($table_count / $number_per_section))
 
-^rem{* Расчитываем сколько секций/страниц вывести на экран *}
+^rem{* Р Р°СЃС‡РёС‚С‹РІР°РµРј СЃРєРѕР»СЊРєРѕ СЃРµРєС†РёР№/СЃС‚СЂР°РЅРёС† РІС‹РІРµСЃС‚Рё РЅР° СЌРєСЂР°РЅ *}
 ^if($section_per_page){
 ^if($record_number < ($number_per_section * $section_per_page)){
 $first_number(1)
@@ -87,7 +87,7 @@ $section($max_section)
 }
 }
 
-^rem{* Рассчитываем значение $first_number, от которого будут считаться ссылки секций/страниц  *}
+^rem{* Р Р°СЃСЃС‡РёС‚С‹РІР°РµРј Р·РЅР°С‡РµРЅРёРµ $first_number, РѕС‚ РєРѕС‚РѕСЂРѕРіРѕ Р±СѓРґСѓС‚ СЃС‡РёС‚Р°С‚СЊСЃСЏ СЃСЃС‹Р»РєРё СЃРµРєС†РёР№/СЃС‚СЂР°РЅРёС†  *}
 ^if(($number_per_section != 1 && $section_per_page || $section_per_page) && ^math:ceiling(($table_count-$first_number) / $number_per_section) < $section){
 $first_number(($table_count - $number_per_section * ($section_per_page - 1)) \ $number_per_section * $number_per_section)
 ^if($number_per_section != 1){^first_number.inc[]}
@@ -97,19 +97,19 @@ $first_number(($table_count - $number_per_section * ($section_per_page - 1)) \ $
 ^if($first_number < 1){$first_number(1)}
 $second_number($first_number + $number_per_section - 1)
 
-^rem{* Левый селектор (по-умолчанию <<) *}
+^rem{* Р›РµРІС‹Р№ СЃРµР»РµРєС‚РѕСЂ (РїРѕ-СѓРјРѕР»С‡Р°РЅРёСЋ <<) *}
 ^if(def $params.l_selector){$l_selector[$params.l_selector]}{$l_selector[&laquo^;]}
 
-^rem{* Правый селектор (по-умолчанию >>) *}
+^rem{* РџСЂР°РІС‹Р№ СЃРµР»РµРєС‚РѕСЂ (РїРѕ-СѓРјРѕР»С‡Р°РЅРёСЋ >>) *}
 ^if(def $params.r_selector){$r_selector[$params.r_selector]}{$r_selector[&raquo^;]}
 
-^rem{* Разделитель между номерами секций (по-умолчанию пробел) *}
+^rem{* Р Р°Р·РґРµР»РёС‚РµР»СЊ РјРµР¶РґСѓ РЅРѕРјРµСЂР°РјРё СЃРµРєС†РёР№ (РїРѕ-СѓРјРѕР»С‡Р°РЅРёСЋ РїСЂРѕР±РµР») *}
 ^if(def $params.divider){$divider[$params.divider]}{$divider[ ]}
 
-^rem{* Разделитель между правым селектором и секциями (по-умолчанию отсутствует) *}
+^rem{* Р Р°Р·РґРµР»РёС‚РµР»СЊ РјРµР¶РґСѓ РїСЂР°РІС‹Рј СЃРµР»РµРєС‚РѕСЂРѕРј Рё СЃРµРєС†РёСЏРјРё (РїРѕ-СѓРјРѕР»С‡Р°РЅРёСЋ РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚) *}
 ^if(def $params.r_divider){$r_divider[<span class="scroller_rl_divider">$params.r_divider</span>]}{$r_divider[]}
 
-^rem{* Разделитель между левым селектором и секциями (по-умолчанию отсутствует) *}
+^rem{* Р Р°Р·РґРµР»РёС‚РµР»СЊ РјРµР¶РґСѓ Р»РµРІС‹Рј СЃРµР»РµРєС‚РѕСЂРѕРј Рё СЃРµРєС†РёСЏРјРё (РїРѕ-СѓРјРѕР»С‡Р°РЅРёСЋ РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚) *}
 ^if(def $params.l_divider){$l_divider[<span class="scroller_rl_divider">$params.l_divider</span>]}{$l_divider[]}
 }{
 ^throw[scroller;create;parameters must be defined]
@@ -134,13 +134,13 @@ $result($record_number - 1)
 
 
 #################################################################################################
-# выводит скроллер на экран
+# РІС‹РІРѕРґРёС‚ СЃРєСЂРѕР»Р»РµСЂ РЅР° СЌРєСЂР°РЅ
 #####
 @draw[][f1;text_link]
 ^if($error){
 $error
 }{
-^rem{* Выводим левый селектор и левый разделитель если они есть *}
+^rem{* Р’С‹РІРѕРґРёРј Р»РµРІС‹Р№ СЃРµР»РµРєС‚РѕСЂ Рё Р»РµРІС‹Р№ СЂР°Р·РґРµР»РёС‚РµР»СЊ РµСЃР»Рё РѕРЅРё РµСЃС‚СЊ *}
 ^if($first_number > 1){
 ^print_selector[^eval($first_number - $number_per_section);$l_selector]
 $l_divider
@@ -148,7 +148,7 @@ $l_divider
 ^if(!def $type){$l_divider}
 }
 
-^rem{* Основной цикл рисования скроллера *}
+^rem{* РћСЃРЅРѕРІРЅРѕР№ С†РёРєР» СЂРёСЃРѕРІР°РЅРёСЏ СЃРєСЂРѕР»Р»РµСЂР° *}
 ^for[f1](1;$section){
 ^if($first_number <= $table_count){
 ^if($number_per_section == 1){
@@ -176,14 +176,14 @@ $text_link[${first_number}-$second_number]
 ^first_number.inc($number_per_section)
 ^second_number.inc($number_per_section)
 }{
-^rem{* Выводим разделитель между секциями *}
+^rem{* Р’С‹РІРѕРґРёРј СЂР°Р·РґРµР»РёС‚РµР»СЊ РјРµР¶РґСѓ СЃРµРєС†РёСЏРјРё *}
 ^if(($first_number - $number_per_section) <= $table_count){<span class="scroller_divider">$divider</span>}
 }
-^rem{* Выводим последнюю секцию если надо *}
+^rem{* Р’С‹РІРѕРґРёРј РїРѕСЃР»РµРґРЅСЋСЋ СЃРµРєС†РёСЋ РµСЃР»Рё РЅР°РґРѕ *}
 ^if($type eq "page_end" && $text_link < $max_section){
 &hellip^;<a href="#" onClick="Go('${path}^eval($max_section * $number_per_section - $number_per_section + 1)','#container')" class="scroller_not_selected">$max_section</a>
 }
-^rem{* Выводим правый селектор и правый разделитель если они есть *}
+^rem{* Р’С‹РІРѕРґРёРј РїСЂР°РІС‹Р№ СЃРµР»РµРєС‚РѕСЂ Рё РїСЂР°РІС‹Р№ СЂР°Р·РґРµР»РёС‚РµР»СЊ РµСЃР»Рё РѕРЅРё РµСЃС‚СЊ *}
 ^if(($second_number - $number_per_section) < $table_count){
 $r_divider
 ^print_selector[^eval($second_number - $number_per_section + 1);$r_selector]
@@ -195,7 +195,7 @@ $r_divider
 
 
 #################################################################################################
-# делает ссылки активными/неактивными
+# РґРµР»Р°РµС‚ СЃСЃС‹Р»РєРё Р°РєС‚РёРІРЅС‹РјРё/РЅРµР°РєС‚РёРІРЅС‹РјРё
 #####
 @print_link[text_link]
 ^if($record_number >= $first_number && $record_number <= $second_number){
@@ -213,10 +213,10 @@ $result[<a href="#" onClick="Go('${path}$first_number','#container')"  class="sc
 
 
 #################################################################################################
-# 1 - не заданы параметры скроллера
-# 2 - не определён $.path_param
-# 3 - в таблице слишком мало записей
-# 0 - ошибок в параметрах нет
+# 1 - РЅРµ Р·Р°РґР°РЅС‹ РїР°СЂР°РјРµС‚СЂС‹ СЃРєСЂРѕР»Р»РµСЂР°
+# 2 - РЅРµ РѕРїСЂРµРґРµР»С‘РЅ $.path_param
+# 3 - РІ С‚Р°Р±Р»РёС†Рµ СЃР»РёС€РєРѕРј РјР°Р»Рѕ Р·Р°РїРёСЃРµР№
+# 0 - РѕС€РёР±РѕРє РІ РїР°СЂР°РјРµС‚СЂР°С… РЅРµС‚
 @_error_codes[source]
 ^switch[$source]{
 ^case[create]{$result(1)}
@@ -228,7 +228,7 @@ $result[<a href="#" onClick="Go('${path}$first_number','#container')"  class="sc
 
 
 #################################################################################################
-# убиваем лишние переводы строк и символы табуляции
+# СѓР±РёРІР°РµРј Р»РёС€РЅРёРµ РїРµСЂРµРІРѕРґС‹ СЃС‚СЂРѕРє Рё СЃРёРјРІРѕР»С‹ С‚Р°Р±СѓР»СЏС†РёРё
 #####
 @optimize[text]
 $result[^text.match[[\n\t]][g]{}]

@@ -9,10 +9,10 @@ $article[^getArticles[
 <block_content>
 ^if($article){^printArticles[$article]}
 </block_content>
-# если права позволяют добавляем в панель управления страницы возможность добавлять новость
+# РµСЃР»Рё РїСЂР°РІР° РїРѕР·РІРѕР»СЏСЋС‚ РґРѕР±Р°РІР»СЏРµРј РІ РїР°РЅРµР»СЊ СѓРїСЂР°РІР»РµРЅРёСЏ СЃС‚СЂР°РЅРёС†С‹ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РґРѕР±Р°РІР»СЏС‚СЊ РЅРѕРІРѕСЃС‚СЊ
 ^if($RIGHTS & $SYSTEM.write){
 	<addcontrol>
-		<img src="/themes/mouse/icons/add.gif" name="add" alt="Добавить" title="Добавить" class="input-image"/>
+		<img src="/themes/mouse/icons/add.gif" name="add" alt="Р”РѕР±Р°РІРёС‚СЊ" title="Р”РѕР±Р°РІРёС‚СЊ" class="input-image"/>
 	</addcontrol>
 }
 
@@ -21,7 +21,7 @@ $article[^getArticles[
 ^untaint[as-is]{
 	^article.menu{
 		<article>
-			<date>^dtf:format[%d %b %Y;$article.dt]</date>
+			<date>^dtf:format[%d %B %Y;$article.dt]</date>
 			<name>^printTitle[$article]</name>
 			<author>$MAIN:objAuth.user.name</author>
 			<anonce>$article.lead</anonce>

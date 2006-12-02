@@ -32,9 +32,9 @@ $USERS[^MAIN:objSQL.sql[table][
 $USERS_HASH[^USERS.hash[id]]
 <block_content>
 ^if(def $EVENT_OUT){
-  Отсутствующие работники: <br />
+  РћС‚СЃСѓС‚СЃС‚РІСѓСЋС‰РёРµ СЂР°Р±РѕС‚РЅРёРєРё: <br />
   <table cellspacing="3" cellpadding="5" width="100%">
-    <tr class="color1"><td>Сотрудник</td><td>Время</td><td>Место</td><td>Причина</td></tr>
+    <tr class="color1"><td>РЎРѕС‚СЂСѓРґРЅРёРє</td><td>Р’СЂРµРјСЏ</td><td>РњРµСЃС‚Рѕ</td><td>РџСЂРёС‡РёРЅР°</td></tr>
     ^EVENT_OUT.menu{
       ^EVENT_HASH.[$EVENT_OUT.user_id].offset(-1)
       <tr class="color2">
@@ -45,6 +45,6 @@ $USERS_HASH[^USERS.hash[id]]
       </tr>
       }
   </table><br />
-}{Данных об отсутствующих работниках не обнаружено. <br />}
-<a href="/static/tabel.html">[вывести за период]</a> <a href="/static/tabel.html">[вывести по отделам]</a> <a href="/static/tabel.html">[вывести по всем]</a>
+}{Р”Р°РЅРЅС‹С… РѕР± РѕС‚СЃСѓС‚СЃС‚РІСѓСЋС‰РёС… СЂР°Р±РѕС‚РЅРёРєР°С… РЅРµ РѕР±РЅР°СЂСѓР¶РµРЅРѕ. <br />}
+<a href="/static/tabel.html">[РІС‹РІРµСЃС‚Рё Р·Р° РїРµСЂРёРѕРґ]</a> <a href="/static/tabel.html">[РІС‹РІРµСЃС‚Рё РїРѕ РѕС‚РґРµР»Р°Рј]</a> <a href="/static/tabel.html">[РІС‹РІРµСЃС‚Рё РїРѕ РІСЃРµРј]</a>
 </block_content>
