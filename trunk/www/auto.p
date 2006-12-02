@@ -1,9 +1,21 @@
 #################################################################################################
-# автоматически выполняемая часть 
+# Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё РІС‹РїРѕР»РЅСЏРµРјР°СЏ С‡Р°СЃС‚СЊ 
 @auto[][_str;_tPath]
-# текущее время
+# СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј Р·Р°РіРѕР»РѕРІРєРё РѕС‚РІРµС‚Р°
+$response:cache-control[no-store, no-cache]
+$response:pragma[no-cache]
+$request:charset[UTF-8]
+$response:charset[windows-1251] 
+$response:content-type[
+	$.value[text/html]
+   $.charset[$response:charset]
+]
+# СЃС‚СЂРѕРєР° РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рє Р‘Р”
+$SQL.connect-string[mysql://root@localhost/mouse4?charset=utf8]
+#		$response:expires[^date::now(-10)] 
+# С‚РµРєСѓС‰РµРµ РІСЂРµРјСЏ
 $dtNow[^date::now[]]
-# режимы отладки и вывода
+# СЂРµР¶РёРјС‹ РѕС‚Р»Р°РґРєРё Рё РІС‹РІРѕРґР°
 ^if(^env:QUERY_STRING.pos[mode=nocache] >= 0){$NoCache(1)}
 ^if(^env:QUERY_STRING.pos[mode=noengine] >= 0){$Engine(0)}
 ^if(^env:QUERY_STRING.pos[mode=debug] >= 0){$Debug(1)}
@@ -13,50 +25,46 @@ $dtNow[^date::now[]]
 	$hUsageBegin[
 		$.rusage[$status:rusage]
 		$.memory[$status:memory]]}
-# пути к классам
+# РїСѓС‚Рё Рє РєР»Р°СЃСЃР°Рј
 $CLASS_PATH[^table::create{path
 /../data
 /../data/processes
 /../data/processes/common
 /../data/processes/shared}]
-
-# подключение основных классов
-^use[lib.p]						# операторы
-^use[implode.p]				# определение браузера
-^use[dtf.p]						# работа с датами
-^use[scroller.p]				# скроллер
+# РїРѕРґРєР»СЋС‡РµРЅРёРµ РѕСЃРЅРѕРІРЅС‹С… РєР»Р°СЃСЃРѕРІ
+^use[lib.p]						# РѕРїРµСЂР°С‚РѕСЂС‹
+^use[implode.p]				# РѕРїСЂРµРґРµР»РµРЅРёРµ Р±СЂР°СѓР·РµСЂР°
+^use[dtf.p]						# СЂР°Р±РѕС‚Р° СЃ РґР°С‚Р°РјРё
+^use[scroller.p]				# СЃРєСЂРѕР»Р»РµСЂ
 # ^use[visualization.p]		# = debug
-# основные настройки
-# строка подключения к БД
-$SQL.connect-string[mysql://root@localhost/mouse]
-# директории
-# основной каталог
+# РґРёСЂРµРєС‚РѕСЂРёРё
+# РѕСЃРЅРѕРІРЅРѕР№ РєР°С‚Р°Р»РѕРі
 $CfgDir[/../data/]
-# каталог с кэшем сайта =work
+# РєР°С‚Р°Р»РѕРі СЃ РєСЌС€РµРј СЃР°Р№С‚Р° =work
 $CacheDir[/../data/cache/]
-# папка где живут шаблоны 
+# РїР°РїРєР° РіРґРµ Р¶РёРІСѓС‚ С€Р°Р±Р»РѕРЅС‹ 
 $TemplateDir[/../data/templates/]
-# папка где живут обработчики блоков и обьектов
+# РїР°РїРєР° РіРґРµ Р¶РёРІСѓС‚ РѕР±СЂР°Р±РѕС‚С‡РёРєРё Р±Р»РѕРєРѕРІ Рё РѕР±СЊРµРєС‚РѕРІ
 $ProcessDir[/../data/processes/shared/blocks/]
-# время кэширования по умолчанию (5 минут)
+# РІСЂРµРјСЏ РєСЌС€РёСЂРѕРІР°РЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ (5 РјРёРЅСѓС‚)
 $iDefaultCacheTime(5*60)
-# получаем путь к запрашиваемой странице
+# РїРѕР»СѓС‡Р°РµРј РїСѓС‚СЊ Рє Р·Р°РїСЂР°С€РёРІР°РµРјРѕР№ СЃС‚СЂР°РЅРёС†Рµ
 $_str[$request:uri]
 $_tPath[^_str.split[?;lh]]
 $sPath[$_tPath.0]
-# данныe HTTP_USER_AGENT 
+# РґР°РЅРЅС‹e HTTP_USER_AGENT 
 ^detectBrowser[]
-^use[mysql.p]		# работа с MySQL
-# sql объект
+^use[mysql.p]		# СЂР°Р±РѕС‚Р° СЃ MySQL
+# sql РѕР±СЉРµРєС‚
 $objSQL[^mysql::init[$SQL.connect-string; 
 	$.is_debug($Debug)
 	$.cache_dir[${CacheDir}sql]
 	$.cache_interval(1/24)
 ]]
-# подключаемся к БД
+# РїРѕРґРєР»СЋС‡Р°РµРјСЃСЏ Рє Р‘Р”
 ^objSQL.server{
-	^use[auth.p]		# авторизация
-# 	объект авторизации $objAuth
+	^use[auth.p]		# Р°РІС‚РѕСЂРёР·Р°С†РёСЏ
+# 	РѕР±СЉРµРєС‚ Р°РІС‚РѕСЂРёР·Р°С†РёРё $objAuth
 	$objAuth[^auth::init[
 		$cookie:CLASS;
 		$form:fields;
@@ -70,27 +78,19 @@ work_position	work_position	work_position
 dt_birth	dt_birth	dt_birth
 telefon	telefon	telefon}]
 ]]
-#		загрузка модуля
+#		Р·Р°РіСЂСѓР·РєР° РјРѕРґСѓР»СЏ
 		^use[m_engine.p]
-#		инициализация
+#		РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
 		$oEngine[^engine::init[]]
 }
-# устанавливаем заголовки ответа
-$response:cache-control[no-store, no-cache]
-$response:pragma[no-cache]
-$response:content-type[
-	$.value[text/html]
-	$.charset[windows-1251]
-]
-#		$response:expires[^date::now(-10)] 
 #end @auto[]
 
 #################################################################################################
 @main[][_hCacheOptions;iIsExecuted]
-# мы можем выключить движок параметром mode=noengine
+# РјС‹ РјРѕР¶РµРј РІС‹РєР»СЋС‡РёС‚СЊ РґРІРёР¶РѕРє РїР°СЂР°РјРµС‚СЂРѕРј mode=noengine
 ^if(^Engine.int(1)){
 #	=debug
-#	обработка запроса + кэширование
+#	РѕР±СЂР°Р±РѕС‚РєР° Р·Р°РїСЂРѕСЃР° + РєСЌС€РёСЂРѕРІР°РЅРёРµ
 	$_hCacheOptions[^cacheOptions[]]
 	^cache[${CacheDir}$_hCacheOptions.key]($_hCacheOptions.time){
 		$iIsExecuted(1) 
@@ -107,10 +107,10 @@ $response:content-type[
 #end @main[]
 
 #################################################################################################
-# получение SQL статистики
+# РїРѕР»СѓС‡РµРЅРёРµ SQL СЃС‚Р°С‚РёСЃС‚РёРєРё
 @postprocess[body]
 $result[$body]
-# Debug режим
+# Debug СЂРµР¶РёРј
 ^if(def $objSQL && $objSQL.iIsDebug){^objSQL.getStatistics[/../data/log/sql.txt]}
 ^if($Debug){
 		$sTime((^hUsageAfter.rusage.tv_sec.double[] - ^hUsageBegin.rusage.tv_sec.double[])*1000 + (^hUsageAfter.rusage.tv_usec.double[] - ^hUsageBegin.rusage.tv_usec.double[])/1000)
@@ -127,9 +127,9 @@ $sLine[$sPrefix   $sMessage
 #################################################################################################
 @cacheOptions[][_fDisableCache;_tCacheCfg;_tCacheTime;_sPath]
 ^if(
-#	POST формы
+#	POST С„РѕСЂРјС‹
 	$env:REQUEST_METHOD eq "POST" || $NoCache
-#	локальные адреса =debug (отключено ибо нужно проверить)
+#	Р»РѕРєР°Р»СЊРЅС‹Рµ Р°РґСЂРµСЃР° =debug (РѕС‚РєР»СЋС‡РµРЅРѕ РёР±Рѕ РЅСѓР¶РЅРѕ РїСЂРѕРІРµСЂРёС‚СЊ)
 #	|| ^env:REMOTE_ADDR.match[^^127\.0\.0] || ^env:REMOTE_ADDR.match[^^192\.168][]
 ){
 	$_fDisableCache(1)
@@ -145,11 +145,11 @@ $sLine[$sPrefix   $sMessage
 }{
 	$result[ 
 		^try{ 
-#			если есть кэш файл загружаем и работаем
+#			РµСЃР»Рё РµСЃС‚СЊ РєСЌС€ С„Р°Р№Р» Р·Р°РіСЂСѓР¶Р°РµРј Рё СЂР°Р±РѕС‚Р°РµРј
 			$_tCacheCfg[^table::load[${CacheDir}_cache.cfg]]
 			$bCacheFile(0)
-#			это кэширование только не динамических(не изменяющихся "сами по себе") объектов
-#			на совести администратора
+#			СЌС‚Рѕ РєСЌС€РёСЂРѕРІР°РЅРёРµ С‚РѕР»СЊРєРѕ РЅРµ РґРёРЅР°РјРёС‡РµСЃРєРёС…(РЅРµ РёР·РјРµРЅСЏСЋС‰РёС…СЃСЏ "СЃР°РјРё РїРѕ СЃРµР±Рµ") РѕР±СЉРµРєС‚РѕРІ
+#			РЅР° СЃРѕРІРµСЃС‚Рё Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂР°
 			$_sCacheTime(0)
 			^_tCacheCfg.menu{
 				^if($_tCacheCfg.full_path eq $sPath){$_sId[$_tCacheCfg.id] $_sCacheTime($_tCacheCfg.cache_time) }
@@ -158,10 +158,10 @@ $sLine[$sPrefix   $sMessage
 			$.time[$_sCacheTime]
 			$.key[${_sId}_${_sPath}_${platform}_${browser}.cache]
 		}{
-#			если его нету говорим движку что его надо создать
+#			РµСЃР»Рё РµРіРѕ РЅРµС‚Сѓ РіРѕРІРѕСЂРёРј РґРІРёР¶РєСѓ С‡С‚Рѕ РµРіРѕ РЅР°РґРѕ СЃРѕР·РґР°С‚СЊ
 			$exception.handled(1)
 			$bCacheFile(1)
-#			и зажигаем пустые флажки кэша
+#			Рё Р·Р°Р¶РёРіР°РµРј РїСѓСЃС‚С‹Рµ С„Р»Р°Р¶РєРё РєСЌС€Р°
 			$.time(0)
 			$.key[dummy]
 		}
