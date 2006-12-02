@@ -2,9 +2,9 @@
 m_ajax.p
 
 #################################################################################################
-# Обработка админки
+# РћР±СЂР°Р±РѕС‚РєР° Р°РґРјРёРЅРєРё
 @main[]
-# инициализируем ajax прослойку
+# РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј ajax РїСЂРѕСЃР»РѕР№РєСѓ
 $oAjax[^ajax::init[
 	$.oAuth[$MAIN:objAuth]
 	$.oSql[$MAIN:objSQL]
@@ -12,14 +12,14 @@ $oAjax[^ajax::init[
 
 
 # -----------------------------------------------------------------------------------------------
-# =debug в лом было думать (авто заполнение полного пути и получение ветви и поля is_not_empty блока) место очень слабое
+# =debug РІ Р»РѕРј Р±С‹Р»Рѕ РґСѓРјР°С‚СЊ (Р°РІС‚Рѕ Р·Р°РїРѕР»РЅРµРЅРёРµ РїРѕР»РЅРѕРіРѕ РїСѓС‚Рё Рё РїРѕР»СѓС‡РµРЅРёРµ РІРµС‚РІРё Рё РїРѕР»СЏ is_not_empty Р±Р»РѕРєР°) РјРµСЃС‚Рѕ РѕС‡РµРЅСЊ СЃР»Р°Р±РѕРµ
 ^if(def $oAjax.hRequest.path){
 	$oAjax.hRequest.full_path[^MAIN:oEngine.getFullPath[$oAjax.hRequest.parent_id;$oAjax.hRequest.path]]
 	$oAjax.hRequest.thread_id[^MAIN:oEngine.getThreadId[$oAjax.hRequest.parent_id;$oAjax.hRequest.id]]
 }
 
 # -----------------------------------------------------------------------------------------------
-# =debug в лом было думать (работа с директориями объектов)
+# =debug РІ Р»РѕРј Р±С‹Р»Рѕ РґСѓРјР°С‚СЊ (СЂР°Р±РѕС‚Р° СЃ РґРёСЂРµРєС‚РѕСЂРёСЏРјРё РѕР±СЉРµРєС‚РѕРІ)
 ^if(def $oAjax.hRequest.full_path || def $oAjax.hRequest.object_id){
 	^switch[$oAjax._sAction]{
 		^case[insert]{^createObject[$oAjax.hRequest.full_path]}
@@ -37,24 +37,24 @@ $oAjax[^ajax::init[
 
 ^if(def $oAjax.hRequest.is_not_empty){^if(def $oAjax.hRequest.data){$oAjax.hRequest.is_not_empty(1)}{$oAjax.hRequest.is_not_empty(0)}}
 
-# =debug в лом было думать (обработка прав объекта) место очень слабое
+# =debug РІ Р»РѕРј Р±С‹Р»Рѕ РґСѓРјР°С‚СЊ (РѕР±СЂР°Р±РѕС‚РєР° РїСЂР°РІ РѕР±СЉРµРєС‚Р°) РјРµСЃС‚Рѕ РѕС‡РµРЅСЊ СЃР»Р°Р±РѕРµ
 ^if(def $oAjax.hRequest.rights_read){$oAjax.hRequest.rights($oAjax.hRequest.rights    + ($oAjax.hRequest.rights_read))      ^oAjax.hRequest.delete[rights_read]}
 ^if(def $oAjax.hRequest.rights_edit){$oAjax.hRequest.rights($oAjax.hRequest.rights    + ($oAjax.hRequest.rights_edit*2))    ^oAjax.hRequest.delete[rights_edit]}
 ^if(def $oAjax.hRequest.rights_delete){$oAjax.hRequest.rights($oAjax.hRequest.rights  + ($oAjax.hRequest.rights_delete*4))  ^oAjax.hRequest.delete[rights_delete]}
 ^if(def $oAjax.hRequest.rights_comment){$oAjax.hRequest.rights($oAjax.hRequest.rights + ($oAjax.hRequest.rights_comment*8))    ^oAjax.hRequest.delete[rights_comment]}
 ^if(def $oAjax.hRequest.rights_supervisory){$oAjax.hRequest.rights($oAjax.hRequest.rights + ($oAjax.hRequest.rights_supervisory*128))   ^oAjax.hRequest.delete[rights_supervisory]}
 
-# установка пароля пользователю
+# СѓСЃС‚Р°РЅРѕРІРєР° РїР°СЂРѕР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЋ
 ^if(def $oAjax.hRequest.passwd){$oAjax.hRequest.passwd[^MAIN:objAuth.cryptPassword[$oAjax.hRequest.passwd]]}
 
-# обработка тип пользователя(группа)
+# РѕР±СЂР°Р±РѕС‚РєР° С‚РёРї РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ(РіСЂСѓРїРїР°)
 ^if(^oAjax.hRequest.auth_parent_id.int(0)){
 	^MAIN:objSQL.void{DELETE FROM auser_to_auser WHERE auser_id="$oAjax.hRequest.auser_id"}
 	^MAIN:objSQL.void{INSERT auser_to_auser (auser_id, parent_id) VALUES ('$oAjax.hRequest.auser_id' , '$oAjax.hRequest.auth_parent_id') }
 }
 	^oAjax.hRequest.delete[auth_parent_id]
 
-# при необходимости удаление файла _cache.cfg
+# РїСЂРё РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё СѓРґР°Р»РµРЅРёРµ С„Р°Р№Р»Р° _cache.cfg
 ^try{^if(def $oAjax.hRequest.cache_time){
 	^MAIN:oEngine.DeleteFiles[$MAIN:CacheDir]
 	^file:delete[${MAIN:CacheDir}_cache.cfg]}
@@ -62,12 +62,12 @@ $oAjax[^ajax::init[
 	$exception.handled(1)
 }
 
-# попытка выполнения действия
+# РїРѕРїС‹С‚РєР° РІС‹РїРѕР»РЅРµРЅРёСЏ РґРµР№СЃС‚РІРёСЏ
 ^oAjax.go[]
 #end @main[][_hRequest]
 
 #################################################################################################
-# Создание объектов
+# РЎРѕР·РґР°РЅРёРµ РѕР±СЉРµРєС‚РѕРІ
 @createObject[sFullPath][_sDummy]
 $_sDummy[@dummy[]
 ^$result[bla-bla]]
@@ -75,13 +75,13 @@ $_sDummy[@dummy[]
 #end @createObject[sFullPath][_sDummy]
 
 #################################################################################################
-# Перемещение объектов 
+# РџРµСЂРµРјРµС‰РµРЅРёРµ РѕР±СЉРµРєС‚РѕРІ 
 @moveObject[sOldFullPath;sNewFullPath]
 ^if($sOldFullPath ne $sNewFullPath){^file:move[$sOldFullPath;$sNewFullPath]}
 #end @moveObject[sOldFullPath;sNewFullPath]
 
 #################################################################################################
-# Удаление объектов
+# РЈРґР°Р»РµРЅРёРµ РѕР±СЉРµРєС‚РѕРІ
 @deleteObject[sFullPath]
 ^dir_delete[$sFullPath]
 #end @deleteObject[sFullPath]
