@@ -2,7 +2,7 @@ $USERS[^MAIN:objAuth.getAllUsers[]]
 <form name="test_form" method="post">
 <table>
 <tr>
-  <td>Выберите период:</td>
+  <td>Р’С‹Р±РµСЂРёС‚Рµ РїРµСЂРёРѕРґ:</td>
   <td>
     <script language="JavaScript">
       var cal1 = new calendar('$form:datetime_0', 'test_form', null, '2002-05-11', 5);
@@ -13,11 +13,11 @@ $USERS[^MAIN:objAuth.getAllUsers[]]
   </td>
 </tr>
 <tr>
-  <td>Выберите сотрудника:</td>
+  <td>Р’С‹Р±РµСЂРёС‚Рµ СЃРѕС‚СЂСѓРґРЅРёРєР°:</td>
   <td>
     ^USERS.sort{$USERS.fio}
     <select name="user_id">
-      <![CDATA[<option value="0" ^if($form:user_id == 0){ selected } >Все сотрудники</option>]]>
+      <![CDATA[<option value="0" ^if($form:user_id == 0){ selected } >Р’СЃРµ СЃРѕС‚СЂСѓРґРЅРёРєРё</option>]]>
       ^USERS.menu{
         <![CDATA[<option value="$USERS.id" ^if($form:user_id == $USERS.id){ selected } >$USERS.fio</option>]]>
       }
@@ -25,49 +25,49 @@ $USERS[^MAIN:objAuth.getAllUsers[]]
   </td>
 </tr>
 <tr>
-  <td>Выберите отдел:</td>
+  <td>Р’С‹Р±РµСЂРёС‚Рµ РѕС‚РґРµР»:</td>
   <td>
     <select name="work_place">
-      <![CDATA[<option value="0"                   ^if($form:work_place eq '0'){ selected } >Все отделы</option>]]>
-      <![CDATA[<option value="1"                   ^if($form:work_place eq '1'){ selected } >Без отдела</option>]]>
-      <![CDATA[<option value="Бухгалтерия"         ^if($form:work_place eq 'Бухгалтерия'){ selected } >Бухгалтерия</option>]]>
-      <![CDATA[<option value="Отдел ИТ"            ^if($form:work_place eq 'Отдел ИТ'){ selected } >Отдел ИТ</option>]]>
-      <![CDATA[<option value="Экономический отдел" ^if($form:work_place eq 'Экономический отдел'){ selected } >Экономический отдел</option>]]>
-      <![CDATA[<option value="Отдел кредитования"  ^if($form:work_place eq 'Отдел кредитования'){ selected } >Отдел кредитования</option>]]>
-      <![CDATA[<option value="ОПиКР"               ^if($form:work_place eq 'ОПиКР'){ selected } >ОПиКР</option>]]>
-      <![CDATA[<option value="Торговый отдел"      ^if($form:work_place eq 'Торговый отдел'){ selected } >Торговый отдел</option>]]>
-      <![CDATA[<option value="Склад ТО"            ^if($form:work_place eq 'Склад ТО'){ selected } >Склад ТО</option>]]>
+      <![CDATA[<option value="0"                   ^if($form:work_place eq '0'){ selected } >Р’СЃРµ РѕС‚РґРµР»С‹</option>]]>
+      <![CDATA[<option value="1"                   ^if($form:work_place eq '1'){ selected } >Р‘РµР· РѕС‚РґРµР»Р°</option>]]>
+      <![CDATA[<option value="Р‘СѓС…РіР°Р»С‚РµСЂРёСЏ"         ^if($form:work_place eq 'Р‘СѓС…РіР°Р»С‚РµСЂРёСЏ'){ selected } >Р‘СѓС…РіР°Р»С‚РµСЂРёСЏ</option>]]>
+      <![CDATA[<option value="РћС‚РґРµР» РРў"            ^if($form:work_place eq 'РћС‚РґРµР» РРў'){ selected } >РћС‚РґРµР» РРў</option>]]>
+      <![CDATA[<option value="Р­РєРѕРЅРѕРјРёС‡РµСЃРєРёР№ РѕС‚РґРµР»" ^if($form:work_place eq 'Р­РєРѕРЅРѕРјРёС‡РµСЃРєРёР№ РѕС‚РґРµР»'){ selected } >Р­РєРѕРЅРѕРјРёС‡РµСЃРєРёР№ РѕС‚РґРµР»</option>]]>
+      <![CDATA[<option value="РћС‚РґРµР» РєСЂРµРґРёС‚РѕРІР°РЅРёСЏ"  ^if($form:work_place eq 'РћС‚РґРµР» РєСЂРµРґРёС‚РѕРІР°РЅРёСЏ'){ selected } >РћС‚РґРµР» РєСЂРµРґРёС‚РѕРІР°РЅРёСЏ</option>]]>
+      <![CDATA[<option value="РћРџРёРљР "               ^if($form:work_place eq 'РћРџРёРљР '){ selected } >РћРџРёРљР </option>]]>
+      <![CDATA[<option value="РўРѕСЂРіРѕРІС‹Р№ РѕС‚РґРµР»"      ^if($form:work_place eq 'РўРѕСЂРіРѕРІС‹Р№ РѕС‚РґРµР»'){ selected } >РўРѕСЂРіРѕРІС‹Р№ РѕС‚РґРµР»</option>]]>
+      <![CDATA[<option value="РЎРєР»Р°Рґ РўРћ"            ^if($form:work_place eq 'РЎРєР»Р°Рґ РўРћ'){ selected } >РЎРєР»Р°Рґ РўРћ</option>]]>
     </select>
   </td>
 </tr>
 <tr>
-  <td>Отметьте события:</td>
+  <td>РћС‚РјРµС‚СЊС‚Рµ СЃРѕР±С‹С‚РёСЏ:</td>
   <td>
-    <![CDATA[<input type="checkbox" name="event1" value="1" ^if(def $form:event1){ checked } /> Прибытие  на работу<br />]]>
-    <![CDATA[<input type="checkbox" name="event2" value="1" ^if(def $form:event2){ checked } /> Отбытие по работе <br />]]>
-    <![CDATA[<input type="checkbox" name="event3" value="1" ^if(def $form:event3){ checked } /> Возвращение по работе <br />]]>
+    <![CDATA[<input type="checkbox" name="event1" value="1" ^if(def $form:event1){ checked } /> РџСЂРёР±С‹С‚РёРµ  РЅР° СЂР°Р±РѕС‚Сѓ<br />]]>
+    <![CDATA[<input type="checkbox" name="event2" value="1" ^if(def $form:event2){ checked } /> РћС‚Р±С‹С‚РёРµ РїРѕ СЂР°Р±РѕС‚Рµ <br />]]>
+    <![CDATA[<input type="checkbox" name="event3" value="1" ^if(def $form:event3){ checked } /> Р’РѕР·РІСЂР°С‰РµРЅРёРµ РїРѕ СЂР°Р±РѕС‚Рµ <br />]]>
   </td>
 </tr>
 <tr>
-  <td> Поля запроса:</td>
+  <td> РџРѕР»СЏ Р·Р°РїСЂРѕСЃР°:</td>
   <td>
     <br />
     <table><tr><td>
-    <![CDATA[<input type="checkbox" name="field1" value="1" checked /> Дата<br />]]>
-    <![CDATA[<input type="checkbox" name="field2" value="1" checked /> Время <br />]]>
-    <![CDATA[<input type="checkbox" name="field3" value="1" checked /> Отдел <br />]]>
+    <![CDATA[<input type="checkbox" name="field1" value="1" checked /> Р”Р°С‚Р°<br />]]>
+    <![CDATA[<input type="checkbox" name="field2" value="1" checked /> Р’СЂРµРјСЏ <br />]]>
+    <![CDATA[<input type="checkbox" name="field3" value="1" checked /> РћС‚РґРµР» <br />]]>
     </td><td>
-    <![CDATA[<input type="checkbox" name="field4" value="1" checked /> Сотрудник <br />]]>
-    <![CDATA[<input type="checkbox" name="field5" value="1" checked /> Событие <br />]]>
-    <![CDATA[<input type="checkbox" name="field6" value="1" checked /> Место <br />]]>
+    <![CDATA[<input type="checkbox" name="field4" value="1" checked /> РЎРѕС‚СЂСѓРґРЅРёРє <br />]]>
+    <![CDATA[<input type="checkbox" name="field5" value="1" checked /> РЎРѕР±С‹С‚РёРµ <br />]]>
+    <![CDATA[<input type="checkbox" name="field6" value="1" checked /> РњРµСЃС‚Рѕ <br />]]>
     </td></tr><tr><td colspan="2">
-    <![CDATA[<input type="checkbox" name="field7" value="1" checked /> Причина <br />]]>
+    <![CDATA[<input type="checkbox" name="field7" value="1" checked /> РџСЂРёС‡РёРЅР° <br />]]>
     </td></tr></table>
   </td>
 </tr>
 <tr>
   <td></td>
-  <td><br /><field type="submit" name="tabel_action" value="Сформировать" /></td>
+  <td><br /><field type="submit" name="tabel_action" value="РЎС„РѕСЂРјРёСЂРѕРІР°С‚СЊ" /></td>
 </tr>
 </table>
 </form>
@@ -112,22 +112,22 @@ $TABEL[^MAIN:objSQL.sql[table][
     )
 ]]
 <print>
-  <center><b> Период с $form:datetime_0 по $form:datetime_1 </b> </center>
-  ^if(def $form:user_id){ Сотрудник:     
+  <center><b> РџРµСЂРёРѕРґ СЃ $form:datetime_0 РїРѕ $form:datetime_1 </b> </center>
+  ^if(def $form:user_id){ РЎРѕС‚СЂСѓРґРЅРёРє:     
     ^switch[$form:user_id]{
-      ^case[0]{все сотрудники , }
+      ^case[0]{РІСЃРµ СЃРѕС‚СЂСѓРґРЅРёРєРё , }
       ^case[DEFAULT]{$USERS_HASH.[$form:user_id].fio , }
     }}
-  ^if(def $form:work_place){<br /> Отдел: $form:work_place}
+  ^if(def $form:work_place){<br /> РћС‚РґРµР»: $form:work_place}
   <table width="100%">
     <tr class="color1">
-      ^if(def $form:field1){<td>Дата:</td>}
-      ^if(def $form:field2){<td>Время:</td>}
-      ^if(def $form:field3){<td>Отдел:</td>}
-      ^if(def $form:field4){<td>Сотрудник:</td>}
-      ^if(def $form:field5){<td>Событие:</td>}
-      ^if(def $form:field6){<td>Место:</td>}
-      ^if(def $form:field7){<td>Причина:</td>}
+      ^if(def $form:field1){<td>Р”Р°С‚Р°:</td>}
+      ^if(def $form:field2){<td>Р’СЂРµРјСЏ:</td>}
+      ^if(def $form:field3){<td>РћС‚РґРµР»:</td>}
+      ^if(def $form:field4){<td>РЎРѕС‚СЂСѓРґРЅРёРє:</td>}
+      ^if(def $form:field5){<td>РЎРѕР±С‹С‚РёРµ:</td>}
+      ^if(def $form:field6){<td>РњРµСЃС‚Рѕ:</td>}
+      ^if(def $form:field7){<td>РџСЂРёС‡РёРЅР°:</td>}
     </tr>
   ^TABEL.menu{
     <tr class="color2">
@@ -137,9 +137,9 @@ $TABEL[^MAIN:objSQL.sql[table][
       ^if(def $form:field4){<td><user_cart id="$TABEL.user_id">$USERS_HASH.[$TABEL.user_id].fio</user_cart></td>}
       ^if(def $form:field5){<td>
         ^switch[$TABEL.event]{
-          ^case[1]{Прибытие на работу}
-          ^case[2]{Отбытие по работе}
-          ^case[3]{Возвращение по работе}
+          ^case[1]{РџСЂРёР±С‹С‚РёРµ РЅР° СЂР°Р±РѕС‚Сѓ}
+          ^case[2]{РћС‚Р±С‹С‚РёРµ РїРѕ СЂР°Р±РѕС‚Рµ}
+          ^case[3]{Р’РѕР·РІСЂР°С‰РµРЅРёРµ РїРѕ СЂР°Р±РѕС‚Рµ}
         }
       </td>}
       ^if(def $form:field6){<td>$TABEL.out_place</td>}

@@ -1,6 +1,6 @@
 $USER[^MAIN:objAuth.getUser[$.user_id[$form:edit]]]
 $USER_GROUPS[^MAIN:objAuth.getUserGroups[^form:edit.int(0)]]
-^rem{ *** выводим форму *** }
+^rem{ *** РІС‹РІРѕРґРёРј С„РѕСЂРјСѓ *** }
 <form method="post">
 <table>
   <tr>
@@ -27,18 +27,18 @@ $USER_GROUPS[^MAIN:objAuth.getUserGroups[^form:edit.int(0)]]
   </tr><tr>
     <td colspan="2">
       <select name="work_place">
-        <option value="Не указан">Выберите отдел:</option>
-        <option value="Бухгалтерия">Бухгалтерия</option>
-        <option value="Отдел ИТ">Отдел ИТ</option>
-        <option value="Экономический отдел">Экономический отдел</option>
-        <option value="Отдел кредитования">Отдел кредитования</option>
-        <option value="ОПиКР">ОПиКР</option>
-        <option value="Торговый отдел">Торговый отдел</option>
-        <option value="Склад ТО">Склад ТО</option>
+        <option value="РќРµ СѓРєР°Р·Р°РЅ">Р’С‹Р±РµСЂРёС‚Рµ РѕС‚РґРµР»:</option>
+        <option value="Р‘СѓС…РіР°Р»С‚РµСЂРёСЏ">Р‘СѓС…РіР°Р»С‚РµСЂРёСЏ</option>
+        <option value="РћС‚РґРµР» РРў">РћС‚РґРµР» РРў</option>
+        <option value="Р­РєРѕРЅРѕРјРёС‡РµСЃРєРёР№ РѕС‚РґРµР»">Р­РєРѕРЅРѕРјРёС‡РµСЃРєРёР№ РѕС‚РґРµР»</option>
+        <option value="РћС‚РґРµР» РєСЂРµРґРёС‚РѕРІР°РЅРёСЏ">РћС‚РґРµР» РєСЂРµРґРёС‚РѕРІР°РЅРёСЏ</option>
+        <option value="РћРџРёРљР ">РћРџРёРљР </option>
+        <option value="РўРѕСЂРіРѕРІС‹Р№ РѕС‚РґРµР»">РўРѕСЂРіРѕРІС‹Р№ РѕС‚РґРµР»</option>
+        <option value="РЎРєР»Р°Рґ РўРћ">РЎРєР»Р°Рґ РўРћ</option>
       </select>
    </td></tr><tr>
     <td>
-      ^rem{ *** выводим список групп, в которых состоит пользователь *** }
+      ^rem{ *** РІС‹РІРѕРґРёРј СЃРїРёСЃРѕРє РіСЂСѓРїРї, РІ РєРѕС‚РѕСЂС‹С… СЃРѕСЃС‚РѕРёС‚ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ *** }
       <user-groups>
         ^USER_GROUPS.menu{
           <item id="$USER_GROUPS.group_id">
@@ -58,15 +58,15 @@ $USER_GROUPS[^MAIN:objAuth.getUserGroups[^form:edit.int(0)]]
       }
     </groups-list>
   </td>
-  </tr><tr><td colspan="2"><field type="submit" value="Сохранить" name="user_edit_action" /></td></tr>
+  </tr><tr><td colspan="2"><field type="submit" value="РЎРѕС…СЂР°РЅРёС‚СЊ" name="user_edit_action" /></td></tr>
   <tr><td colspan="2">
-        Задать новый пароль:
+        Р—Р°РґР°С‚СЊ РЅРѕРІС‹Р№ РїР°СЂРѕР»СЊ:
         <field type="text" value="" name="new_passwd" />
-        <field type="submit" value="Заменить" name="user_passwd_action" />
+        <field type="submit" value="Р—Р°РјРµРЅРёС‚СЊ" name="user_passwd_action" />
       </td></tr>
 </table>
 </form>
-^rem{ *** обработчики форм *** }
+^rem{ *** РѕР±СЂР°Р±РѕС‚С‡РёРєРё С„РѕСЂРј *** }
 ^if(def $form:user_edit_action){
   ^MAIN:objSQL.sql[void]{
     UPDATE 
@@ -100,37 +100,37 @@ $USER_GROUPS[^MAIN:objAuth.getUserGroups[^form:edit.int(0)]]
 
 
 ^rem{ ^MAIN:pSQL.sql[void]{UPDATE auser SET passwd = '^auth_data.cryptPassword[$password]' WHERE auser_id = 3} 
-^rem{ добавление пользователя в группу }
+^rem{ РґРѕР±Р°РІР»РµРЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІ РіСЂСѓРїРїСѓ }
 ^if(def $form:gid && ^auth.groups.locate[group_id;$form:gid] && def $form:addgroup && def $form:id){
 	^auth.addUsertGroup[$form:fields]
 }
 
-^rem{ удаление пользователя из группы }
+^rem{ СѓРґР°Р»РµРЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РёР· РіСЂСѓРїРїС‹ }
 ^if(def $form:gid && def $form:deluser){
 	^auth.delUserfGroup[$form:fields]
 }
 
-^rem{ *** выдаем антикеширующие заголовки *** }
+^rem{ *** РІС‹РґР°РµРј Р°РЅС‚РёРєРµС€РёСЂСѓСЋС‰РёРµ Р·Р°РіРѕР»РѕРІРєРё *** }
 ^auth.setExpireHeaders[]
 $is_show_form(1)
 $status_message[]
 
 ^if(def $form:do){
 	^try{
-		^rem{ *** сохраняем параметры существующего пользователя *** }
+		^rem{ *** СЃРѕС…СЂР°РЅСЏРµРј РїР°СЂР°РјРµС‚СЂС‹ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РµРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ *** }
 		^auth.updateUserAdmin[$form:fields]
-		$status_message[Параметры пользователя сохранены.]
+		$status_message[РџР°СЂР°РјРµС‚СЂС‹ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ СЃРѕС…СЂР°РЅРµРЅС‹.]
 		$is_show_form(0)
 	}{
 		$exception.handled(1)
 		$errors[^auth.decodeError[]]
-		$status_message[При сохранении новых параметров пользователя возникли следующие проблемы: ^errors.menu{$errors.name}[, ].]
+		$status_message[РџСЂРё СЃРѕС…СЂР°РЅРµРЅРёРё РЅРѕРІС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІРѕР·РЅРёРєР»Рё СЃР»РµРґСѓСЋС‰РёРµ РїСЂРѕР±Р»РµРјС‹: ^errors.menu{$errors.name}[, ].]
 	}
 }
 
 ^if(def $form:id || def $form:do){
 	<auser>
-	^rem{если есть сообщение о регистрации или о ошибке}
+	^rem{РµСЃР»Рё РµСЃС‚СЊ СЃРѕРѕР±С‰РµРЅРёРµ Рѕ СЂРµРіРёСЃС‚СЂР°С†РёРё РёР»Рё Рѕ РѕС€РёР±РєРµ}
 	^if($status_message ne ""){<status ^if($errors){error="1"}>$status_message</status>}
 	
 	^if($is_show_form && def $form:id){
@@ -139,13 +139,13 @@ $status_message[]
 		]]
 		^if($_user){
 			^if(!def $form:order){$orderBy[name]}{$orderBy[$form:order]}
-			^rem{ *** показываем форму изменения параметров *** }
+			^rem{ *** РїРѕРєР°Р·С‹РІР°РµРј С„РѕСЂРјСѓ РёР·РјРµРЅРµРЅРёСЏ РїР°СЂР°РјРµС‚СЂРѕРІ *** }
 			^auth.xmlFormProfile[
 				$.fields[
 					$.[auth.name][$_user.name]
 					$.[auth.email][$_user.email]
 				]
-				^rem{ *** дополнительные поля *** }
+				^rem{ *** РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РїРѕР»СЏ *** }
 				$.addon[
 					<field type="hidden" name="order" value="$orderBy"/>
 					<field type="hidden" name="id" value="$_user.id"/>
@@ -158,7 +158,7 @@ $status_message[]
 				]
 				$.tag_name[auth-profile]
 			]
-			^rem{ *** выводим список групп, в которых состоит пользователь *** }
+			^rem{ *** РІС‹РІРѕРґРёРј СЃРїРёСЃРѕРє РіСЂСѓРїРї, РІ РєРѕС‚РѕСЂС‹С… СЃРѕСЃС‚РѕРёС‚ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ *** }
 			$userGroups[^auth.getUserGroups[^form:id.int(0)]]
 			<user-groups>
 			^userGroups.menu{
@@ -167,7 +167,7 @@ $status_message[]
 				</item>
 			}
 			</user-groups>
-			^rem{ *** выводим список групп, в которых пользователь не состоит *** }
+			^rem{ *** РІС‹РІРѕРґРёРј СЃРїРёСЃРѕРє РіСЂСѓРїРї, РІ РєРѕС‚РѕСЂС‹С… РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ РЅРµ СЃРѕСЃС‚РѕРёС‚ *** }
 			<groups-list>
 			^auth.groups.menu{
 				^if(!^userGroups.locate[group_id;$auth.groups.group_id]){
