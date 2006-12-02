@@ -29,7 +29,7 @@ $HtmlValue[$Value]
 }
 </div>
 
-# В корневом main должно быть определено $MAIN:browser $MAIN:platform (в Mouse определяется)
+# Р’ РєРѕСЂРЅРµРІРѕРј main РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РѕРїСЂРµРґРµР»РµРЅРѕ $MAIN:browser $MAIN:platform (РІ Mouse РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ)
 @IsCompatible[]
 ^if(^MAIN:browser.pos[opera] > -1 ||  ^MAIN:platform.pos[mac] > -1 ){$result(0)}{$result(1)}
 
