@@ -11,7 +11,7 @@ $response:content-type[
    $.charset[$response:charset]
 ]
 # строка подключения к БД
-$SQL.connect-string[mysql://root@localhost/mouse4?charset=utf8]
+$SQL.connect-string[mysql://root@localhost/mouse?charset=utf8]
 #		$response:expires[^date::now(-10)] 
 # текущее время
 $dtNow[^date::now[]]
