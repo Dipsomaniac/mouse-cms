@@ -29,7 +29,7 @@
 	<div>
 		<img src="/themes/mouse/icons/nil{@level}.gif" />
 		<xsl:if test="./branche">
-			<span class="plusminus" id="plusminus_{@id}" onClick="toggleLayer('sections', '{@id}')">
+			<span class="plusminus" id="plusminus_{@id}" onClick="$('#sections_{@id}').toggleClass('hide')">
 				<img src="/themes/mouse/icons/plus.gif" />
 			</span>
 		</xsl:if>
@@ -47,7 +47,7 @@
 		alt="Создать потомок" title="Управление блоками" 
 		class="input-image" onClick="Go('/mc/admin/?type=objects&amp;action=blocks&amp;id={@id}', '#container')" />
 		<xsl:if test="./branche">
-			<div class="layer" id="sections_{@id}">
+			<div id="sections_{@id}">
 				<xsl:apply-templates />
 			</div>
 		</xsl:if>
