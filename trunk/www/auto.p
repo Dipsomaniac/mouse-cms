@@ -11,7 +11,7 @@ $response:content-type[
    $.charset[$response:charset]
 ]
 # строка подключения к БД
-$SQL.connect-string[mysql://root@localhost/mouse?charset=utf8]
+$SQL.connect-string[mysql://root:@localhost/mouse2?charset=utf8]
 #		$response:expires[^date::now(-10)] 
 # текущее время
 $dtNow[^date::now[]]
@@ -108,8 +108,8 @@ telefon	telefon	telefon}]
 
 #################################################################################################
 # получение SQL статистики
-@postprocess[body]
-$result[$body]
+@postprocess[sBody]
+$result[$sBody]
 # Debug режим
 ^if(def $objSQL && $objSQL.iIsDebug){^objSQL.getStatistics[/../data/log/sql.txt]}
 ^if($Debug){

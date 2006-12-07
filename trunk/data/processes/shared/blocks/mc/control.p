@@ -106,32 +106,48 @@ ID	id
 # Управление объектами
 @objects[][_iR;path;is_published;description;name;document_name;window_name;parent_id]
 ^if(def $form:action){
+
+# -----------------------------------------------------------------------------------------------
+# 	Работа с блоками объекта
 	^if($form:action eq 'blocks'){$result[
 		<form method="post" action="" name="form_content" id="form_content" enctype="multipart/form-data"
 		label="MOUSE CMS | Объекты | Управление блоками объекта | $OBJECTS_HASH.[$form:id].name ">
 		<tabs>
 		<tab id="section-1" name="Блоки объекта $OBJECTS_HASH.[$form:id].name">
-			$BLOCK_TO_OBJECT[^getBLOCK_TO_OBJECT[$.where[ m_block_to_object.object_id='$form:id' ]]]
-			<field type="none" label="$OBJECTS_HASH.[$form:id].name" description="Блоки объекта">
-				<img src="/themes/mouse/icons/16_add_block.gif" title="Добавить" alt="^BLOCK_TO_OBJECT.count[]" id="add_button" class="input-image" onClick="add_line('blocks')" />
-				<br/><br/>
+
+#			параметры SQL запроса
+			<field type="hidden" name="object_id">$form:id</field>
+			<field type="hidden" name="tables">
+				^$.main[m_block_to_object]
 			</field>
-			<div id="blocks">
+			<field type="hidden" name="action">delete</field>
+			<field type="hidden" name="where">object_id</field>
+
+			$BLOCK_TO_OBJECT[^getBLOCKS_TO_OBJECT[]]
+			^BLOCK_TO_OBJECT.append{9	none	1	0} 
+			<field type="none" label="$OBJECTS_HASH.[$form:id].name" description="Блоки объекта">
+			<br/><br/>
 			<br/>Mode: &nbsp^; &nbsp^; &nbsp^; &nbsp^; Sort_order: &nbsp^; &nbsp^; &nbsp^; &nbsp^; Name:<br/>
-				$iCount(1)
-				^BLOCK_TO_OBJECT.menu{
-				<div id="block_to_object_$iCount">
-					<input name="mode_$iCount" value="$BLOCK_TO_OBJECT.mode" class="input-text-short"/><input name="sort_order_$iCount" value="$BLOCK_TO_OBJECT.sort_order" class="input-text-short"/><input type="hidden" name="block_id_$iCount" value="$BLOCK_TO_OBJECT.id"/><input name="block_id_${iCount}_title"  value="$BLOCK_TO_OBJECT.name" class="input-text-medium"/><img src="/themes/mouse/icons/16_select.gif"    title="Выбрать"       alt="x" class="input-image" onClick="pickObject('$OBJECTS_HASH.84.full_path?type=blocks&amp^;mode=picker&amp^;elem=block_id_$iCount')" /><img src="/themes/mouse/icons/16_del_block.gif" title="Убрать"        alt="x" class="input-image" onClick="remove_line($iCount)" />
-				</div>
-				^iCount.inc(1);
-				}
-			</div>
+# 			объекту можно присвоить до 10 блоков =debug
+			^for[iCount](0;9){
+				^if(^BLOCK_TO_OBJECT.count[] > $iCount){^BLOCK_TO_OBJECT.offset[set]($iCount)}
+				<input  name="mode_$iCount" value="$BLOCK_TO_OBJECT.mode" class="input-text-short"/>
+				<input  name="sort_order_$iCount" value="$BLOCK_TO_OBJECT.sort_order" class="input-text-short"/>
+				<select name="block_id_$iCount" class="medium">
+					<option value="0">none</option>
+					<system:method name="list">name[BLOCKS]added[select="$BLOCK_TO_OBJECT.id"]tag[option]</system:method>
+				</select>
+				<br/>
+			}
+			</field>
 			<field type="none">
 			</field>
 		</tab>
 		</tabs>
 		</form>
 	]}
+# -----------------------------------------------------------------------------------------------
+
 	^if($form:action eq 'edit'){$_iR($_iR + 1) $_sLabel[Редатирование ]}
 	^if($form:action eq 'copy'){$_iR($_iR + 2) $_sLabel[Копирование ]}
 	^if($form:action eq 'add'){ $_iR($_iR + 4) $_sLabel[Добавление ]}
@@ -614,28 +630,61 @@ E-mail	email
 #################################################################################################
 # Управление правами
 @rights[]
+^if(def $form:action){
+	^if($form:action eq 'edit'){$_iR($_iR + 1) $_sLabel[Редатирование ]}
+	^if($form:action eq 'copy'){$_iR($_iR + 2) $_sLabel[Копирование ]}
+	^if($form:action eq 'add'){ $_iR($_iR + 4) $_sLabel[Добавление ]}
+	<form method="post" action="" name="form_content" id="form_content" enctype="multipart/form-data"
+	label="MOUSE CMS | Управление правами | $_sLabel  ">
+	<tabs>
+		<tab id="section-1" name="Основное">
+			<field type="select" name="object_id" label="Объект" description="Выбор объекта" class="medium">
+				<system:method name="list">name[OBJECTS]tag[option]added[select="$ACL_HASH.[$form:id].object_id"]</system:method>
+			</field>
+			<field type="select" name="auser_id" label="Пользователь(группа)" description="Выбор пользователя" class="medium">
+				<system:method name="list">name[USERS]tag[option]added[select="$ACL_HASH.[$form:id].auser_id"]</system:method>
+			</field>
+			$hRights[^getHashRights($ACL_HASH.[$form:id].rights)]
+			<field type="checkbox" name="rights_read" label="Просмотр" description="Права по умолчанию">$hRights.read</field>
+			<field type="checkbox" name="rights_edit" label="Правка" description="Права по умолчанию">$hRights.edit</field>
+			<field type="checkbox" name="rights_delete" label="Удаление" description="Права по умолчанию">$hRights.delete</field>
+			<field type="checkbox" name="rights_comment" label="Комментарии" description="Права по умолчанию">$hRights.comment</field>
+			<field type="checkbox" name="rights_supervisory" label="Может все" description="Права по умолчанию">$hRights.supervisory</field>
+			^if($_iR & 6){
+			<field type="hidden" name="action">insert</field>
+			}
+			^if($_iR & 1){
+				<field type="hidden" name="action">update</field>
+				<field type="hidden" name="where">acl_id</field>
+				<field type="hidden" name="acl_id">$form:id</field>
+			}
+			<field type="hidden" name="cache">acl</field>
+			<field type="hidden" name="tables">
+				^$.main[acl]
+			</field>
+		</tab>
+	</tabs>
+	</form>
+}{
 ^drawList[
 		$.names[^table::create{name	id	object
-Объект	id	OBJECTS_HASH
-Пользователь	id	USERS_HASH
+Объект	object_id	OBJECTS_HASH
+Пользователь(группа)	auser_id	USERS_HASH
 Права	rights
 }]
 		$.data[$ACL]
 		$.added[
-			<field type="hidden" name="cache_time">0</field>
-			<field type="hidden" name="where">auser_id</field>
-			<field type="hidden" name="cache">users</field>
+			<field type="hidden" name="where">acl_id</field>
+			<field type="hidden" name="cache">acl</field>
 			<field type="hidden" name="action">delete</field>
 			<field type="hidden" name="tables">
-				^$.main[auser]
-				^$.connect[asession]
-				^$.connect2[aevent_log]
-				^$.connect3[acl]
+				^$.main[acl]
 			</field>
 		]
-		$.where[auser_id]
+		$.where[acl_id]
 		$.label[Mouse CMS | Управление правами ]
 	]
+}
 #end @rights[]
 
 # -----------------------------------------------------------------------------------------------

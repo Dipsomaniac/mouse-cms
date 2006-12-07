@@ -22,18 +22,13 @@ $_hParams[^hash::create[$hParams]]
 # 	проверка на права администратора
 	^if(^oAuth.user.groups.locate[name;Admins]){
 		# 		получаем параметры запроса
-		$_sTableName[$hRequest.table_name]
 		$_sAction[$hRequest.action]
 		$_sWhere[$hRequest.where]
-		$_sConnectTableName[$hRequest.connect]
 # 		очистка кэша SQL
 		^if(def $hRequest.cache){^oSql.clear[] }
 # 		и удаляем их и лишнее
 		^hRequest.delete[where]
 		^hRequest.delete[action]
-		^hRequest.delete[table_name]
-		^hRequest.delete[button]
-		^hRequest.delete[connect]
 		^hRequest.delete[cache]
 	}{
 	^throw[ajax;Action failure. User must be in Admins.]

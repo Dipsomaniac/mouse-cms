@@ -1,0 +1,187 @@
+﻿@main[]
+$response:cache-control[no-store, no-cache]
+$response:pragma[no-cache]
+$request:charset[UTF-8]
+$response:charset[windows-1251] 
+$response:content-type[
+	$.value[text/html]
+   $.charset[$response:charset]
+]
+<html>
+<head>
+<title>Mouse CMS</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+<style type="text/css">
+body
+{
+    font-family: Georgia;
+    color: #000;
+    background: #fff;
+}
+table#main
+{
+    width: 100%;
+    height: 100%;
+    border: 1px solid #000;
+}
+td#center
+{
+    text-align: center;
+}
+fieldset
+{
+    padding: "10px";
+}
+input.text
+{
+    width: 300px;
+}
+input.button
+{
+    width: 100px;
+}
+.system
+{
+    color: #900;
+}
+</style>
+</head>
+<body>
+	<table id="main">
+	<tr><td align="center">
+		<table><tr><td>
+			<form method="post" name="form">
+				^switch($form:step){
+					^case[1]{^step2[]}
+					^case[2]{^step3[]}
+					^case[3]{^step4[]}
+					^case[DEFAULT]{^step1[]}
+				}
+			</form>
+			</td></tr>
+		</table>
+	</td></tr>
+	</table>
+</body>
+</html>
+
+@step1[]
+<fieldset><legend>Хост сайта</legend><input type="text" name="host" value="www.mouse.ru" class="text"></fieldset>
+<fieldset><legend>Хост базы данных</legend><input type="text" name="bd_host" value="localhost" class="text"></fieldset>
+<fieldset><legend>Логин к базе данных</legend><input type="text" name="bd_login" value="root" class="text"></fieldset>
+<fieldset><legend>Пароль к базе данных</legend><input type="text" name="bd_password" value="" class="text"></fieldset>
+<fieldset><legend>Имя базы данных</legend><input type="text" name="bd_name" value="mouse" class="text"></fieldset>
+<input type="hidden" name="step" value="1">
+<p align="center"><input type="submit" value="Далее" class="button"></p>
+
+@step2[]
+<fieldset>
+	$_sConnectString[mysql://${form:bd_login}:${form:bd_password}@${form:bd_host}/${form:bd_name}?charset=utf8]
+	<legend>Подключение к базе данных и копирование файлов</legend>
+	^try{
+		^loadDump[mouse.sql;$_sConnectString]
+		^connect[$_sConnectString]{^void:sql{UPDATE m_site SET domain='$form:host' WHERE site_id='1'}}
+		Данные записаны.
+		$_sAuto[^file::load[text;www/auto.p]]
+		$_sAuto[$_sAuto.text]
+		$_sAuto[^_sAuto.match[mysql://root@localhost/[\w\d]+\?charset=utf8][gi]{$_sConnectString}]
+		^_sAuto.save[www/auto.p]
+		^dir_copy[data][/../data][$.is_recursive(1)]
+		^dir_copy[www][/][$.is_recursive(1)]
+		Файлы скопированы.
+	}{
+		$exception.handled(1)
+		Выполнить не удалось.
+	}
+</fieldset>
+^if(^exception.handled.int(0)){
+	<input type="hidden" name="step" value="0">
+	<p align="center"><input type="submit" value="Назад" class="button"></p>
+}{
+	<fieldset><legend>Пароль админитратора (admin)</legend><input type="text" name="password" value="" class="text"></fieldset>
+	<input type="hidden" name="step" value="2">
+	<input type="hidden" name="host" value="$form:host">
+	<p align="center"><input type="submit" value="Далее" class="button"></p>
+}
+
+@step3[]
+<fieldset>
+	<legend>Установка пароля пользователю Admin</legend>
+	^MAIN:objSQL.sql[void]{
+			UPDATE
+				auser
+			SET
+				passwd = '^objAuth.cryptPassword[$form:password]'
+			WHERE
+				auser_id = 3
+		}
+		^objAuth.clearUserSessions[3;$objAuth.session.session_id]
+		Пользователю Admin успешно установлен пароль $form:password . <br/>
+		Нажмите далее для завершения установки.
+		<input type="hidden" name="step" value="3">
+		<input type="hidden" name="host" value="$form:host">
+		<p align="center"><input type="submit" value="Далее" class="button"></p>
+</fieldset>
+
+@step4[]
+^dir_delete[../install;$.is_recursive(1)]
+$response:location[http://$form:host]
+
+###########################################################################
+# загрузка дампа базы
+@loadDump[sFile;sConnectString][_fDump;_tDump]
+ $_fDump[^file::load[binary;$sFile]]
+ $_tDump[^_fDump.text.split[^;]]
+ ^_tDump.menu{
+	^connect[$sConnectString]{
+		^if(^_tDump.piece.pos[`] > 0){^void:sql{^untaint{$_tDump.piece}}}
+	}
+ }
+#end @loadDump[]
+
+###########################################################################
+# coping file $from_file to $to_file
+@file_copy[sFileFrom;sFileTo][fFile]
+^if(def $sFileFrom && -f $sFileFrom && def $sFileTo && $sFileFrom ne $sFileTo){
+	$fFile[^file::load[binary;$sFileFrom]]
+	^fFile.save[binary;$sFileTo]
+}
+#end @file_copy[]
+
+
+
+###########################################################################
+# copy directory $sDirFrom to $sDirTo
+# with $.is_recursive(1) - will copy all subdirectories
+@dir_copy[sDirFrom;sDirTo;hParam][tFileList]
+^if(def $sDirFrom && -d $sDirFrom && def $sDirTo && $sDirFrom ne $sDirTo){
+	$tFileList[^file:list[$sDirFrom]]
+	^tFileList.menu{
+		^if($hParam.is_recursive && -d "$sDirFrom/$tFileList.name"){
+			^dir_copy[$sDirFrom/$tFileList.name;$sDirTo/$tFileList.name;$hParam]
+		}
+		^if(-f "$sDirFrom/$tFileList.name"){
+			^file_copy[$sDirFrom/$tFileList.name;$sDirTo/$tFileList.name]
+		}
+	}
+}
+#end @dir_copy[]
+
+###########################################################################
+# delete directory $sDir
+# with $.is_recursive(1) - will delete all subdirectories
+@dir_delete[sDir;hParam][tFileList]
+^try{
+	$tFileList[^file:list[$sDir]]
+	^tFileList.menu{
+		^if($hParam.is_recursive && -d "$sDir/$tFileList.name"){
+			^dir_delete[$sDir/$tFileList.name;$hParam]
+		}
+		^if(-f "$sDir/$tFileList.name"){
+			^file:delete[$sDir/$tFileList.name]
+		}
+	}
+}{
+	$exception.handled(1)
+}
+#end @dir_delete[]
