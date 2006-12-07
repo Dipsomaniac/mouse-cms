@@ -6,8 +6,9 @@
 #################################################################################################
 }
 ^rem{	Отлючаем кэширование	}
-^cache(0)        ^rem{ страниц }
-$MAIN:NoCache(1) ^rem{ SQL }
+^rem{ =debug оставил кэширование?}
+# ^cache(0)        ^rem{ страниц }
+# $MAIN:NoCache(1) ^rem{ SQL }
 ^rem{	получаем объекты }
 ^rem{ объекты системы	}
 $OBJECTS[^getOBJECTS[]]
@@ -40,6 +41,7 @@ $USERS_TYPES_HASH[
 ]
 ^rem{	таблица прав системы }
 $ACL[^getACL[]]
+$ACL_HASH[^ACL.hash[id]]
 ^rem{	отдаем данные блока	}
 $lparams.body
 
@@ -131,7 +133,7 @@ $result[
 	]]
 		$.table[m_block]
 		$.where[$lparams.where]
-		$.cache[blocks]
+		$.cache[blocks_full]
 	]
 ]
 #end @getBLOCKS[]
@@ -142,13 +144,17 @@ $result[
 $result[
 	^getSql[
 		$.names[^hash::create[
-    		$.[m_block_to_object.block_id][id]
-    		$.[m_block_to_object.sort_order][]
-    		$.[m_block_to_object.mode][]
+			$.[m_block_to_object.block_id][id]
+			$.[m_block_to_object.sort_order][]
+			$.[m_block_to_object.mode][]
+			$.[m_block.name][]
 	]]
 		$.table[m_block_to_object]
+		$.leftjoin[m_block]
+		$.using[block_id]
 		$.where[object_id = '$form:id']
-		$.cache[blocks_to_object_{$form:id}]
+		$.order[sort_order]
+		$.cache[blocks_to_object_${form:id}]
 	]
 ]
 #end @getBLOCKS_TO_OBJECT[]
@@ -244,7 +250,8 @@ $result[
 $result[
 	^getSql[
 		$.names[^hash::create[
-			$.[acl.object_id][id]
+			$.[acl.acl_id][id]
+			$.[acl.object_id][]
 			$.[acl.auser_id][]
 			$.[acl.rights][]
 	]]

@@ -10,7 +10,6 @@ $oAjax[^ajax::init[
 	$.oSql[$MAIN:objSQL]
 ]]
 
-
 # -----------------------------------------------------------------------------------------------
 # =debug в лом было думать (авто заполнение полного пути и получение ветви и поля is_not_empty блока) место очень слабое
 ^if(def $oAjax.hRequest.path){
@@ -20,7 +19,7 @@ $oAjax[^ajax::init[
 
 # -----------------------------------------------------------------------------------------------
 # =debug в лом было думать (работа с директориями объектов)
-^if(def $oAjax.hRequest.full_path || def $oAjax.hRequest.object_id){
+^if(def $oAjax.hRequest.full_path){
 	^switch[$oAjax._sAction]{
 		^case[insert]{^createObject[$oAjax.hRequest.full_path]}
 		^case[delete]{
@@ -53,7 +52,8 @@ $oAjax[^ajax::init[
 	^MAIN:objSQL.void{INSERT auser_to_auser (auser_id, parent_id) VALUES ('$oAjax.hRequest.auser_id' , '$oAjax.hRequest.auth_parent_id') }
 }
 	^oAjax.hRequest.delete[auth_parent_id]
-
+^rem{
+=debug
 # при необходимости удаление файла _cache.cfg
 ^try{^if(def $oAjax.hRequest.cache_time){
 	^MAIN:oEngine.DeleteFiles[$MAIN:CacheDir]
@@ -61,9 +61,29 @@ $oAjax[^ajax::init[
 }{
 	$exception.handled(1)
 }
+}
+# раз уж сюда дошли то удалим весь кэш
+^dir_delete[^MAIN:CacheDir.trim[end;/];$.is_recursive(1)]
 
 # попытка выполнения действия
 ^oAjax.go[]
+
+# а это опять блоки и это очень криво =debug
+$_tTemp[^oAjax.hRequest._keys[]]
+^_tTemp.menu{
+	^if(^_tTemp.key.pos[mode_] >= 0){
+		$_iTemp[^_tTemp.key.mid(5)]
+		^if($oAjax.hRequest.block_id_$_iTemp ne '0'){
+			^MAIN:objSQL.void{
+				INSERT 
+					m_block_to_object
+					(object_id, block_id, sort_order, mode)
+				VALUES
+					('$oAjax.hRequest.object_id','$oAjax.hRequest.block_id_$_iTemp','$oAjax.hRequest.sort_order_$_iTemp','$oAjax.hRequest.mode_$_iTemp')
+				}
+		}
+	}
+}
 #end @main[][_hRequest]
 
 #################################################################################################
@@ -85,3 +105,9 @@ $_sDummy[@dummy[]
 @deleteObject[sFullPath]
 ^dir_delete[$sFullPath]
 #end @deleteObject[sFullPath]
+
+#################################################################################################
+# Присваивание блоков
+@blocks[]
+	^oAjax.go[]
+#end 

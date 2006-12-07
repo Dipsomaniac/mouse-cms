@@ -76,19 +76,4 @@ function setPick(value, title, elem)
     window.opener.focus();
     window.close();
 }
-function add_line(container)
-{
-	var contentsPlacerElem = document.getElementById(container);
-	var table_container = document.createElement('div');
-	var next_count = eval(parseInt(document.getElementById('add_button').getAttribute('alt')) + 1);
-	table_container.setAttribute('id', 'block_to_object_' + parseInt(next_count));
-	table_container.innerHTML='<input name="mode_' + next_count + '" class="input-text-short"/><input name="sort_order_' + next_count + '" class="input-text-short"/><input type="hidden" name="block_id_' + next_count + '"/><input name="block_id_' + next_count + '_title" class="input-text-medium"/><img src="/themes/mouse/icons/16_select.gif" title="Выбрать" alt="x" class="input-image" onClick="pickObject(\'/admin/mc/picker/?type=blocks&mode=picker&elem=block_id_' + next_count + '\')" /><img src="/themes/mouse/icons/16_del_block.gif" title="Убрать" alt="x" class="input-image" onClick="remove_line(' + next_count + ')" />';
-	contentsPlacerElem.appendChild(table_container);
-	document.getElementById('add_button').setAttribute('alt', next_count);
-}
-function remove_line(line_number){
-	var line_object = document.getElementById('blocks');
-	line_object.removeChild(document.getElementById('block_to_object_' + line_number));
-	if(line_object.hasChildNodes() == false){document.getElementById('add_button').setAttribute('alt','0');}
-}
 

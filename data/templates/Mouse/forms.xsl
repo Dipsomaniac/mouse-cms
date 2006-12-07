@@ -84,13 +84,6 @@
 		</input>
 </xsl:template>
 
-<!-- select -->
-<xsl:template match="select">
-	<select name="{@name}"  class="{@class}" size="1">
-		<xsl:apply-templates />
-  	</select>
-</xsl:template>
-
 <!-- option -->
 <xsl:template match="option">
 	<xsl:if test="@select=@value"><option value="{@value}" mode="{@mode}" selected="selected"><xsl:value-of select="." /></option></xsl:if>

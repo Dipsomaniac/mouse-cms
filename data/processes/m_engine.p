@@ -49,7 +49,7 @@ $TEMPLATES_HASH[^TEMPLATES.hash[id]]
 }{
 	$str[$exception.type]
 	^if(^str.pos[cms] == 0){
-# 		обработка исскуственно сгенирированных ошибок смс
+# 		обработка исскуственно сгенерированных ошибок смс
 		$exception.handled(1)
 # 		и отправляем по адресу
 		$result[
@@ -127,6 +127,12 @@ $_sStylesheet[^getStylesheet[]]
 	$_xDoc[^_xDoc.transform[$_sStylesheet]]
 }
 $result[^_xDoc.string[]]
+
+# =debug чистка лишних переносов строк - задолбали
+# =debug а оно надо вообще таким способом и в этом месте?
+$result[^result.match[( +)][g]{ }]
+$result[^result.match[(\n\s*\n)][g]{}]
+
 # end @contentSwitcher[][doc;stylesheet]
 
 #################################################################################################
@@ -180,7 +186,7 @@ $result[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
 <!DOCTYPE site_page [
 	^entitySet[]
 ]>
-<document lang="$SYSTEM.siteLangID" server="$env:SERVER_NAME" template="^getStylesheet[]">
+<document xmlns:system="http://klen.zoxt.net/doc/" lang="$SYSTEM.siteLangID" server="$env:SERVER_NAME" template="^getStylesheet[]">
   ^getDocumentBody[]
 </document>
 }]
@@ -432,7 +438,7 @@ $result[]
 
 #################################################################################################
 # обработка условий
-@if[hParam][_jMethod]
+@select[hParam][_jMethod]
 $result[^if(${hParam.name} eq ${hParam.value}){${hParam.true}}{${hParam.false}}]
 #end @sql[hParam]
 
