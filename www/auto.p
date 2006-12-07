@@ -1,6 +1,7 @@
 #################################################################################################
 # автоматически выполняемая часть 
-@auto[][_str;_tPath]
+@auto[][cTemp;sTemp]
+# -----------------------------------------------------------------------------------------------
 # устанавливаем заголовки ответа
 $response:cache-control[no-store, no-cache]
 $response:pragma[no-cache]
@@ -10,62 +11,92 @@ $response:content-type[
 	$.value[text/html]
    $.charset[$response:charset]
 ]
-# строка подключения к БД
-$SQL.connect-string[mysql://root:@localhost/mouse2?charset=utf8]
-#		$response:expires[^date::now(-10)] 
-# текущее время
-$dtNow[^date::now[]]
-# режимы отладки и вывода
-^if(^env:QUERY_STRING.pos[mode=nocache] >= 0){$NoCache(1)}
-^if(^env:QUERY_STRING.pos[mode=noengine] >= 0){$Engine(0)}
-^if(^env:QUERY_STRING.pos[mode=debug] >= 0){$Debug(1)}
-^if(^env:QUERY_STRING.pos[mode=ncdebug] >= 0){$NoCache(1) $Debug(1)}
-^if(^env:QUERY_STRING.pos[mode=xml] >= 0){$EngineXML(1)}
-^if($Debug){
-	$hUsageBegin[
-		$.rusage[$status:rusage]
-		$.memory[$status:memory]]}
-# пути к классам
-$CLASS_PATH[^table::create{path
+# -----------------------------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------------------------
+# получаем информацию о пользователе, сразу потому что маус ведет статистику и по кэшированным страницам
+$hUserInfo[
+	$.Os[unix]
+	$.Browser[other]
+	$.Browser_ver(0)
+	$.Browser_subver(0)
+	$.Ip[$env:REMOTE_ADDR]
+	$.Proxy[$env:HTTP_X_FORWARDED_FOR]
+	$.UserAgent[$env:HTTP_USER_AGENT]
+	$.Referer[$env:HTTP_REFERER]
+	$.Query[$env:QUERY_STRING]
+	$.Request[$request:uri]
+]
+^hUserInfo.UserAgent.match[mac][i]{$hUserInfo.Os[mac]}
+^hUserInfo.UserAgent.match[win][i]{$hUserInfo.Os[win]}
+$cTemp{
+	^hUserInfo.UserAgent.match[(?:$sTemp).((?:\d+)(?:\.(\d+))?)][i]{
+		$hUserInfo.Browser[$sTemp]
+		$hUserInfo.Browser_ver[^match.2.int(0)]
+		$hUserInfo.Browser_subver[^match.4.int(0)]
+		$hUserInfo.Browser_fullver[^match.1.double(0)]
+	}
+}
+$sTemp[opera]$cTemp
+$sTemp[msie]$cTemp
+$sTemp[mozilla]$cTemp
+$sTemp[safari]$cTemp
+$sTemp[netscape]$cTemp
+# -----------------------------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------------------------
+# основные настройки
+$SQL.connect-string[mysql://root:@localhost/mouse?charset=utf8]	# строка подключения к БД
+$CLASS_PATH[^table::create{path												# пути к классам
 /../data
 /../data/processes
 /../data/processes/common
 /../data/processes/shared}]
+# пути к директориям
+$CfgDir[/../data/]																# основной каталог
+$CacheDir[${CfgDir}cache/]														# каталог с кэшем сайта
+$TemplateDir[${CfgDir}templates/]											# папка где живут шаблоны 
+$ProcessDir[${CfgDir}processes/shared/blocks/]							# папка где живут обработчики блоков и обьектов
+$LogDir[${CfgDir}log/]															# папка где живут логи
+# -----------------------------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------------------------
+# отладка
+^if(^hUserInfo.Query.pos[mode=nocache] >= 0){$NoCache(1)}
+^if(^hUserInfo.Query.pos[mode=debug] >= 0){$Debug(1)}
+^if(^hUserInfo.Query.pos[mode=ncdebug] >= 0){$NoCache(1) $Debug(1)}
+^if(^hUserInfo.Query.pos[mode=xml] >= 0){$EngineXML(1)}
+^if($Debug){$hUsageBegin[$.rusage[$status:rusage] $.memory[$status:memory]]}
+# -----------------------------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------------------------
 # подключение основных классов
 ^use[lib.p]						# операторы
-^use[implode.p]				# определение браузера
 ^use[dtf.p]						# работа с датами
 ^use[scroller.p]				# скроллер
+^use[mysql.p]					# работа с MySQL
+^use[auth.p]					# авторизация
+^use[m_engine.p]				# движок mouse
 # ^use[visualization.p]		# = debug
-# директории
-# основной каталог
-$CfgDir[/../data/]
-# каталог с кэшем сайта =work
-$CacheDir[/../data/cache/]
-# папка где живут шаблоны 
-$TemplateDir[/../data/templates/]
-# папка где живут обработчики блоков и обьектов
-$ProcessDir[/../data/processes/shared/blocks/]
-# время кэширования по умолчанию (5 минут)
-$iDefaultCacheTime(5*60)
+# -----------------------------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------------------------
+# прочее для совместимости =debug
+$dtNow[^date::now[]]
 # получаем путь к запрашиваемой странице
-$_str[$request:uri]
-$_tPath[^_str.split[?;lh]]
-$sPath[$_tPath.0]
-# данныe HTTP_USER_AGENT 
-^detectBrowser[]
-^use[mysql.p]		# работа с MySQL
-# sql объект
-$objSQL[^mysql::init[$SQL.connect-string; 
+$sPath[^hUserInfo.Request.split[?;lh]]
+$sPath[$sPath.0]
+# -----------------------------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------------------------
+# создание основных объектов и инициализация engine
+$objSQL[^mysql::init[$SQL.connect-string; # SQL object
 	$.is_debug($Debug)
 	$.cache_dir[${CacheDir}sql]
 	$.cache_interval(1/24)
 ]]
-# подключаемся к БД
 ^objSQL.server{
-	^use[auth.p]		# авторизация
-# 	объект авторизации $objAuth
-	$objAuth[^auth::init[
+	$objAuth[^auth::init[	# 	объект авторизации $objAuth
 		$cookie:CLASS;
 		$form:fields;
 		$.csql[$MAIN:objSQL]
@@ -78,36 +109,32 @@ work_position	work_position	work_position
 dt_birth	dt_birth	dt_birth
 telefon	telefon	telefon}]
 ]]
-#		загрузка модуля
-		^use[m_engine.p]
-#		инициализация
-		$oEngine[^engine::init[]]
+	$oEngine[^engine::init[]]
 }
+# -----------------------------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------------------------
+# убираем грязь
+$result[]
+# -----------------------------------------------------------------------------------------------
 #end @auto[]
 
 #################################################################################################
+# выполнение кода движка по дефолту
 @main[][_hCacheOptions;iIsExecuted]
-# мы можем выключить движок параметром mode=noengine
-^if(^Engine.int(1)){
 #	=debug
 #	обработка запроса + кэширование
-	$_hCacheOptions[^cacheOptions[]]
-	^cache[${CacheDir}$_hCacheOptions.key]($_hCacheOptions.time){
-		$iIsExecuted(1) 
-		^trim[^oEngine.execute[]]
-	}
-	^_comments[$_hCacheOptions.key;$_hCacheOptions.time;$iIsExecuted]
+$_hCacheOptions[^mGetCacheOptions[]]
+^cache[${CacheDir}$_hCacheOptions.key]($_hCacheOptions.time){
+	$iIsExecuted(1) 
+	^trim[^oEngine.execute[]]
 }
-	^if($Debug){
-		$hUsageAfter[
-			$.rusage[$status:rusage]
-			$.memory[$status:memory]
-		]
-	}
+^_comments[$_hCacheOptions.key;$_hCacheOptions.time;$iIsExecuted]
+^if($Debug){$hUsageAfter[ $.rusage[$status:rusage] $.memory[$status:memory]]}
 #end @main[]
 
 #################################################################################################
-# получение SQL статистики
+# получение статистики да и вообще постпроцесс
 @postprocess[sBody]
 $result[$sBody]
 # Debug режим
@@ -122,69 +149,56 @@ $sLine[$sPrefix   $sMessage
 ]
 ^sLine.save[append;/../data/log/EngineUsage.log]
 }
-#end @postprocess[body]
+#end @postprocess[sBody]
 
 #################################################################################################
-@cacheOptions[][_fDisableCache;_tCacheCfg;_tCacheTime;_sPath]
-^if(
-#	POST формы
-	$env:REQUEST_METHOD eq "POST" || $NoCache
-#	локальные адреса =debug (отключено ибо нужно проверить)
+# получение ключа кэширования
+@mGetCacheOptions[][_tCacheCfg;_tCacheTime;_sPath;_sId]
+$result[
+	$.time(0)
+	$.key[dummy]
+]
 #	|| ^env:REMOTE_ADDR.match[^^127\.0\.0] || ^env:REMOTE_ADDR.match[^^192\.168][]
-){
-	$_fDisableCache(1)
-}{
-	$_fDisableCache(0)
-}
-
-^if($_fDisableCache){
-	$result[
-		$.time(0)
-		$.key[dummy]
-	]
+^if( $env:REQUEST_METHOD eq "POST" || $NoCache ){
+# если идет отладка или POST формы ничего не делаем
 }{
 	$result[ 
 		^try{ 
 #			если есть кэш файл загружаем и работаем
 			$_tCacheCfg[^table::load[${CacheDir}_cache.cfg]]
-			$bCacheFile(0)
-#			это кэширование только не динамических(не изменяющихся "сами по себе") объектов
-#			на совести администратора
 			$_sCacheTime(0)
-			^_tCacheCfg.menu{
-				^if($_tCacheCfg.full_path eq $sPath){$_sId[$_tCacheCfg.id] $_sCacheTime($_tCacheCfg.cache_time) }
-			}
+			^_tCacheCfg.menu{^if($_tCacheCfg.full_path eq $sPath){$_sId[$_tCacheCfg.id] $_sCacheTime($_tCacheCfg.cache_time) }}
 			$_sPath[^math:md5[$request:uri]]
 			$.time[$_sCacheTime]
-			$.key[${_sId}_${_sPath}_${platform}_${browser}.cache]
+			$.key[${_sId}_${_sPath}_${hUserInfo.Os}_${hUserInfo.Browser}.cache]
 		}{
 #			если его нету говорим движку что его надо создать
 			$exception.handled(1)
 			$bCacheFile(1)
-#			и зажигаем пустые флажки кэша
 			$.time(0)
 			$.key[dummy]
-		}
-]}
-#end @cacheOptions[]
+		}]
+}
+#end @mGetCacheOptions[]
 
 #################################################################################################
-@_comments[sKey;iTime;iIsExecuted][_dNow]
+@_comments[sKey;iTime;iIsExecuted][cTemp]
+$cTemp{<!-- ^dtNow.sql-string[] $sText Cache key: $sKey, cache time: $iTime secs -->}
 ^if($iIsExecuted){
-	^if(-f "$sCacheDir/$sKey"){
-		$result[^self._print[Point generated.;$sKey]($iTime)]]
-	}{
-		$result[^self._print[Point generated. Storing to cache skipped.;$sKey]($iTime)]]
-	}
-}{
-	$result[^self._print[Point taked from cache.;$sKey]($iTime)]]
-}
+	^if(-f "$sCacheDir/$sKey"){$sText[Point generated.]}{$sText[Point generated. Storing to cache skipped]}
+}{$sText[Point taked from cache.]}
+$result[$cTemp]
 #end @_comments[]
 
-###########################################################################
-@_print[sText;sKey;iTime]
-$result[<!-- ^dtNow.sql-string[] $sText Cache key: $sKey, cache time: $iTime secs -->]
-#end @_print[]
+#################################################################################################
+# метод собирает статистику по пользователям =debug решил сделать здесь
+@mStatistic[]
 
+#end @mStatistic[]
+
+#################################################################################################
+# =debug отладка просто чтобы ^trow долго не писать - ^stop[bla bla bla]
 @stop[str]
 ^throw[stop;$str]
+#end @stop[str]
+
