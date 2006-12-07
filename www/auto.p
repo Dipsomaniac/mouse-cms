@@ -111,6 +111,7 @@ telefon	telefon	telefon}]
 ]]
 	$oEngine[^engine::init[]]
 }
+^mStatistic[]
 # -----------------------------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------------------------
@@ -192,8 +193,34 @@ $result[$cTemp]
 
 #################################################################################################
 # метод собирает статистику по пользователям =debug решил сделать здесь
-@mStatistic[]
-
+@mStatistic[][tHits;tHosts;cCounter;sFile;fFile;sCount;sStr;tLog]
+$cCounter{
+	^file:lock[${sFile}.lock]{
+	$fFile[^file::load[text;$sFile]]
+	$sCount[^eval($fFile.text+1)]
+	^sCount.save[$sFile]
+	}
+}
+^try{
+	$tHits[^file::load[text;${LogDir}statistic/hits/^dtNow.day.format[%02d].cfg]]
+	$tHosts[^file::load[text;${LogDir}statistic/hosts/^dtNow.day.format[%02d].cfg]]
+	$sFile[${LogDir}statistic/hits/^dtNow.day.format[%02d].cfg]
+	$cCounter
+	$tLog[^table::load[nameless;${LogDir}statistic/^dtNow.day.format[%02d].cfg]]
+	^if(^tLog.locate($tLog.2 eq $hUserInfo.Ip && $tLog.3 eq $hUserInfo.Proxy)){}{
+		$sFile[${LogDir}statistic/hosts/^dtNow.day.format[%02d].cfg]
+		$cCounter
+	}
+}{
+	$sCount[1]
+	$sFile[${LogDir}statistic/hits/^dtNow.day.format[%02d].cfg]
+	^sCount.save[$sFile]
+	$sFile[${LogDir}statistic/hosts/^dtNow.day.format[%02d].cfg]
+	^sCount.save[$sFile]
+	$exception.handled(1)
+}
+$sStr[^dtNow.sql-string[]	$sPath	$hUserInfo.Ip	$hUserInfo.Proxy	$hUserInfo.Os	$hUserInfo.Browser $hUserInfo.Browser_fullver	$hUserInfo.Referer^#0A]
+^file:lock[${LogDir}statistic/^dtNow.day.format[%02d].cfg.lock]{^sStr.save[append;${LogDir}statistic/^dtNow.day.format[%02d].cfg]}
 #end @mStatistic[]
 
 #################################################################################################
