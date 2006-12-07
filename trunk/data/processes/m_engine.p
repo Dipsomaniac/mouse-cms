@@ -72,7 +72,7 @@ $TEMPLATES_HASH[^TEMPLATES.hash[id]]
 # создание страницы сайта
 @create[][ACL]
 # если зажжен флажок отсутствия кэш файла - создаем его
-^if($MAIN:bCacheFile){^createCacheFile[]}
+^if(^MAIN:bCacheFile.int(0)){^createCacheFile[]}
 # проверка существования запрошенного объекта, существует - создаем, иначе отправка на страницу ошибок
 ^OBJECTS.menu{^if($OBJECTS.full_path eq $SYSTEM.path){$OBJECT[$OBJECTS.fields]}}
 ^if(!def $OBJECT){^throw[cms.404;$request:uri;Страница не найдена]}
