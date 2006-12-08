@@ -46,7 +46,7 @@ $sTemp[netscape]$cTemp
 
 # -----------------------------------------------------------------------------------------------
 # основные настройки
-$SQL.connect-string[mysql://root:@localhost/mouse?charset=utf8]	# строка подключения к БД
+$SQL.connect-string[mysql://root:@localhost/mouse2?charset=utf8]	# строка подключения к БД
 $CLASS_PATH[^table::create{path												# пути к классам
 /../data
 /../data/processes
@@ -65,7 +65,6 @@ $LogDir[${CfgDir}log/]															# папка где живут логи
 ^if(^hUserInfo.Query.pos[mode=nocache] >= 0){$NoCache(1)}
 ^if(^hUserInfo.Query.pos[mode=debug] >= 0){$Debug(1)}
 ^if(^hUserInfo.Query.pos[mode=ncdebug] >= 0){$NoCache(1) $Debug(1)}
-^if(^hUserInfo.Query.pos[mode=xml] >= 0){$EngineXML(1)}
 ^if($Debug){$hUsageBegin[$.rusage[$status:rusage] $.memory[$status:memory]]}
 # -----------------------------------------------------------------------------------------------
 
@@ -120,6 +119,8 @@ $result[]
 # -----------------------------------------------------------------------------------------------
 #end @auto[]
 
+
+
 #################################################################################################
 # выполнение кода движка по дефолту
 @main[][_hCacheOptions;iIsExecuted]
@@ -133,6 +134,8 @@ $_hCacheOptions[^mGetCacheOptions[]]
 ^_comments[$_hCacheOptions.key;$_hCacheOptions.time;$iIsExecuted]
 ^if($Debug){$hUsageAfter[ $.rusage[$status:rusage] $.memory[$status:memory]]}
 #end @main[]
+
+
 
 #################################################################################################
 # получение статистики да и вообще постпроцесс
@@ -151,6 +154,8 @@ $sLine[$sPrefix   $sMessage
 ^sLine.save[append;/../data/log/EngineUsage.log]
 }
 #end @postprocess[sBody]
+
+
 
 #################################################################################################
 # получение ключа кэширования
@@ -182,6 +187,8 @@ $result[
 }
 #end @mGetCacheOptions[]
 
+
+
 #################################################################################################
 @_comments[sKey;iTime;iIsExecuted][cTemp]
 $cTemp{<!-- ^dtNow.sql-string[] $sText Cache key: $sKey, cache time: $iTime secs -->}
@@ -190,6 +197,8 @@ $cTemp{<!-- ^dtNow.sql-string[] $sText Cache key: $sKey, cache time: $iTime secs
 }{$sText[Point taked from cache.]}
 $result[$cTemp]
 #end @_comments[]
+
+
 
 #################################################################################################
 # метод собирает статистику по пользователям =debug решил сделать здесь
@@ -222,6 +231,8 @@ $cCounter{
 $sStr[^dtNow.sql-string[]	$sPath	$hUserInfo.Ip	$hUserInfo.Proxy	$hUserInfo.Os	$hUserInfo.Browser $hUserInfo.Browser_fullver	$hUserInfo.Referer^#0A]
 ^file:lock[${LogDir}statistic/^dtNow.day.format[%02d].cfg.lock]{^sStr.save[append;${LogDir}statistic/^dtNow.day.format[%02d].cfg]}
 #end @mStatistic[]
+
+
 
 #################################################################################################
 # =debug отладка просто чтобы ^trow долго не писать - ^stop[bla bla bla]
