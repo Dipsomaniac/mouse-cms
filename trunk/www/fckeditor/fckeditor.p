@@ -20,7 +20,7 @@ $HtmlValue[$Value]
 	^if((def $form:fcksource) && ($form:fcksource eq 'true')){$File[fckeditor.original.html]}{$File[fckeditor.html]}
 	$Link[${BasePath}editor/${File}?InstanceName=${InstanceName}^if(def $ToolbarSet){&amp^;Toolbar=$ToolbarSet}^if($Config.mode eq 'noengine'){&amp^;mode=$Config.mode}]
 	<input type="hidden" id="$InstanceName" name="$InstanceName" value='$HtmlValue' style="display:none" />
-	<input type="hidden" id="${InstanceName}___Config" value="^GetConfigFieldString[]" style="display:none" />
+#	<input type="hidden" id="${InstanceName}___Config" value="^GetConfigFieldString[]" style="display:none" />
 	<iframe id="${InstanceName}___Frame" src="$Link" width="$Width" height="$Height" frameborder="no" scrolling="no"></iframe>
 }{
 	^if(^Width.pos[%] > -1){$WidthCSS[${Width}px]}{$WidthCSS[$Width]}

@@ -15,6 +15,7 @@
 			<button image="24_rights.gif"     name="rigths"    alt="Назначение прав"           onClick="Go('$OBJECTS_HASH.80.full_path?type=rights','#container')" />
 			<button image="24_configure.gif"  name="configure" alt="Обслуживание системы"      onClick="Go('$OBJECTS_HASH.80.full_path?type=config','#container')" />
 			<button image="24_files.gif"      name="files"     alt="Загрузка файлов"           onClick="Go('$OBJECTS_HASH.80.full_path?type=files','#container')" />
+			<button image="24_articles.gif"   name="articles"  alt="Работа со статьями"        onClick="Go('$OBJECTS_HASH.80.full_path?type=articles','#container')" />
 			<button image="24_divider.gif" />
 		^if(def $form:action && $form:action ne 'config'){
 			<button image="24_save.gif"    name="save"      alt="Сохранить" onClick="saveForm('form_content','${OBJECTS_HASH.80.full_path}?type=$form:type','#container')" />
@@ -27,9 +28,7 @@
 	^_jMethod[]
 </block_content>
 #################################################################################################
-#                                                                                               #
 #                                    ОБХОД ТИПОВ                                                #
-#                                                                                               #
 #################################################################################################
 
 # -----------------------------------------------------------------------------------------------
@@ -719,10 +718,18 @@ label="MOUSE CMS | Отладка системы ">
 </form>
 #end files[]
 
+# -----------------------------------------------------------------------------------------------
+#                                    РАБОТА СО СТАТЬЯМИ
+# -----------------------------------------------------------------------------------------------
 #################################################################################################
-#                                                                                               #
+# Загружаем файлы
+@articles[]
+^rem{ пусть разбирается редактор }
+^executeSystemProcess[$.id[5]]
+#end @articles[]
+
+#################################################################################################
 #                                    ВЫВОД ДАННЫХ                                               #
-#                                                                                               #
 #################################################################################################
 # -----------------------------------------------------------------------------------------------
 #                                  СПИСОК ОБЪЕКТОВ
@@ -801,7 +808,7 @@ $_tData[^table::create[$hParams.data;$.limit($scroller.limit) $.offset($scroller
       				^if(def $hParams.names.object){
       					$[$hParams.names.object].[${_tData.[$hParams.names.id]}].name
       				}{
-      					${_tData.[$hParams.names.id]}
+							$_tData.[$hParams.names.id]
       				}
       			</span>
 				</td>

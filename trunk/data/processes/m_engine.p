@@ -1,57 +1,47 @@
 @CLASS
 engine
 
+
+
 #################################################################################################
-#                                                                                               #
 #      ИНИЦИАЛИЗАЦИЯ   САЙТЫ   ОБРАБОТЧИКИ   ШАБЛОНЫ   СИСТЕМНЫЕ КОНСТАНТЫ                      #
-#                                                                                               #
 #################################################################################################
 # Конструктор инициализация и выполнение engine
-@init[][siteID;suteLangID]
-# получаем ВСЕ сайты
-$SITES[^getSITES[]]
+@init[]
+$SITES[^getSITES[]]				# получаем ВСЕ сайты
 $SITES_HASH[^SITES.hash[id]]
-# получение ID сайта и ID языка сайта =debug а если такого сайта нету?
-^if(^SITES.locate[domain;$env:SERVER_NAME]){$siteID($SITES.id) $siteLangID($SITES.lang_id)}
+^if(^SITES.locate[domain;$env:SERVER_NAME]){$siteID($SITES.id) $siteLangID($SITES.lang_id)}	# получение ID сайта и ID языка сайта =debug а если такого сайта нету?
 $SYSTEM[
-	$.SiteUrl[$env:SERVER_NAME]
-#	полный путь запрошенного объекта (/admin/index.html)
-	$.fullPath[$request:uri]
-#	путь объекта
+	$.siteUrl[$env:SERVER_NAME]
+	$.fullPath[$request:uri]			#	полный путь запрошенного объекта (/admin/index.html)
 #	$.path[$env:PATH_INFO]
-	$.path[$MAIN:sPath]
+	$.path[$MAIN:sPath]					#	путь до объекта без параметров
 	$.siteID(^siteID.int(0))
 	$.siteLangID(^siteLangID.int(0)) #=debug
 ]
-# получаем ВСЕ ОПУБЛИКОВАННЫЕ объекты текущего сайта
-$OBJECTS[^getOBJECTS[$.where[m_object.site_id ='$SYSTEM.siteID' AND m_object.is_published ='1']]]
+$OBJECTS[^getOBJECTS[$.where[m_object.site_id ='$SYSTEM.siteID' AND m_object.is_published ='1']]]	# ВСЕ ОПУБЛИКОВАННЫЕ объекты текущего сайта
 $OBJECTS_HASH[^OBJECTS.hash[id]]
 # обработчики и шаблоны получаем в любом случае
-# таблица обработчиков
-$PROCESSES[^getPROCESSES[]]
-$PROCESSES_HASH[^PROCESSES.hash[id]]
-# таблица шаблонов
-$TEMPLATES[^getTEMPLATES[]]
-$TEMPLATES_HASH[^TEMPLATES.hash[id]]
-# хэш основных параметров сайта
+$PROCESSES[^getPROCESSES[]]				# таблица обработчиков
+$PROCESSES_HASH[^PROCESSES.hash[id]]	# хэш таблицы обработчиков
+$TEMPLATES[^getTEMPLATES[]]				# таблица шаблонов
+$TEMPLATES_HASH[^TEMPLATES.hash[id]]	# хэш таблицы шаблонов
 #end @init[]
 
+
+
 #################################################################################################
-#                                                                                               #
 #      ОШИБКИ   ВЫПОЛНЕНИЕ                                                                      #
-#                                                                                               #
 #################################################################################################
 # "Чух, чух, чух" - Поехали!
-@execute[][str]
+@execute[]
 ^try{
-#	построение объекта
-	$result[^create[]]
+	$result[^create[]]			#	построение объекта
 }{
-	$str[$exception.type]
-	^if(^str.pos[cms] == 0){
-# 		обработка исскуственно сгенерированных ошибок смс
+# 	обработка исскуственно сгенерированных ошибок смс
+	^if(^exception.type.pos[cms] == 0){
+# 		перехватываем и отправляем по адресу
 		$exception.handled(1)
-# 		и отправляем по адресу
 		$result[
   			^if(^OBJECTS.locate[id;$SITES_HASH.[$SYSTEM.siteID].e404_object_id]){
     				^location[$OBJECTS.full_path?error=$exception.type&url=$SYSTEM.path;$.is_external(1)]
@@ -62,15 +52,15 @@ $TEMPLATES_HASH[^TEMPLATES.hash[id]]
 #		$result[произошла ошибка "$exception.type" - $exception.comment]
 	}
 }
-# end @execute[][str]
+# end @execute[]
+
+
 
 #################################################################################################
-#                                                                                               #
 # ОБЪЕКТЫ   ПРАВА   ТИП ВЫВОДА   ОЧИСТКА ПАМЯТИ   РАБОТА С ШАБЛОНОМ                             #
-#                                                                                               #
 #################################################################################################
 # создание страницы сайта
-@create[][ACL]
+@create[][RIGHS;ACL]
 # если зажжен флажок отсутствия кэш файла - создаем его
 ^if(^MAIN:bCacheFile.int(0)){^createCacheFile[]}
 # проверка существования запрошенного объекта, существует - создаем, иначе отправка на страницу ошибок
@@ -84,15 +74,14 @@ $TEMPLATES_HASH[^TEMPLATES.hash[id]]
 	$OBJECT_THREAD[^OBJECTS.select($OBJECTS.thread_id == $OBJECT.thread_id)]
 #	хэш объектов по parent_id (для наследования навигации)
 	$OBJECTS_HASH_TREE[^OBJECTS.hash[parent_id][$.distinct[tables]]]
-#	=debug тут реализовать проверку прав на объект 
-	$RIGHTS($OBJECT.rights)
+	$RIGHTS($OBJECT.rights)				# права объекта по умолчанию
 	^if($MAIN:objAuth.is_logon){
 #		достаем назначения прав текущему пользователю на все объекты треда
-		$ACL[^MAIN:objAuth.getFullACL[$OBJECT_THREAD]]
+		$ACL[^MAIN:objAuth.getFullACL[$OBJECT_THREAD]]	
 #		определяем права авторизированного пользователя на объект
 		$RIGHTS(^MAIN:objAuth.getRightsToObject[$OBJECT;$OBJECT_THREAD;$ACL;^if($MAIN:objAuth.user.id == $OBJECT.auser_id){1}{0}])
 	}
-	$HASH_RIGHTS[^getHashRights[$RIGHTS]]
+	$HASH_RIGHTS[^getHashRights[$RIGHTS]]				# получаем хэш прав
 #	определение необходимого content и выдача его содержимого
 	^if($HASH_RIGHTS.read){
 		$result[^contentSwitcher[]]
@@ -100,83 +89,68 @@ $TEMPLATES_HASH[^TEMPLATES.hash[id]]
 		^throw[cms.403;$uri;доступ к объекту запрещен]
 	}
 }
-# end @create[][str]
+#end @create[][RIGHS;ACL]
+
+
 
 #################################################################################################
 # создание файла кэша
-@createCacheFile[][_tCache]
-$_tCache[^table::create{id	full_path	cache_time
-^OBJECTS.menu{$OBJECTS.id	$OBJECTS.full_path	$OBJECTS.cache_time
-}}]
-^_tCache.save[${MAIN:CacheDir}_cache.cfg]
+@createCacheFile[][tCache]
+$tCache[^table::create{id	full_path	cache_time^#0A
+^OBJECTS.menu{$OBJECTS.id	$OBJECTS.full_path	$OBJECTS.cache_time^#0A}}]
+^tCache.save[${MAIN:CacheDir}_cache.cfg]
 #end @createCacheFile[]
+
+
 
 #################################################################################################
 # развилка-переключатель xml <=> html
-@contentSwitcher[][_xDoc;_sStylesheet]
-# формируем xml тело
-$_xDoc[^getDocumentXML[]]
-$_sStylesheet[^getStylesheet[]]
+@contentSwitcher[][xDoc;sStylesheet]
+$xDoc[^getDocumentXML[]]			# Xdoc сборка страницы
+$sStylesheet[^getStylesheet[]]			# путь к стилю
 # проверка строки запроса
-^if(!$MAIN:EngineXML){
+^if(^MAIN:hUserInfo.Query.pos[mode=xml] == -1){
 #	получение XSLT шаблона =debug вывод на печать реализовать как то по другому чтоли
-	^if($form:mode eq print){$_sStylesheet[${MAIN:TemplateDir}print.xsl]}
-#	Очистка памяти
-	^clearMemory[]
-#	XSLT трансформация
-	$_xDoc[^_xDoc.transform[$_sStylesheet]]
+	^if($form:mode eq print){$sStylesheet[${MAIN:TemplateDir}print.xsl]}
+	^clearMemory[]			#	Очистка памяти
+	$xDoc[^xDoc.transform[$sStylesheet]]			#	XSLT трансформация
 }
-$result[^_xDoc.string[]]
-
+$result[^xDoc.string[]]
 # =debug чистка лишних переносов строк - задолбали
 # =debug а оно надо вообще таким способом и в этом месте?
 $result[^result.match[( +)][g]{ }]
 $result[^result.match[(\n\s*\n)][g]{}]
+# end @contentSwitcher[][xDoc;sStylesheet]
 
-# end @contentSwitcher[][doc;stylesheet]
+
 
 #################################################################################################
 # очистка памяти перед результирующей трансформацией =work
 @clearMemory[]
 # системные переменные
-$SYSTEM[]
-$SITES[]
-$SITES_HASH
-$OBJECT[]
-$OBJECTS_HASH[]
-$OBJECTS[]
-$OBJECT_THREAD[]
-$OBJECTS_HASH_TREE[]
-$TYPES[]
-$TYPES_HASH[]
-$TEMPLATES[]
-$TEMPLATES_HASH[]
-$PROCESSES[]
-$PROCESSES_HASH[]
-$ACL[]
-$BLOCKS[]
-$BLOCKS_HASH[]
-$TYPES[]
-$TYPES_HASH[]
-$USERS[]
-$USERS_HASH[]
+$SYSTEM[] $SITES[] $SITES_HASH
+$OBJECT[] $OBJECTS_HASH[] $OBJECTS[] $OBJECT_THREAD[] $OBJECTS_HASH_TREE[]
+$TYPES[] $TYPES_HASH[]
+$TEMPLATES[] $TEMPLATES_HASH[]
+$PROCESSES[] $PROCESSES_HASH[]
+$ACL[] $ACL_HASH[]
+$BLOCKS[] $BLOCKS_HASH[]
+$TYPES[] $TYPES_HASH[]
+$USERS[] $USERS_HASH[]
 # очистка памяти
 ^memory:compact[]
 #end @clearMemory[]
 
+
+
 #################################################################################################
 #создание XSLT обработчика
-@getStylesheet[][_sFileName]
-# имя файла шаблона
-$_sFileName[${MAIN:TemplateDir}$TEMPLATES_HASH.[$OBJECT.template_id].filename]
-^if(-f $_sFileName){
-#	result - полное путь + имя шаблона
-	$result[$_sFileName]
-}{
-#	ошибка, для шаблона не задан XSLT шаблон
-	^throw[cms.500;$_sFileName;Для объекта не задан XSLT шаблон]
-}
-#end @getStylesheet[]
+@getStylesheet[][sFileName]
+$sFileName[${MAIN:TemplateDir}$TEMPLATES_HASH.[$OBJECT.template_id].filename]			# имя файла шаблона
+^if(-f $sFileName){$result[$sFileName]}{^throw[cms.500;$sFileName;Для объекта не задан XSLT шаблон]}
+#end @getStylesheet[][sFileName]
+
+
 
 #################################################################################################
 # создание документа на основе собранного xml
@@ -184,13 +158,15 @@ $_sFileName[${MAIN:TemplateDir}$TEMPLATES_HASH.[$OBJECT.template_id].filename]
 @getDocumentXML[]
 $result[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
 <!DOCTYPE site_page [
-	^entitySet[]
+	^getEntitySet[]
 ]>
-<document xmlns:system="http://klen.zoxt.net/doc/" lang="$SYSTEM.siteLangID" server="$env:SERVER_NAME" template="^getStylesheet[]">
+<document xmlns:system="http://klen.zoxt.net/doc/" lang="$SYSTEM.siteLangID" server="$SYSTEM.siteUrl" template="^getStylesheet[]">
   ^getDocumentBody[]
 </document>
 }]
 # end @documentXML[]
+
+
 
 #################################################################################################
 # сборка xml документа
@@ -207,13 +183,15 @@ $result[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
 }
 #end @documentBody[]
 
+
+
 #################################################################################################
 # default сборка тела xml документа
 @getDocumentBodyDefault[]
 $result[
 <system>
 	<!-- ID и URL сайта -->
-	<site id="$SYSTEM.siteID">$SYSTEM.SiteUrl</site>
+	<site id="$SYSTEM.siteID">$SYSTEM.siteUrl</site>
 	<!-- запрошеннный URI -->
 	<request-uri>$env:REQUEST_URI</request-uri>
 	<!-- URI объекта  -->
@@ -264,17 +242,16 @@ $result[
 #end @documentBodyDefault[]
 
 
+
 ##################################################################################################
-##                                                                                              ##
-## БЛОКИ   ОБРАБОТЧИКИ   ПРЕОБРАЗОВАНИЯ                                                         ##
-##                                                                                              ##
+#  БЛОКИ   ОБРАБОТЧИКИ   ПРЕОБРАЗОВАНИЯ                                                          #
 ##################################################################################################
 # обработка блоков объекта
-@getBlocks[][BLOCKS]
+@getBlocks[][tBlocksNow]
 # опубликованнные блоки текущего объекта и (=debug не работает подчиненных) подчиненных объектов предназначенные для автоматической обработки
-$BLOCKS_NOW[^getBLOCK_TO_OBJECT[$.where[
+$tBlocksNow[^getBLOCK_TO_OBJECT[$.where[
 	object_id IN ( 
-#		если тип объекта не "уникальный"
+#		если тип объекта не "уникальный" =debug зачем я это сделал?
 		^if($OBJECT.object_type_id != 3){
 #			приходят блоки всех глобальных объектов
 			^OBJECTS.menu{^if(^OBJECTS.object_type_id.int(0) == 2){$OBJECTS.id ,}}
@@ -283,40 +260,43 @@ $BLOCKS_NOW[^getBLOCK_TO_OBJECT[$.where[
 		^if(^OBJECT.link_to_object_id.int(0)){	$OBJECT.link_to_object_id }{ $OBJECT.id }
 	)
 	AND m_block.is_published = 1 AND m_block.is_parsed_manual != 1]]]
-# сортировка блоков по y
-$result[^BLOCKS_NOW.menu{^getBlock[$BLOCKS_NOW.fields]}]
-#end @parseDefaultBlocks[]
+$result[^tBlocksNow.menu{^getBlock[$tBlocksNow.fields]}]
+#end @getBlocks[][tBlocksNow]
+
+
 
 #################################################################################################
 # Собираем блок
-@getBlock[blockFields][_cBlock;blockParams;blockData]
+@getBlock[hBlockFields][hBlockParams;cBlock;sBlockData]
 $result[
-	$blockParams[^getSystemParams[$blockFields.attr]]
-	$_cBlock{
+	$hBlockParams[^getSystemParams[$hBlockFields.attr]]			# параметры блока
+	$cBlock{
 #	 	если блок не пустой парсим его данные =debug эта штука поважнее должна быть
-		^if(^blockFields.is_not_empty.int(0)){$blockData[^taint[as-is][$blockFields.data]]}
+		^if(^hBlockFields.is_not_empty.int(0)){$sBlockData[^taint[as-is][$hBlockFields.data]]}
 #	 	передача управления обработчику блока (если есть)
-		^if(^blockFields.data_process_id.int(0)){$blockData[^executeBlock[$blockFields.data_process_id;$blockParams;$blockData;$blockFields]]}
+		^if(^hBlockFields.data_process_id.int(0)){$sBlockData[^executeBlock[$hBlockFields.data_process_id;$hBlockParams;$sBlockData;$hBlockFields]]}
 #	 	замена спец конструкций в теле блока
-		$blockData[^parseBlockPostProcess[$blockParams;$blockData]]
+		$sBlockData[^parseBlockPostProcess[$hBlockParams;$sBlockData]]
 #	 	и собираем фрагмент блока
-<block 
-			id="$blockFields.id" 
-			name="$blockFields.name" 
-			mode="$blockFields.mode" 
-			style="^blockParams.Style.int(1)"
-			^if(def ^blockFields.data_process_id.int(0)){process="$blockFields.data_process_id"}
-		>$blockData</block>
+	<block 
+			id="$hBlockFields.id" 
+			name="$hBlockFields.name" 
+			mode="$hBlockFields.mode" 
+			style="^hBlockParams.Style.int(1)"
+			^if(def ^hBlockFields.data_process_id.int(0)){process="$hBlockFields.data_process_id"}
+		>$sBlockData</block>
 	}
-	^if(^blockParams.Cache.int(0)){
-		<!-- ^MAIN:dtNow.sql-string[] Begin Block Cache key: blocks_code_${blockFields.id}, cache time: $blockParams.Cache secs -->
-		^cache[${MAIN:CacheDir}sql/blocks_code_${blockFields.id}.cache]($blockParams.Cache){$_cBlock}
-		<!-- ^MAIN:dtNow.sql-string[] Ended Block Cache key: blocks_code_${blockFields.id}, cache time: $blockParams.Cache secs -->
+	^if(^hBlockParams.Cache.int(0)){
+		<!-- ^MAIN:dtNow.sql-string[] Begin Block Cache key: blocks_code_${hBlockFields.id}, cache time: $hBlockParams.Cache secs -->
+		^cache[${MAIN:CacheDir}sql/blocks_code_${hBlockFields.id}.cache]($hBlockParams.Cache){$cBlock}
+		<!-- ^MAIN:dtNow.sql-string[] Ended Block Cache key: blocks_code_${hBlockFields.id}, cache time: $hBlockParams.Cache secs -->
 	}{
-		$_cBlock
+		$cBlock
 	}
 ]
 #end @printBlock[blockFields]
+
+
 
 #################################################################################################
 # "Пост" обработка блока
@@ -345,10 +325,10 @@ $result[
 $result[$sBlockData]
 #end @parseBlockPostProcess[]
 
+
+
 ##################################################################################################
-##                                                                                              ##
-##                  ВИРТУАЛЬНЫЕ МЕТОДЫ                                                          ##
-##                                                                                              ##
+#                   ВИРТУАЛЬНЫЕ МЕТОДЫ                                                           #
 ##################################################################################################
 # ------------------------------------------------------------------------------------------------
 #                   ФАБРИКИ
@@ -359,6 +339,9 @@ $_tDub[^sParams.split[^]]]
 ^_tDub.append{^taint[^#0A]}
 $result[^getParams[]]
 #end @getSystemParams[sParams]
+
+
+# обработка параметров
 @getParams[name;value]
 $result[
 	^hash::create[
@@ -372,6 +355,8 @@ $result[
 ]
 #end @getParams[name;value]
 
+
+
 #################################################################################################
 # виртуальная фабрика методов
 @getSystemMethod[sName;sParams][_jMethod;_hParams]
@@ -380,6 +365,8 @@ $result[
 	^_jMethod[^getSystemParams[$sParams]]
 ]
 #end @getSystemParser[sName;sParams]
+
+
 
 #################################################################################################
 # виртуальная фабрика объектов
@@ -391,6 +378,11 @@ $_sField[$sKey]
 		^case[DEFAULT]{$result[^if(^sKey.int(0)){$[$sName].[$sKey].[$sField]}{$[$sName].[$form:[$_sField]].[$sField]}]}
 }
 #end @getSystemObject[sName;sKey;sField]
+
+
+
+#################################################################################################
+# получение системных значений
 @getParser[sName;sField]
 $result[^switch[$sName]{
 	^case[request]{$request:[$sField]}
@@ -401,6 +393,8 @@ $result[^switch[$sName]{
 	^case[DEFAULT]{}}]
 #end @getParser[sName;sField]
 
+
+
 # ------------------------------------------------------------------------------------------------
 #                   ОСНОВНЫЕ ВИРТУАЛЬНЫЕ МЕТОДЫ
 # ------------------------------------------------------------------------------------------------
@@ -409,6 +403,8 @@ $result[^switch[$sName]{
 @tree[hParam]
 $result[^ObjectByParent[$[$hParam.hash_name];$hParam.thread_id;$.description[1]]]
 #end @Tree[hParam]
+
+
 
 #################################################################################################
 # вывод полей объектов
@@ -424,6 +420,8 @@ $result[
 ]
 #end @list[hParam]
 
+
+
 #################################################################################################
 # получение и создание объека
 @sql[hParam][_jMethod]
@@ -436,11 +434,15 @@ $result[
 $result[]
 #end @sql[hParam]
 
+
+
 #################################################################################################
 # обработка условий
 @select[hParam][_jMethod]
 $result[^if(${hParam.name} eq ${hParam.value}){${hParam.true}}{${hParam.false}}]
 #end @sql[hParam]
+
+
 
 #################################################################################################
 # вызов любого определенного обработчика
@@ -448,14 +450,12 @@ $result[^if(${hParam.name} eq ${hParam.value}){${hParam.true}}{${hParam.false}}]
 $result[^executeBlock[$hParam.id;$hParam.body;$hParam.param;$hParam.field]]
 #end @process[hParam][_jMethod]
 
-##################################################################################################
-##                                                                                              ##
-##                  РАБОТА С ОБРАБОТЧИКАМИ                                                      ##
-##                                                                                              ##
-##################################################################################################
 
-#################################################################################################
-# запус обработчиков объектов
+
+##################################################################################################
+#                   РАБОТА С ОБРАБОТЧИКАМИ                                                       #
+##################################################################################################
+# запуск обработчиков объектов
 # в принципе, то-же самое что executeBlock, но обработчику объекта может сваиться от передачи ему пустых параметров :) 
 @executeProcess[dataProcessID]
 # подготовка обработчика к использованию
@@ -465,10 +465,12 @@ $result[^executeBlock[$hParam.id;$hParam.body;$hParam.param;$hParam.field]]
 # запуск обработчика
 	$result[^PROCESSES_HASH.[$dataProcessID].main[]]
 }{
-#	нухно убрать кактус с подоконника
+#	нужно убрать кактус с подоконника
 	$result[]
 }
 #end @executeProcess[]
+
+
 
 #################################################################################################
 # запуск обработчиков блоков
@@ -486,6 +488,7 @@ $result[^executeBlock[$hParam.id;$hParam.body;$hParam.param;$hParam.field]]
 	$result[]
 }
 #end @executeBlock[]
+
 
 
 #################################################################################################
@@ -523,13 +526,10 @@ $result[^executeBlock[$hParam.id;$hParam.body;$hParam.param;$hParam.field]]
 }
 
 
-##################################################################################################
-##                                                                                              ##
-##                  ПРОЧЕЕ                                                                      ##
-##                                                                                              ##
-##################################################################################################
 
-#################################################################################################
+##################################################################################################
+#                   ПРОЧЕЕ                                                                       #
+##################################################################################################
 # А дальше будут деревья чтоб их разорвало
 @ObjectByParent[lparams;parent_id;params][tblLvlObj;_hParams]
 $_hParams[^hash::create[$params]]
@@ -544,6 +544,7 @@ $_hParams[^hash::create[$params]]
     }
     ^_hParams.level.dec(1)
 }
+
 
 
 #################################################################################################
@@ -569,6 +570,8 @@ $result[<branche id="$itemHash.id" name="$itemHash.name" level="$lparams.level"
 	>$childItems</branche>]
 #end @printItem[itemHash;childItems;lparams]
 
+
+
 #################################################################################################
 # Удаление файлов кэша начинающихся с заданного имени
 @DeleteFiles[sDir;sName]
@@ -582,6 +585,8 @@ $result[<branche id="$itemHash.id" name="$itemHash.name" level="$lparams.level"
 }
 #end @DeleteFiles[sDir;sName]
 
+
+
 #################################################################################################
 # преобразование числа прав к хэшу прав
 @getHashRights[iRights]
@@ -594,11 +599,15 @@ $result[^hash::create[
 ]]
 #end @getRights[iRights]
 
+
+
 #################################################################################################
 # преобразование хэша прав к числу прав
 @getIntRights[hRights]
 $result($hRights.read + $hRights.edit + $hRights.delete + $hRights.comment + $hRights.supervisory)
 #end @getIntRights[hRights]
+
+
 
 #################################################################################################
 # получение полного пути объекта
@@ -606,15 +615,19 @@ $result($hRights.read + $hRights.edit + $hRights.delete + $hRights.comment + $hR
 $result[^if(^_iParentId.int(0)){$OBJECTS_HASH.[$_iParentId].full_path}{/}$_sPath/]
 #end @getFullPath[_iParentId;_sPath]
 
+
+
 #################################################################################################
 # получение ветви объекта
 @getThreadId[_iParentId;_iId]
 $result[^if(^_iParentId.int(0)){$OBJECTS_HASH.[$_iParentId].thread_id}{^OBJECTS_HASH.[$_iId].id.int(0)}]
 #end @getThreadId[_iParentId]
 
+
+
 #################################################################################################
 # Набор HTML entities - надо т.к. в XML могут встречаться эти хуёвины
-@entitySet[]
+@getEntitySet[]
 <!-- Character entity references for ISO 8859-1 characters -->
 <!ENTITY nbsp   "&#160;">
 <!ENTITY sect   "&#167;" >
@@ -644,7 +657,9 @@ $result[^if(^_iParentId.int(0)){$OBJECTS_HASH.[$_iParentId].thread_id}{^OBJECTS_
 <!ENTITY amp    "&#38;">
 <!ENTITY lt     "&#60;">
 <!ENTITY gt     "&#62;">
-#end @entitySet[]
+#end @getEntitySet[]
+
+
 
 ##################################################################################################
 ##
@@ -674,6 +689,8 @@ $result[
 ]
 #end @getSql[hParams]
 
+
+
 #################################################################################################
 # забирает из sql таблицу с зарегистрированнными сайтами
 @getSITES[lparams]
@@ -695,6 +712,8 @@ $result[
 	]
 ]
 #end @getSITES[]
+
+
 
 #################################################################################################
 # забирает объекты 
@@ -731,6 +750,8 @@ $result[
 ]
 #end @getOBJECTS[lparams]
 
+
+
 #################################################################################################
 # забирает из sql все зарегистрированные шаблоны
 @getTEMPLATES[lparams]
@@ -753,6 +774,8 @@ $result[
 	]
 ]
 #end @getTEMPLATES[]
+
+
 
 #################################################################################################
 # метод достает все блоки объекта 
@@ -781,6 +804,8 @@ $result[
 ]
 #end @getBlocks[]
 
+
+
 #################################################################################################
 # забирает из sql все зарегистрированные обработчики
 @getPROCESSES[lparams]
@@ -802,6 +827,7 @@ $result[
 	]
 ]
 #end @getPROCESSES[lparams]
+
 
 
 #################################################################################################
