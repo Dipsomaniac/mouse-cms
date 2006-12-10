@@ -1,39 +1,58 @@
 @CLASS
 fckeditor
 
-@Init[instanceName]
-$InstanceName[$instanceName]
-$BasePath[/fckeditor/]
-$Width[100%]
-$Height[200]
-$ToolbarSet[Default]
-$Value[]
-$Config[^hash::create[]]
 
-@Create[]
-^CreateHtml[]
 
-@CreateHtml[][HtmlValue;Link;File;WidthCSS;HeightCSS]
-$HtmlValue[$Value]
+#################################################################################################
+# инициализация
+@init[sName]
+$sInstanceName[$sName]
+$sPath[/fckeditor/]
+$sWidth[100%]
+$sHeight[200]
+$sToolbarSet[Default]
+$sValue[]
+$hConfig[^hash::create[]]
+#end @init[sInstanceName]
+
+
+
+#################################################################################################
+# Вывод HTML
+@create[][sFile;sLink]
 <div>
-^if(^IsCompatible[]){
-	^if((def $form:fcksource) && ($form:fcksource eq 'true')){$File[fckeditor.original.html]}{$File[fckeditor.html]}
-	$Link[${BasePath}editor/${File}?InstanceName=${InstanceName}^if(def $ToolbarSet){&amp^;Toolbar=$ToolbarSet}^if($Config.mode eq 'noengine'){&amp^;mode=$Config.mode}]
-	<input type="hidden" id="$InstanceName" name="$InstanceName" value='$HtmlValue' style="display:none" />
-#	<input type="hidden" id="${InstanceName}___Config" value="^GetConfigFieldString[]" style="display:none" />
-	<iframe id="${InstanceName}___Frame" src="$Link" width="$Width" height="$Height" frameborder="no" scrolling="no"></iframe>
+^if(^isCompatible[]){
+	^if((def $form:fcksource) && ($form:fcksource eq 'true')){$sFile[fckeditor.original.html]}{$sFile[fckeditor.html]}
+	$sLink[${sPath}editor/${sFile}?InstanceName=${sInstanceName}&amp^;Toolbar=${sToolbarSet}]
+	<input type="hidden" id="$sInstanceName" name="$sInstanceName" value="$sValue" style="display:none" />
+	<input type="hidden" id="${sInstanceName}___Config" name="fckdelete" value="^getConfigFieldString[]" style="display:none" />
+	<iframe id="${sInstanceName}___Frame" src="$sLink" width="$sWidth" height="$sHeight" frameborder="0" scrolling="no"></iframe>
 }{
-	^if(^Width.pos[%] > -1){$WidthCSS[${Width}px]}{$WidthCSS[$Width]}
-	^if(^Height.pos[%] > -1){$HeightCSS[${Height}px]}{$HeightCSS[$Height]}
-	<textarea name="$InstanceName" rows="4" cols="40" style="width: $WidthCSS^; height: $HeightCSS">${HtmlValue}</textarea>
+	^if(^Width.pos[%] < 0){$sWidth[${sWidth}px]}
+	^if(^Height.pos[%] < 0){$sHeight[${sHeight}px]}
+	<textarea name="$sInstanceName" rows="4" cols="40" style="width: $sWidth^; height: $sHeight">$sValue</textarea>
 }
 </div>
+#end @CreateHtml[][HtmlValue;Link;File;WidthCSS;HeightCSS]
 
-# В корневом main должно быть определено $MAIN:browser $MAIN:platform (в Mouse определяется)
-@IsCompatible[]
-^if(^MAIN:browser.pos[opera] > -1 ||  ^MAIN:platform.pos[mac] > -1 ){$result(0)}{$result(1)}
 
-@GetConfigFieldString[]
-$sParams[]
-$bFirst(1)
-$result[^Config.foreach[sKey;sValue]{^if(!$bFirst){$sParams[${sParams}&amp^;]}{$bFirst(0)}^try{^if($sValue == 1){$sParams[${sParams}${sKey}=true]}{$sParams[${sParams}${sKey}=false]}}{$exception.handled(1)$sParams[${sParams}${sKey}=${sValue}]}}]
+
+#################################################################################################
+# Проверка совместимости
+@isCompatible[sAgent]
+$sAgent[$env:HTTP_USER_AGENT]
+^if(^sAgent.pos[mac] < 0 && ^sAgent.pos[Opera] < 0){$result(1)}{$result(0)}
+# пока отключил fckeditor ибо сбоит
+$result(0)
+#end @IsCompatible[sAgent] >
+
+
+
+#################################################################################################
+# Строка конфига
+@getConfigFieldString[][bFirst]
+$result[]
+^hConfig.foreach[sKey;sValue]{
+	^if(^bFirst.int(0)){$result[${result}&amp^;]}{$bFirst(1)}
+	$result[${result}${sKey}='${sValue}']}
+#end @GetConfigFieldString[][bFirst]

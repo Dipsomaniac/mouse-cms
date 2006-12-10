@@ -1,42 +1,37 @@
-$article[^getArticles[
-	$.path[$SYSTEM.path]
-	^if(^form:year.int(0)){
-		$.where[dt >= '^form:year.int(0)-^form:month.int(0)-00' AND dt <= '^form:year.int(0)-^form:month.int(0)-31']
-	}{
-		$.limit(20)
-	}
-]]
-<block_content>
-^if($article){^printArticles[$article]}
-</block_content>
-# если права позволяют добавляем в панель управления страницы возможность добавлять новость
-^if($RIGHTS & $SYSTEM.write){
-	<addcontrol>
-		<img src="/themes/mouse/icons/add.gif" name="add" alt="Добавить" title="Добавить" class="input-image"/>
-	</addcontrol>
-}
+^mArticleRun[$lparams]
 
-@printArticles[article]
+
+
+#################################################################################################
+# Вывод данных
+@mArticleRun[hParams][tArticles]
+$tArticles[^getArticles[
+	$.path[$SYSTEM.path]
+	$.id[$form:id]
+	^if(^form:year.int(0)){$.where[dt >= '^form:year.int(0)-^form:month.int(0)-00' AND dt <= '^form:year.int(0)-^form:month.int(0)-31']}{$.limit(20)}
+	]
+]
+<block_content>
+$hParams.body
 <ul>
 ^untaint[as-is]{
-	^article.menu{
+	^tArticles.menu{
 		<article>
 			<date>^dtf:format[%d %B %Y;$article.dt]</date>
-			<name>^printTitle[$article]</name>
-			<author>$MAIN:objAuth.user.name</author>
-			<anonce>$article.lead</anonce>
+			<name><a href="?id=$tArticles.id">$tArticles.title</a></name>
+			<author>$tArticles.name</author>
+			^if(^form:id.int(0)){<body>$tArticles.body</body>}{<anonce>$tArticles.lead</anonce>}
 		</article>
 	}
 }
 </ul>
+</block_content>
+#end @mArticleRun[hParams][tArticles]
 
-@printTitle[article]
-^if(def $article.title && ^article.title.match[\^[[^^\^]]+\^]]){
-	$result[^article.title.match[\^[([^^\^]]+)\^]][g]{<a href="?id=$article.id">$match.1</a>}]
-}{
-	$result[<a href="?id=$article.id">$article.title</a>]
-}
 
+
+#################################################################################################
+# загрузка данных
 @getArticles[params]
 $result[
 	^getSql[
@@ -45,6 +40,7 @@ $result[
          $.[m_b_article.title][]
 			$.[m_b_article.lead][]
 			$.[m_b_article.dt][]
+			$.[m_b_article.name][]
 			^if(^params.id.int(0)){$.[m_b_article.body][]}
 		]]
 		$.table[m_b_article]
@@ -63,4 +59,4 @@ $result[
 		^if(def $params.offset){$.offset($params.offset)}
 	]
 ]
-#end @getArticles[]
+#end @getArticles[params]

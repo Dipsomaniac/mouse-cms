@@ -1,10 +1,28 @@
-^rem{ вызываем загрузчик данных админки }
+^mControlInit[]
+^mControlRun[$lparams]
+
+
+
+# -----------------------------------------------------------------------------------------------
+#                                    ЗАГРУЗКА ДАННЫХ
+# -----------------------------------------------------------------------------------------------
+#################################################################################################
+# загрузка данных в админку
+@mControlInit[]
 ^executeSystemProcess[$.id[1]]
-# обрабатываем запрос
+$result[]
+#end @mControlInit[params]
+
+
+
+#################################################################################################
+# общая часть
+@mControlRun[hParams]
+$result[
 <block_content>
-	$lparams.body
+#	выдача данных блока
+	$hParams.body
 #	если вызван не режим "picker" выводим набор кнопок админки
-	^if($form:mode ne 'picker'){
 	<buttons>
 			<button image="24_sites.gif"      name="sites"     alt="Управление сайтами"        onClick="Go('$OBJECTS_HASH.80.full_path?type=sites','#container')" />
 			<button image="24_objects.gif"    name="objects"   alt="Управление объектами"      onClick="Go('$OBJECTS_HASH.80.full_path?type=objects','#container')" />
@@ -15,50 +33,64 @@
 			<button image="24_rights.gif"     name="rigths"    alt="Назначение прав"           onClick="Go('$OBJECTS_HASH.80.full_path?type=rights','#container')" />
 			<button image="24_configure.gif"  name="configure" alt="Обслуживание системы"      onClick="Go('$OBJECTS_HASH.80.full_path?type=config','#container')" />
 			<button image="24_files.gif"      name="files"     alt="Загрузка файлов"           onClick="Go('$OBJECTS_HASH.80.full_path?type=files','#container')" />
-			<button image="24_articles.gif"   name="articles"  alt="Работа со статьями"        onClick="Go('$OBJECTS_HASH.80.full_path?type=articles','#container')" />
+			<button image="24_articles.gif"   name="articles"  alt="Работа со статьями"        onClick="Go('$OBJECTS_HASH.80.full_path?type=article','#container')" />
+			<button image="24_category.gif"   name="articles"  alt="Работа с категориями"      onClick="Go('$OBJECTS_HASH.80.full_path?type=category','#container')" />
 			<button image="24_divider.gif" />
 		^if(def $form:action && $form:action ne 'config'){
 			<button image="24_save.gif"    name="save"      alt="Сохранить" onClick="saveForm('form_content','${OBJECTS_HASH.80.full_path}?type=$form:type','#container')" />
 			<button image="24_retype.gif"  name="retype"    alt="Сбросить"  onClick="resetForm()" />
 			<button image="24_cancel.gif"  name="cancel"    alt="Отменить"  onClick="Cancel('$OBJECTS_HASH.80.full_path?type=$form:type')" />
 		}
-	</buttons>
+	</buttons>]
+	^switch[$form:type]{
+		^case[article]{$result[$result^executeSystemProcess[$.id[5] $.param[article]]]}
+		^case[category]{$result[$result^executeSystemProcess[$.id[5] $.param[category]]]}
+		^case[DEFAULT]{$_jMethod[$[$form:type]]$result[$result^#OA^_jMethod[]]}
 	}
-	$_jMethod[$[$form:type]]
-	^_jMethod[]
-</block_content>
+$result[$result ^#OA</block_content>]
+#end @mControlRun[hParams]
+
+
+
 #################################################################################################
-#                                    ОБХОД ТИПОВ                                                #
-#################################################################################################
+# Определение действия
+@mGetAction[sTemp]
+^switch[$sTemp]{
+	^case[edit]{$result[$.i(1)$.label[Редактирование]]}
+	^case[copy]{$result[$.i(2)$.label[Копирование]]}
+	^case[add]{$result[$.i(4)$.label[Удаление]]}
+	^case[DEFAULT]{$result[$.i(0)$.label[]]}
+}
+#end @mGetAction[sTemp]
+
+
 
 # -----------------------------------------------------------------------------------------------
 #                                    УПРАВЛЕНИЕ САЙТАМИ
 # -----------------------------------------------------------------------------------------------
 #################################################################################################
 # Управление сайтами
-@sites[]
+@sites[][hAction]
 ^if(def $form:action){
-	^if($form:action eq 'edit'){$_iR($_iR + 1) $_sLabel[Редатирование ]}
-	^if($form:action eq 'copy'){$_iR($_iR + 2) $_sLabel[Копирование ]}
-	^if($form:action eq 'add'){ $_iR($_iR + 4) $_sLabel[Добавление ]}
-	<form method="post" action="" name="form_content" id="form_content" enctype="multipart/form-data" 
-	label="MOUSE CMS | Сайты | $_sLabel | $SITES_HASH.[$form:id].name ">
+	$hAction[^mGetAction[$form:action]]
+	<form method="post" action="/ajax/go.html" name="form_content" id="form_content" enctype="multipart/form-data" 
+	label="MOUSE CMS | Сайты | $hAction.label | $SITES_HASH.[$form:id].name ">
 	<tabs>
 	<tab id="section-1" name="Основное">
 		<field type="text"   name="name"           label="Название"   description="Имя сайта"              class="long">$SITES_HASH.[$form:id].name</field>
 		<field type="text"   name="domain"         label="Домен"      description="Доменное имя"           class="medium">$SITES_HASH.[$form:id].domain</field>
 		<field type="select" name="lang_id"        label="Язык"       description="Язык сайта"             class="short"><option value="1">Русский</option></field>
-	^if($_iR & 1){
+	^if($hAction.i & 1){
 		<field type="select" name="e404_object_id" label="Ошибки"     description="Страница ошибок"        class="medium">
 			<system:method name="list">name[OBJECTS]added[select="$SITES_HASH.[$form:id].e404_object_id"]tag[option]</system:method>
 		</field>
 	}
 		<field type="text"   name="cache_time"     label="Кэш"        description="Время кэширования (сек)" class="short">$SITES_HASH.[$form:id].cache_time</field>
 		<field type="text"   name="sort_order"     label="Сортировка" description="Порядок сортировки"      class="short">$SITES_HASH.[$form:id].sort_order</field>
-	^if($_iR & 6){
+	^if($hAction.i & 6){
 		<field type="hidden" name="action">insert</field>
 	}
-	^if($_iR & 1){
+	^if($hAction.i & 1){
 		<field type="hidden" name="action">update</field>
 		<field type="hidden" name="site_id">$form:id</field>
 		<field type="hidden" name="where">site_id</field>
@@ -98,18 +130,20 @@ ID	id
 }
 #end @sites[]
 
+
+
 # -----------------------------------------------------------------------------------------------
 #                                    УПРАВЛЕНИЕ ОБЪЕКТАМИ
 # -----------------------------------------------------------------------------------------------
 #################################################################################################
 # Управление объектами
-@objects[][_iR;path;is_published;description;name;document_name;window_name;parent_id]
+@objects[][hAction;path;is_published;description;name;document_name;window_name;parent_id]
 ^if(def $form:action){
 
 # -----------------------------------------------------------------------------------------------
 # 	Работа с блоками объекта
 	^if($form:action eq 'blocks'){$result[
-		<form method="post" action="" name="form_content" id="form_content" enctype="multipart/form-data"
+		<form method="post" action="/ajax/go.html" name="form_content" id="form_content" enctype="multipart/form-data"
 		label="MOUSE CMS | Объекты | Управление блоками объекта | $OBJECTS_HASH.[$form:id].name ">
 		<tabs>
 		<tab id="section-1" name="Блоки объекта $OBJECTS_HASH.[$form:id].name">
@@ -132,7 +166,7 @@ ID	id
 				^if(^BLOCK_TO_OBJECT.count[] > $iCount){^BLOCK_TO_OBJECT.offset[set]($iCount)}
 				<input  name="mode_$iCount" value="$BLOCK_TO_OBJECT.mode" class="input-text-short"/>
 				<input  name="sort_order_$iCount" value="$BLOCK_TO_OBJECT.sort_order" class="input-text-short"/>
-				<select name="block_id_$iCount" class="medium">
+				<select name="block_id_$iCount" class="long">
 					<option value="0">none</option>
 					<system:method name="list">name[BLOCKS]added[select="$BLOCK_TO_OBJECT.id"]tag[option]</system:method>
 				</select>
@@ -147,26 +181,24 @@ ID	id
 	]}
 # -----------------------------------------------------------------------------------------------
 
-	^if($form:action eq 'edit'){$_iR($_iR + 1) $_sLabel[Редатирование ]}
-	^if($form:action eq 'copy'){$_iR($_iR + 2) $_sLabel[Копирование ]}
-	^if($form:action eq 'add'){ $_iR($_iR + 4) $_sLabel[Добавление ]}
-	^if($_iR & 1){
+	$hAction[^mGetAction[$form:action]]
+	^if($hAction.i & 1){
 		$path[$OBJECTS_HASH.[$form:id].path]
 		$is_published[$OBJECTS_HASH.[$form:id].is_published]
 		$description[$OBJECTS_HASH.[$form:id].description]
 	}
-	^if($_iR & 3){
+	^if($hAction.i & 3){
 		$name[$OBJECTS_HASH.[$form:id].name]
 		$document_name[$OBJECTS_HASH.[$form:id].document_name]
 		$window_name[$OBJECTS_HASH.[$form:id].window_name]
 		$parent_id[$OBJECTS_HASH.[$form:id].parent_id]
 	}
-	^if($_iR & 4){$parent_id[$form:id]}
-	<form method="post" action="" name="form_content" id="form_content" enctype="multipart/form-data"
-	label="MOUSE CMS | Объекты | $_sLabel | $OBJECTS_HASH.[$form:id].name ">
+	^if($hAction.i & 4){$parent_id[$form:id]}
+	<form method="post" action="/ajax/go.html" name="form_content" id="form_content" enctype="multipart/form-data"
+	label="MOUSE CMS | Объекты | $hAction.label | $OBJECTS_HASH.[$form:id].name ">
 		<tabs>
 			<tab id="section-1" name="Основное">
-				^if($_iR & 1){
+				^if($hAction.i & 1){
 					<field type="none"     name="object_id"     label="ID"           description="ID объекта">$OBJECTS_HASH.[$form:id].id</field>
 				}
 				<field type="text"     name="name"          label="Имя"          description=" Имя объекта "           class="medium">
@@ -198,7 +230,7 @@ ID	id
 				<field type="textarea" name="description"   label="Описание"     description="Описание объекта">$description</field>
 			</tab>
 			<tab id="section-2" name="Дополнительное">
-				^if($_iR & 1){
+				^if($hAction.i & 1){
 					<field type="none" name="full_path" label="Полный путь" description="От корня сайта">$OBJECTS_HASH.[$form:id].full_path</field>
 				}
 				<field name="thread_id" label="Ветвь объекта" description="" type="none">$OBJECTS_HASH.[$OBJECTS_HASH.[$form:id].thread_id].name</field>
@@ -221,7 +253,7 @@ ID	id
 				</field>
 			</tab>
 			<tab id="section-3" name="Атрибуты">
-				^if($_iR & 1){
+				^if($hAction.i & 1){
 					<field name="dt_update" label="Изменен" description="Дата последнего редактирования" type="none">$OBJECTS_HASH.[$form:id].dt_update</field>
 					<field name="auser_id" label="Владелец" description="Логин редактировавшего" type="none">$USERS_HASH.[$OBJECTS_HASH.[$form:id].auser_id].name</field>
 				}
@@ -232,13 +264,14 @@ ID	id
 #				<field type="text" name="rights" label="rights" description="Маска прав на объект" class="short">$OBJECTS_HASH.[$form:id].rights</field>
 				<field type="hidden" name="dt_update">^MAIN:dtNow.sql-string[]</field>
 				<field type="hidden" name="auser_id">$MAIN:objAuth.user.[$form:id]</field>
-				^if($_iR & 6){
+				^if($hAction.i & 6){
 					<field type="hidden" name="action">insert</field>
 				}
-				^if($_iR & 1){
+				^if($hAction.i & 1){
 				<field type="hidden" name="action">update</field>
 				<field type="hidden" name="where">object_id</field>
 				<field type="hidden" name="object_id">$form:id</field>
+				<field type="hidden" name="ajax_option">objects</field>
 				}
 				<field type="hidden" name="tables">
 					^$.main[m_object]
@@ -293,25 +326,23 @@ ID	id
 			$.label[Mouse CMS | Объекты]
 		]
 }
-
-
 #end @objects[]
+
+
 
 # -----------------------------------------------------------------------------------------------
 #                                    УПРАВЛЕНИЕ БЛОКАМИ
 # -----------------------------------------------------------------------------------------------
 #################################################################################################
 # Управление блоками
-@blocks[]
+@blocks[][hAction]
 ^if(def $form:action){
-	^if($form:action eq 'edit'){$_iR($_iR + 1) $_sLabel[Редатирование ]}
-	^if($form:action eq 'copy'){$_iR($_iR + 2) $_sLabel[Копирование ]}
-	^if($form:action eq 'add'){ $_iR($_iR + 4) $_sLabel[Добавление ]}
-	<form method="post" action="" name="form_content" id="form_content" enctype="multipart/form-data"
-	label="MOUSE CMS | Блоки | $_sLabel | $BLOCKS_HASH.[$form:id].name ">
+	$hAction[^mGetAction[$form:action]]
+	<form method="post" action="/ajax/go.html" name="form_content" id="form_content" enctype="multipart/form-data"
+	label="MOUSE CMS | Блоки | $hAction.label | $BLOCKS_HASH.[$form:id].name ">
 		<tabs>
 			<tab id="section-1" name="Основное">
-				^if($_iR & 1){
+				^if($hAction.i & 1){
 					<field type="none"  name="block_id" label="ID" description="ID блока">$BLOCKS_HASH.[$form:id].id</field>
 				}
 				<field type="text"     name="name"          label="Имя"          description="Название блока" class="medium">
@@ -334,17 +365,17 @@ ID	id
 			</tab>
 			<tab id="section-3" name="Данные">
 				^use[/fckeditor/fckeditor.p]
-				$oFCKeditorData[^fckeditor::Init[data]]
-				$oFCKeditorData.Height[500]
-				$oFCKeditorData.ToolbarSet[Basic]
-				$oFCKeditorData.Value[$BLOCKS_HASH.[$form:id].data]
-				^oFCKeditorData.Create[]
+				$oFCKeditorData[^fckeditor::init[data]]
+				$oFCKeditorData.sHeight[500]
+				$oFCKeditorData.sToolbarSet[Basic]
+				$oFCKeditorData.sValue[$BLOCKS_HASH.[$form:id].data]
+				^oFCKeditorData.create[]
 			</tab>
 		</tabs>
-		^if($_iR & 6){
+		^if($hAction.i & 6){
 					<field type="hidden" name="action">insert</field>
 		}
-		^if($_iR & 1){
+		^if($hAction.i & 1){
 			<field type="hidden" name="action">update</field>
 			<field type="hidden" name="where">block_id</field>
 			<field type="hidden" name="block_id">$form:id</field>
@@ -393,21 +424,21 @@ ID	id
 }
 #end @blocks[]
 
+
+
 # -----------------------------------------------------------------------------------------------
 #                                    УПРАВЛЕНИЕ ОБРАБОТЧИКАМИ
 # -----------------------------------------------------------------------------------------------
 #################################################################################################
 # Управление обработчиками
-@process[]
+@process[][hAction]
 ^if(def $form:action){
-	^if($form:action eq 'edit'){$_iR($_iR + 1) $_sLabel[Редатирование ]}
-	^if($form:action eq 'copy'){$_iR($_iR + 2) $_sLabel[Копирование ]}
-	^if($form:action eq 'add'){ $_iR($_iR + 4) $_sLabel[Добавление ]}
-	<form method="post" action="" name="form_content" id="form_content" enctype="multipart/form-data"
-	label="MOUSE CMS | Обработчики | $_sLabel | $PROCESSES_HASH.[$form:id].name ">
+	$hAction[^mGetAction[$form:action]]
+	<form method="post" action="/ajax/go.html" name="form_content" id="form_content" enctype="multipart/form-data"
+	label="MOUSE CMS | Обработчики | $hAction.label | $PROCESSES_HASH.[$form:id].name ">
 	<tabs>
 		<tab id="section-1" name="Основное">
-			^if($_iR & 1){
+			^if($hAction.i & 1){
 				<field type="none"  name="data_process_id" label="ID" description="ID обработчика">$PROCESSES_HASH.[$form:id].id</field>
 			}
 			<field type="text" name="name" label="Имя" description="Имя обработчика">$PROCESSES_HASH.[$form:id].name</field>
@@ -417,10 +448,10 @@ ID	id
 				<system:method name="list">name[DATA_PROCESS_TYPES]tag[option]added[select="$PROCESSES_HASH.[$form:id].data_process_type_id"]</system:method>
 			</field>
 			<field type="textarea" name="description" label="Описание" description="Функциональность обработчика">$PROCESSES_HASH.[$form:id].description</field>
-			^if($_iR & 6){
+			^if($hAction.i & 6){
 				<field type="hidden" name="action">insert</field>
 			}
-			^if($_iR & 1){
+			^if($hAction.i & 1){
 				<field type="hidden" name="action">update</field>
 				<field type="hidden" name="where">data_process_id</field>
 				<field type="hidden" name="data_process_id">$form:id</field>
@@ -461,21 +492,21 @@ ID	id
 }
 #end @process[]
 
+
+
 # -----------------------------------------------------------------------------------------------
 #                                    УПРАВЛЕНИЕ ШАБЛОНАМИ
 # -----------------------------------------------------------------------------------------------
 #################################################################################################
 # Управление шаблонами
-@templates[]
+@templates[][hAction]
 ^if(def $form:action){
-	^if($form:action eq 'edit'){$_iR($_iR + 1) $_sLabel[Редатирование ]}
-	^if($form:action eq 'copy'){$_iR($_iR + 2) $_sLabel[Копирование ]}
-	^if($form:action eq 'add'){ $_iR($_iR + 4) $_sLabel[Добавление ]}
-	<form method="post" action="" name="form_content" id="form_content" enctype="multipart/form-data"
-	label="MOUSE CMS | Шаблоны | $_sLabel | $TEMPLATES_HASH.[$form:id].name ">
+	$hAction[^mGetAction[$form:action]]
+	<form method="post" action="/ajax/go.html" name="form_content" id="form_content" enctype="multipart/form-data"
+	label="MOUSE CMS | Шаблоны | $hAction.label | $TEMPLATES_HASH.[$form:id].name ">
 	<tabs>
 		<tab id="section-1" name="Основное">
-			^if($_iR & 1){
+			^if($hAction.i & 1){
 				<field type="none"  name="template_id" label="ID" description="ID шаблона">$TEMPLATES_HASH.[$form:id].id</field>
 			}
 			<field type="text" name="name"       label="Имя"        description="Имя шаблона">$TEMPLATES_HASH.[$form:id].name</field>
@@ -483,10 +514,10 @@ ID	id
 			<field type="text" name="params"     label="Файл стиля" description=" Имя файла стиля"  class="medium">$TEMPLATES_HASH.[$form:id].params</field>
 			<field type="text" name="sort_order" label="Порядок"    description="Сортировка" class="short">$TEMPLATES_HASH.[$form:id].sort_order</field>
 			<field type="textarea" name="description" label="Описание" description="Функциональность шаблона">$TEMPLATES_HASH.[$form:id].description</field>
-			^if($_iR & 6){
+			^if($hAction.i & 6){
 				<field type="hidden" name="action">insert</field>
 			}
-			^if($_iR & 1){
+			^if($hAction.i & 1){
 				<field type="hidden" name="action">update</field>
 				<field type="hidden" name="where">template_id</field>
 				<field type="hidden" name="template_id">$form:id</field>
@@ -527,22 +558,22 @@ ID	id
 }
 #end @templates[]
 
+
+
 # -----------------------------------------------------------------------------------------------
 #                                    УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ
 # -----------------------------------------------------------------------------------------------
 #################################################################################################
 # Управление пользователями
-@users[]
+@users[][hAction;hRights]
 ^if(def $form:action){
-	^if($form:action eq 'edit'){$_iR($_iR + 1) $_sLabel[Редатирование ]}
-	^if($form:action eq 'copy'){$_iR($_iR + 2) $_sLabel[Копирование ]}
-	^if($form:action eq 'add'){ $_iR($_iR + 4) $_sLabel[Добавление ]}
-	^if($_iR & 2){$USERS_HASH.[$form:id].name[]}
-	<form method="post" action="" name="form_content" id="form_content" enctype="multipart/form-data"
-	label="MOUSE CMS | Пользователи и группы | $_sLabel | $USERS_HASH.[$form:id].name ">
+	$hAction[^mGetAction[$form:action]]
+	^if($hAction.i & 2){$USERS_HASH.[$form:id].name[]}
+	<form method="post" action="/ajax/go.html" name="form_content" id="form_content" enctype="multipart/form-data"
+	label="MOUSE CMS | Пользователи и группы | $hAction.label | $USERS_HASH.[$form:id].name ">
 	<tabs>
 		<tab id="section-1" name="Основное">
-			^if($_iR & 1){
+			^if($hAction.i & 1){
 				<field type="none"  name="auser_id" label="ID" description="ID пользователя" class="short">$USERS_HASH.[$form:id].id</field>
 			}
 			<field type="text" name="name" label="Имя" description="Имя пользователя" class="medium">
@@ -571,11 +602,11 @@ ID	id
 			<field type="checkbox" name="rights_delete" label="Удаление" description="Права по умолчанию">$hRights.delete</field>
 			<field type="checkbox" name="rights_comment" label="Комментарии" description="Права по умолчанию">$hRights.comment</field>
 			<field type="checkbox" name="rights_supervisory" label="Может все" description="Права по умолчанию">$hRights.supervisory</field>
-			^if($_iR & 6){
+			^if($hAction.i & 6){
 			<field type="hidden" name="action">insert</field>
 			<field type="hidden" name="dt_register">^MAIN:dtNow.sql-string[]</field>
 			}
-			^if($_iR & 1){
+			^if($hAction.i & 1){
 				<field type="hidden" name="action">update</field>
 				<field type="hidden" name="where">auser_id</field>
 				<field type="hidden" name="auser_id">$form:id</field>
@@ -623,18 +654,18 @@ E-mail	email
 }
 #end @users[]
 
+
+
 # -----------------------------------------------------------------------------------------------
 #                                    УПРАВЛЕНИЕ ПРАВАМИ
 # -----------------------------------------------------------------------------------------------
 #################################################################################################
 # Управление правами
-@rights[]
+@rights[][hAction;hRights]
 ^if(def $form:action){
-	^if($form:action eq 'edit'){$_iR($_iR + 1) $_sLabel[Редатирование ]}
-	^if($form:action eq 'copy'){$_iR($_iR + 2) $_sLabel[Копирование ]}
-	^if($form:action eq 'add'){ $_iR($_iR + 4) $_sLabel[Добавление ]}
-	<form method="post" action="" name="form_content" id="form_content" enctype="multipart/form-data"
-	label="MOUSE CMS | Управление правами | $_sLabel  ">
+	$hAction[^mGetAction[$form:action]]
+	<form method="post" action="/ajax/go.html" name="form_content" id="form_content" enctype="multipart/form-data"
+	label="MOUSE CMS | Управление правами | $hAction.label  ">
 	<tabs>
 		<tab id="section-1" name="Основное">
 			<field type="select" name="object_id" label="Объект" description="Выбор объекта" class="medium">
@@ -649,10 +680,10 @@ E-mail	email
 			<field type="checkbox" name="rights_delete" label="Удаление" description="Права по умолчанию">$hRights.delete</field>
 			<field type="checkbox" name="rights_comment" label="Комментарии" description="Права по умолчанию">$hRights.comment</field>
 			<field type="checkbox" name="rights_supervisory" label="Может все" description="Права по умолчанию">$hRights.supervisory</field>
-			^if($_iR & 6){
+			^if($hAction.i & 6){
 			<field type="hidden" name="action">insert</field>
 			}
-			^if($_iR & 1){
+			^if($hAction.i & 1){
 				<field type="hidden" name="action">update</field>
 				<field type="hidden" name="where">acl_id</field>
 				<field type="hidden" name="acl_id">$form:id</field>
@@ -686,6 +717,8 @@ E-mail	email
 }
 #end @rights[]
 
+
+
 # -----------------------------------------------------------------------------------------------
 #                                    ОТЛАДКА СИСТЕМЫ
 # -----------------------------------------------------------------------------------------------
@@ -693,12 +726,14 @@ E-mail	email
 # Строим таблицу запрошенных объектов
 @config[]
 <button image="24_clear.gif"  name="clear"    alt="Очистить кэш"  onClick="saveForm('form_content','${OBJECTS_HASH.80.full_path}?type=$form:type','#container')" />
-<form method="post" action="" name="form_content" id="form_content" enctype="multipart/form-data" 
+<form method="post" action="/ajax/go.html" name="form_content" id="form_content" enctype="multipart/form-data" 
 label="MOUSE CMS | Отладка системы ">
 	<field type="hidden" name="cache">all</field>
 	<field type="hidden" name="cache_time">all</field>
 </form>
 #end @config[]
+
+
 
 # -----------------------------------------------------------------------------------------------
 #                                    ЗАГРУЗКА ФАЙЛОВ
@@ -706,7 +741,7 @@ label="MOUSE CMS | Отладка системы ">
 #################################################################################################
 # Загружаем файлы
 @files[]
-<form method="post" action="" name="form_content" id="form_content" enctype="multipart/form-data"
+<form method="post" action="/ajax/go.html" name="form_content" id="form_content" enctype="multipart/form-data"
 	label="MOUSE CMS | Загрузка файлов ">
 	<tabs>
 		<tab id="section-1" name="Загрузка файлов">
@@ -718,15 +753,7 @@ label="MOUSE CMS | Отладка системы ">
 </form>
 #end files[]
 
-# -----------------------------------------------------------------------------------------------
-#                                    РАБОТА СО СТАТЬЯМИ
-# -----------------------------------------------------------------------------------------------
-#################################################################################################
-# Загружаем файлы
-@articles[]
-^rem{ пусть разбирается редактор }
-^executeSystemProcess[$.id[5]]
-#end @articles[]
+
 
 #################################################################################################
 #                                    ВЫВОД ДАННЫХ                                               #
@@ -766,7 +793,7 @@ $scroller[^scroller::create[
 	$.l_divider[^[]
 ]]
 $_tData[^table::create[$hParams.data;$.limit($scroller.limit) $.offset($scroller.offset)]]
-<form name="form_content" method="post" action="" label="$hParams.label">
+<form name="form_content" method="post" action="/ajax/go.html" label="$hParams.label">
 	<button image="24_add.gif"    name="add"    alt="Добавить"   onClick="Go('$OBJECTS_HASH.80.full_path?type=$form:type&amp^;action=add','#container')" />
 	<button image="24_copy.gif"   name="copy"   alt="Копировать" onClick="CopyChecked('$OBJECTS_HASH.80.full_path?type=$form:type&amp^;action=copy')" />
 	<button image="24_delete.gif" name="delete" alt="Удалить"    onClick="DeleteChecked('$hParams.where','${OBJECTS_HASH.80.full_path}?type=$form:type','#container')" />

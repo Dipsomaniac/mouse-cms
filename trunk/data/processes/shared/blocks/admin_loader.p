@@ -1,47 +1,49 @@
-^rem{
+^mLoaderInit[]
+^mLoaderRun[$lparams]
+
+
+
 #################################################################################################
-#                                    ЗАГРУЗКА ДАННЫХ В СИСТЕМУ                                  #
-#################################################################################################
-}
-^rem{	Отлючаем кэширование	}
-^rem{ =debug оставил кэширование?}
-# ^cache(0)        ^rem{ страниц }
-# $MAIN:NoCache(1) ^rem{ SQL }
-^rem{	получаем объекты }
-^rem{ объекты системы	}
-$OBJECTS[^getOBJECTS[]]
+# загрузка данных в админку
+@mLoaderInit[]
+# ^cache(0)			# =debug оставил кэширование в админке!
+# $MAIN:NoCache(1)			# =debug оставил кэширование в админке!
+$OBJECTS[^getOBJECTS[]]			# объекты
 $OBJECTS_HASH[^OBJECTS.hash[id]]
 $OBJECTS_HASH_TREE[^OBJECTS.hash[parent_id][$.distinct[tables]]]
-^rem{	типы объектов	}
-$TYPES[^getTYPES[]]
+$TYPES[^getTYPES[]]			# типы объектов
 $TYPES_HASH[^TYPES.hash[id]]
-^rem{	таблица блоков	}
-$BLOCKS[^getBLOCKS[]]
+$BLOCKS[^getBLOCKS[]]			# блоки
 $BLOCKS_HASH[^BLOCKS.hash[id]]
-$BLOCKS_TO_OBJECT[^getBLOCKS_TO_OBJECT[]]
+$BLOCKS_TO_OBJECT[^getBLOCKS_TO_OBJECT[]]			# связи блоков
 $BLOCKS_TO_OBJECT_HASH[^BLOCKS_TO_OBJECT.hash[id]]
-^rem{	таблица типов данных	}
-$DATA_TYPES[^getDATA_TYPES[]]
+$DATA_TYPES[^getDATA_TYPES[]]			# типы данных
 $DATA_TYPES_HASH[^DATA_TYPES.hash[id]]
-^rem{	таблица типов обработчиков	}
-$DATA_PROCESS_TYPES[^getDATA_PROCESS_TYPES[]]
+$DATA_PROCESS_TYPES[^getDATA_PROCESS_TYPES[]]			# обработчики
 $DATA_PROCESS_TYPES_HASH[^DATA_PROCESS_TYPES.hash[id]]
-^rem{	таблица пользователей системы }
-$USERS[^getUSERS[]]
+$USERS[^getUSERS[]]			# пользователи
 $USERS_HASH[^USERS.hash[id]]
-^rem{	таблица взаимосвязей пользователей }
-$GROUPS[^getGROUPS[]]
+$GROUPS[^getGROUPS[]]			# взаимосвязи пользователей
 $GROUPS_HASH[^GROUPS.hash[id]]
-$USERS_TYPES_HASH[
+$USERS_TYPES_HASH[			# типы пользователей
 	$.0[$.name[user]]
 	$.1[$.name[group]]
 	$.2[$.name[owner]]
 ]
-^rem{	таблица прав системы }
-$ACL[^getACL[]]
+$ACL[^getACL[]]			# права системы
 $ACL_HASH[^ACL.hash[id]]
-^rem{	отдаем данные блока	}
-$lparams.body
+$result[]			# подчистим грязь
+#end @mLoaderInit[]
+
+
+
+#################################################################################################
+# общая часть
+@mLoaderRun[hParams]
+$result[$hParams.body]
+#end @mLoaderRun[hParams]
+
+
 
 #################################################################################################
 #                                    ПОЛУЧЕНИЕ ДАННЫХ                                           #
