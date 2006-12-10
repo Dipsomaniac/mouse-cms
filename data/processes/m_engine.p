@@ -60,7 +60,7 @@ $TEMPLATES_HASH[^TEMPLATES.hash[id]]	# хэш таблицы шаблонов
 # ОБЪЕКТЫ   ПРАВА   ТИП ВЫВОДА   ОЧИСТКА ПАМЯТИ   РАБОТА С ШАБЛОНОМ                             #
 #################################################################################################
 # создание страницы сайта
-@create[][RIGHS;ACL]
+@create[][RIGHTS;ACL]
 # если зажжен флажок отсутствия кэш файла - создаем его
 ^if(^MAIN:bCacheFile.int(0)){^createCacheFile[]}
 # проверка существования запрошенного объекта, существует - создаем, иначе отправка на страницу ошибок
@@ -269,7 +269,7 @@ $result[^tBlocksNow.menu{^getBlock[$tBlocksNow.fields]}]
 # Собираем блок
 @getBlock[hBlockFields][hBlockParams;cBlock;sBlockData]
 $result[
-	$hBlockParams[^getSystemParams[$hBlockFields.attr]]			# параметры блока
+	$hBlockParams[^getSystemParams[$hBlockFields.attr]]
 	$cBlock{
 #	 	если блок не пустой парсим его данные =debug эта штука поважнее должна быть
 		^if(^hBlockFields.is_not_empty.int(0)){$sBlockData[^taint[as-is][$hBlockFields.data]]}
@@ -447,7 +447,7 @@ $result[^if(${hParam.name} eq ${hParam.value}){${hParam.true}}{${hParam.false}}]
 #################################################################################################
 # вызов любого определенного обработчика
 @executeSystemProcess[hParam][_jMethod]
-$result[^executeBlock[$hParam.id;$hParam.body;$hParam.param;$hParam.field]]
+$result[^executeBlock[$hParam.id;$hParam.param;$hParam.body;$hParam.field]]
 #end @process[hParam][_jMethod]
 
 

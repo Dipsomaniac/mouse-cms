@@ -10,16 +10,14 @@ $oAjax[^ajax::init[
 	$.oSql[$MAIN:objSQL]
 ]]
 
+# для совместимости с fck
+^oAjax.hRequest.delete[fckdelete]
 # -----------------------------------------------------------------------------------------------
-# =debug в лом было думать (авто заполнение полного пути и получение ветви и поля is_not_empty блока) место очень слабое
-^if(def $oAjax.hRequest.path){
+# =debug в лом было думать (авто заполнение полного пути и получение ветви и поля is_not_empty блока, работа с директориями объектов) место очень слабое
+^if(def $oAjax.hRequest.ajax_option && $oAjax.hRequest.ajax_option eq 'objects'){
+	^oAjax.hRequest.delete[ajax_option]
 	$oAjax.hRequest.full_path[^MAIN:oEngine.getFullPath[$oAjax.hRequest.parent_id;$oAjax.hRequest.path]]
 	$oAjax.hRequest.thread_id[^MAIN:oEngine.getThreadId[$oAjax.hRequest.parent_id;$oAjax.hRequest.id]]
-}
-
-# -----------------------------------------------------------------------------------------------
-# =debug в лом было думать (работа с директориями объектов)
-^if(def $oAjax.hRequest.full_path){
 	^switch[$oAjax._sAction]{
 		^case[insert]{^createObject[$oAjax.hRequest.full_path]}
 		^case[delete]{
@@ -32,11 +30,10 @@ $oAjax[^ajax::init[
 			^moveObject[^MAIN:oEngine.OBJECTS_HASH.[$oAjax.hRequest.object_id].full_path.trim[end;/];^oAjax.hRequest.full_path.trim[end;/]]
 		}
 	}
+	^if(def $oAjax.hRequest.data){$oAjax.hRequest.is_not_empty(1)}{$oAjax.hRequest.is_not_empty(0)}
 }
 
-^if(def $oAjax.hRequest.is_not_empty){^if(def $oAjax.hRequest.data){$oAjax.hRequest.is_not_empty(1)}{$oAjax.hRequest.is_not_empty(0)}}
-
-# =debug в лом было думать (обработка прав объекта) место очень слабое
+# =debug в лом было думать (обработка прав) место очень слабое
 ^if(def $oAjax.hRequest.rights_read){$oAjax.hRequest.rights($oAjax.hRequest.rights    + ($oAjax.hRequest.rights_read))      ^oAjax.hRequest.delete[rights_read]}
 ^if(def $oAjax.hRequest.rights_edit){$oAjax.hRequest.rights($oAjax.hRequest.rights    + ($oAjax.hRequest.rights_edit*2))    ^oAjax.hRequest.delete[rights_edit]}
 ^if(def $oAjax.hRequest.rights_delete){$oAjax.hRequest.rights($oAjax.hRequest.rights  + ($oAjax.hRequest.rights_delete*4))  ^oAjax.hRequest.delete[rights_delete]}
@@ -58,10 +55,8 @@ $oAjax[^ajax::init[
 ^try{^if(def $oAjax.hRequest.cache_time){
 	^MAIN:oEngine.DeleteFiles[$MAIN:CacheDir]
 	^file:delete[${MAIN:CacheDir}_cache.cfg]}
-}{
-	$exception.handled(1)
-}
-}
+}{$exception.handled(1)}}
+
 # раз уж сюда дошли то удалим весь кэш
 ^dir_delete[^MAIN:CacheDir.trim[end;/];$.is_recursive(1)]
 
