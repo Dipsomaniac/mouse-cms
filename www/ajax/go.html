@@ -3,34 +3,41 @@ m_ajax.p
 
 #################################################################################################
 # Обработка админки
-@main[]
+@main[][sType]
+$sType[$form:cache]
 # инициализируем ajax прослойку
 $oAjax[^ajax::init[
 	$.oAuth[$MAIN:objAuth]
 	$.oSql[$MAIN:objSQL]
 ]]
-
-# для совместимости с fck
+# для совместимости с spaw
 ^if(def $oAjax.hRequest.body){$oAjax.hRequest.body[^oAjax.hRequest.body.match[<br>][gi]{<br/>}]}
 # -----------------------------------------------------------------------------------------------
 # =debug в лом было думать (авто заполнение полного пути и получение ветви и поля is_not_empty блока, работа с директориями объектов) место очень слабое
-^if(def $oAjax.hRequest.ajax_option && $oAjax.hRequest.ajax_option eq 'objects'){
-	^oAjax.hRequest.delete[ajax_option]
-	$oAjax.hRequest.full_path[^MAIN:oEngine.getFullPath[$oAjax.hRequest.parent_id;$oAjax.hRequest.path]]
-	$oAjax.hRequest.thread_id[^MAIN:oEngine.getThreadId[$oAjax.hRequest.parent_id;$oAjax.hRequest.id]]
-	^switch[$oAjax._sAction]{
-		^case[insert]{^createObject[$oAjax.hRequest.full_path]}
-		^case[delete]{
-			^if(^oAjax.hRequest.object_id.pos[,] > 0){
-				$_tWhere[^oAjax.hRequest.object_id.split[,]]
-				^_tWhere.menu{
-					^deleteObject[$MAIN:oEngine.OBJECTS_HASH.[$_tWhere.piece].full_path]
-		}}}
-		^case[update]{
-			^moveObject[^MAIN:oEngine.OBJECTS_HASH.[$oAjax.hRequest.object_id].full_path.trim[end;/];^oAjax.hRequest.full_path.trim[end;/]]
+^if(def $sType){
+	^switch[$sType]{
+#		объекты
+		^case[objects]{
+			$oAjax.hRequest.full_path[^MAIN:oEngine.getFullPath[$oAjax.hRequest.parent_id;$oAjax.hRequest.path]]
+			$oAjax.hRequest.thread_id[^MAIN:oEngine.getThreadId[$oAjax.hRequest.parent_id;$oAjax.hRequest.id]]
+			^switch[$oAjax._sAction]{
+				^case[insert]{^createObject[$oAjax.hRequest.full_path]}
+				^case[delete]{
+					^if(^oAjax.hRequest.object_id.pos[,] > 0){
+					$_tWhere[^oAjax.hRequest.object_id.split[,]]
+					^_tWhere.menu{
+						^deleteObject[$MAIN:oEngine.OBJECTS_HASH.[$_tWhere.piece].full_path]
+				}}}
+				^case[update]{
+					^moveObject[^MAIN:oEngine.OBJECTS_HASH.[$oAjax.hRequest.object_id].full_path.trim[end;/];^oAjax.hRequest.full_path.trim[end;/]]
+				}
+			}
+		}
+#		блоки
+		^case[blocks]{
+			^if(def $oAjax.hRequest.data){$oAjax.hRequest.is_not_empty(1)}{$oAjax.hRequest.is_not_empty(0)}
 		}
 	}
-	^if(def $oAjax.hRequest.data){$oAjax.hRequest.is_not_empty(1)}{$oAjax.hRequest.is_not_empty(0)}
 }
 
 # =debug в лом было думать (обработка прав) место очень слабое

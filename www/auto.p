@@ -95,19 +95,7 @@ $objSQL[^mysql::init[$SQL.connect-string; # SQL object
 	$.cache_interval(1/24)
 ]]
 ^objSQL.server{
-	$objAuth[^auth::init[	# 	объект авторизации $objAuth
-		$cookie:CLASS;
-		$form:fields;
-		$.csql[$MAIN:objSQL]
-		$.additional_fields[^table::create{select	update	field
-fio	fio	fio
-www	www	www
-adress	adress	adress
-work_place	work_place	work_place
-work_position	work_position	work_position
-dt_birth	dt_birth	dt_birth
-telefon	telefon	telefon}]
-]]
+	$objAuth[^auth::init[$cookie:CLASS;$form:fields;$.csql[$MAIN:objSQL]]]
 	$oEngine[^engine::init[]]
 }
 ^mStatistic[]

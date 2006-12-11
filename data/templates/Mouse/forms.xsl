@@ -35,7 +35,10 @@
 	<xsl:if test="@type='hidden'">
 		<input type="{@type}"  name="{@name}" value="{.}" />
 	</xsl:if>
-	<xsl:if test="not(@type='hidden')">
+	<xsl:if test="@type='submit'">
+		<input type="submit" class="input-button" name="{@name}" value="{@value}" />
+	</xsl:if>
+	<xsl:if test="not(@type='hidden') and not(@type='submit')">
 		<div class="divider">
 			<label for="" class="title" id="title_{@name}"><xsl:value-of select="@label"/></label>
 			<small class="help"><xsl:value-of select="@description"/></small>
@@ -58,7 +61,7 @@
 					<xsl:when test="@type='textarea'">
 							<br/><br/>
 							<div>
-								<img src="/themes/mouse/buttons/minimize.gif" name="img_{@name}" alt="..." title="..." class="input-image" style="float: right;" onClick="$('#div_{@name}').toggleClass('hide')" />
+								<img src="/themes/mouse/buttons/minimize.gif" name="img_{@name}" alt="..." title="..." class="input-image" style="float: right;" onClick="$('#div_{@name}').slideToggle('slow');" />
 								<br/>
 							</div>
 							<div id="div_{@name}">

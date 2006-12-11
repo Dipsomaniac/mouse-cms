@@ -1545,7 +1545,7 @@ $_hParams[^hash::create[$hParams]]
 		>
 			$_hParams.addon
 			<login-name>$user.name</login-name>
-			<field type="hidden" name="auth.logout" value="do" />
+			<field type="hidden" name="auth.logout" value="do">do</field>
 			<field type="submit" name="action" value="^if(def $_hParams.action_name){$_hParams.action_name}{Завершить работу}" />
 		</^if(def $_hParams.tag_name){$_hParams.tag_name}{auth-logout}>
 	}

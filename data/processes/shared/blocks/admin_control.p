@@ -271,7 +271,6 @@ ID	id
 				<field type="hidden" name="action">update</field>
 				<field type="hidden" name="where">object_id</field>
 				<field type="hidden" name="object_id">$form:id</field>
-				<field type="hidden" name="ajax_option">objects</field>
 				}
 				<field type="hidden" name="tables">
 					^$.main[m_object]
@@ -351,7 +350,9 @@ ID	id
 				<field type="checkbox" name="is_published"  label="Опубликовать">$BLOCKS_HASH.[$form:id].is_published</field>
 				<field type="select" name="data_process_id" label="Обработчик" description="Обработчик блока">
 					<option id="0" select="$BLOCKS_HASH.[$form:id].data_process_id">отсутствует</option>
-					<system:method name="list">name[PROCESSES]added[select="$BLOCKS_HASH.[$form:id].data_process_id"]tag[option]</system:method>
+^PROCESSES.menu{
+					<option id="$PROCESSES.id" value="$PROCESSES.id" select="$BLOCKS_HASH.[$form:id].data_process_id">$PROCESSES.name</option>
+}
 				</field>
 				<field type="textarea" name="description"   label="Описание"  description="Описание блока" >$BLOCKS_HASH.[$form:id].description</field>
 			</tab>
@@ -360,16 +361,13 @@ ID	id
 				<field type="checkbox" name="is_shared" label="Общий блок">$BLOCKS_HASH.[$form:id].is_parsed_manual</field>
 				<field type="textarea" name="attr" label="Атрибуты" description="Атрибуты блока">$BLOCKS_HASH.[$form:id].attr</field>
 				<field type="select" name="data_type_id" label="Данные" description="Тип данных блока">
-					<system:method name="list">name[DATA_TYPES]added[select="$BLOCKS_HASH.[$form:id].data_type_id"]tag[option]</system:method>
+^DATA_TYPES.menu{
+					<option id="$DATA_TYPES.id" select="$BLOCKS_HASH.[$form:id].data_type_id">$DATA_TYPES.name</option>
+}
 				</field>
 			</tab>
 			<tab id="section-3" name="Данные">
-				^use[/fckeditor/fckeditor.p]
-				$oFCKeditorData[^fckeditor::init[data]]
-				$oFCKeditorData.sHeight[500]
-				$oFCKeditorData.sToolbarSet[Basic]
-				$oFCKeditorData.sValue[$BLOCKS_HASH.[$form:id].data]
-				^oFCKeditorData.create[]
+				<field type="textarea" name="data" label="Данные" ws="true" description="Данные блока">$BLOCKS_HASH.[$form:id].data</field>
 			</tab>
 		</tabs>
 		^if($hAction.i & 6){
@@ -386,6 +384,7 @@ ID	id
 			^$.main[m_block]
 		</field>
 	</form>
+	$SYSTEM.postProcess(0)
 }{
 $IS_SHARED[
 	$.1[$.name[общий]]
@@ -576,9 +575,7 @@ ID	id
 			^if($hAction.i & 1){
 				<field type="none"  name="auser_id" label="ID" description="ID пользователя" class="short">$USERS_HASH.[$form:id].id</field>
 			}
-			<field type="text" name="name" label="Имя" description="Имя пользователя" class="medium">
-				$USERS_HASH.[$form:id].name
-			</field>
+			<field type="text" name="name" label="Имя" description="Имя пользователя" class="medium">$USERS_HASH.[$form:id].name</field>
 			<field type="select" name="auser_type_id" label="Тип" description="Тип пользователя" class="medium">
 				<option value="0" select="$USERS_HASH.[$form:id].auser_type_id">Пользователь</option>
 				<option value="1" select="$USERS_HASH.[$form:id].auser_type_id">Группа</option>
