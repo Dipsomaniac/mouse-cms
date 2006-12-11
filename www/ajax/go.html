@@ -11,7 +11,7 @@ $oAjax[^ajax::init[
 ]]
 
 # для совместимости с fck
-^oAjax.hRequest.delete[fckdelete]
+^if(def $oAjax.hRequest.body){$oAjax.hRequest.body[^oAjax.hRequest.body.match[<br>][gi]{<br/>}]}
 # -----------------------------------------------------------------------------------------------
 # =debug в лом было думать (авто заполнение полного пути и получение ветви и поля is_not_empty блока, работа с директориями объектов) место очень слабое
 ^if(def $oAjax.hRequest.ajax_option && $oAjax.hRequest.ajax_option eq 'objects'){

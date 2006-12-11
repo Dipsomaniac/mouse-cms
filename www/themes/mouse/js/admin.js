@@ -77,3 +77,18 @@ function setPick(value, title, elem)
     window.close();
 }
 
+function popXTextArea(name)
+{
+    w_location='/spaw/spaw.php?name='+name;
+    w_name='';
+    w_width=600;
+    w_height=400;
+    w_left=(window.innerWidth-w_width)/2;
+    w_top=(window.innerHeight-w_height)/2;
+    w=window.open(w_location, w_name, 'left='+w_left+', top='+w_top+', width='+w_width+', height='+w_height+', status=yes, resizable=yes, scrollbars=yes');
+    w.focus();
+
+    elems=document.getElementsByName(name);
+    elems[0].disabled=true;
+    elems[0].onclick='new function{w.focus()}';
+}

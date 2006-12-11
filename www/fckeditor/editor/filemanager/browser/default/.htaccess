@@ -1,4 +1,0 @@
-RemoveHandler parsed-html html htm
-
-AddType application/x-javascript .js
-AddType text/css .css

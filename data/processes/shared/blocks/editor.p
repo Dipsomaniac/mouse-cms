@@ -58,12 +58,7 @@ $hCategory[^tCategory.hash[id]]
 			</field>
 		</tab>
 		<tab id="section-2" name="Содержание">
-			^use[/fckeditor/fckeditor.p]
-			$oFCKeditorData[^fckeditor::init[body]]
-			$oFCKeditorData.sHeight[500]
-#			$oFCKeditorData.sToolbarSet[Basic]
-			$oFCKeditorData.sValue[$hArticles.[$form:id].body]
-			^oFCKeditorData.create[]
+			<field type="textarea" name="body" ws="true"  label="Анонс"   description="Краткое содержание">$hArticles.[$form:id].body</field>
 		</tab>
 	</tabs>
 	</form>

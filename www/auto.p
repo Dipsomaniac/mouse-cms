@@ -46,7 +46,7 @@ $sTemp[netscape]$cTemp
 
 # -----------------------------------------------------------------------------------------------
 # основные настройки
-$SQL.connect-string[mysql://root:@localhost/mouse2?charset=utf8]	# строка подключения к БД
+$SQL.connect-string[mysql://root:@localhost/mouse?charset=utf8]	# строка подключения к БД
 $CLASS_PATH[^table::create{path												# пути к классам
 /../data
 /../data/processes
@@ -76,7 +76,7 @@ $LogDir[${CfgDir}log/]															# папка где живут логи
 ^use[mysql.p]					# работа с MySQL
 ^use[auth.p]					# авторизация
 ^use[m_engine.p]				# движок mouse
-# ^use[visualization.p]		# = debug
+# ^use[debug.p]			# = debug
 # -----------------------------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------------------------
