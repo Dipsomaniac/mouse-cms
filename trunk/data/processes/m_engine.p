@@ -272,6 +272,7 @@ $result[
 #	 	передача управления обработчику блока (если есть)
 		^if(^hBlockFields.data_process_id.int(0)){$sBlockData[^executeBlock[$hBlockFields.data_process_id;$hBlockParams;$sBlockData;$hBlockFields]]}
 #	 	замена спец конструкций в теле блока
+		^if(def $SYSTEM.postProcess){$hBlockParams.PostProcess($SYSTEM.postProcess)}
 		$sBlockData[^parseBlockPostProcess[$hBlockParams;$sBlockData]]
 #	 	и собираем фрагмент блока
 	<block 
@@ -297,7 +298,7 @@ $result[
 #################################################################################################
 # "Пост" обработка блока
 @parseBlockPostProcess[hBlockParams;sBlockData]
-# =debug - не нравится мне это все
+# =debug - не нравится мне это все 
 # в параметрах блока можно запретить постпроцесс блока 
 ^if(^hBlockParams.PostProcess.int(1)){
 

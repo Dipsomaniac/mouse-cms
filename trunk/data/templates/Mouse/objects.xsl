@@ -29,7 +29,7 @@
 	<div>
 		<img src="/themes/mouse/icons/nil{@level}.gif" />
 		<xsl:if test="./branche">
-			<span class="plusminus" id="plusminus_{@id}" onClick="$('#sections_{@id}').toggleClass('hide')">
+			<span class="plusminus" id="plusminus_{@id}" onClick="$('#sections_{@id}').slideToggle('slow');">
 				<img src="/themes/mouse/icons/plus.gif" />
 			</span>
 		</xsl:if>
