@@ -115,11 +115,7 @@ $sStylesheet[^getStylesheet[]]			# путь к стилю
 	^clearMemory[]			#	Очистка памяти
 	$xDoc[^xDoc.transform[$sStylesheet]]			#	XSLT трансформация
 }
-$result[^xDoc.string[]]
-# =debug чистка лишних переносов строк - задолбали
-# =debug а оно надо вообще таким способом и в этом месте?
-$result[^result.match[( +)][g]{ }]
-$result[^result.match[(\n\s*\n)][g]{}]
+$result[^taint[optimized-as-is][^xDoc.string[]]]
 # end @contentSwitcher[][xDoc;sStylesheet]
 
 
