@@ -225,6 +225,7 @@ ID	id
 					<system:method name="list">name[OBJECTS]added[select="$parent_id"]tag[option]</system:method>
 				</field>
 				<field type="select" name="template_id" label="Шаблон" description="Шаблон дизайна объекта" class="medium">
+					<option id="0" select="$OBJECTS_HASH.[$form:id].template_id">Не задан</option>
 					<system:method name="list">name[TEMPLATES]added[select="$OBJECTS_HASH.[$form:id].template_id"]tag[option]</system:method>
 				</field>
 				<field type="textarea" name="description"   label="Описание"     description="Описание объекта">$description</field>
