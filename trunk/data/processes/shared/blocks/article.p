@@ -19,7 +19,7 @@ $hParams.body
 		<article>
 			<date>^dtf:format[%d %B %Y;$article.dt]</date>
 			<name><a href="?id=$tArticles.id">$tArticles.title</a></name>
-			<author>$tArticles.name</author>
+			<author>$tArticles.author</author>
 			^if(^form:id.int(0)){<body>$tArticles.body</body>}{<anonce>$tArticles.lead</anonce>}
 		</article>
 	}
@@ -40,7 +40,7 @@ $result[
          $.[m_b_article.title][]
 			$.[m_b_article.lead][]
 			$.[m_b_article.dt][]
-			$.[m_b_article.name][]
+			$.[m_b_article.author][]
 			^if(^params.id.int(0)){$.[m_b_article.body][]}
 		]]
 		$.table[m_b_article]

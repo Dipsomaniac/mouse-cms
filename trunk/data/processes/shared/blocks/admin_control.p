@@ -363,7 +363,7 @@ ID	id
 				<field type="textarea" name="attr" label="Атрибуты" description="Атрибуты блока">$BLOCKS_HASH.[$form:id].attr</field>
 				<field type="select" name="data_type_id" label="Данные" description="Тип данных блока">
 ^DATA_TYPES.menu{
-					<option id="$DATA_TYPES.id" select="$BLOCKS_HASH.[$form:id].data_type_id">$DATA_TYPES.name</option>
+					<option id="$DATA_TYPES.id" value="$DATA_TYPES.id" select="$BLOCKS_HASH.[$form:id].data_type_id">$DATA_TYPES.name</option>
 }
 				</field>
 			</tab>
@@ -486,6 +486,7 @@ ID	id
 		$.description{
 			Описание: $_tData.description <br/>
 			Изменен: $_tData.dt_update <br/>
+			Сортировка: $_tData.sort_order <br/>
 		}
 		$.label[Mouse CMS | Обработчики]
 	]
