@@ -180,6 +180,17 @@ $sFileName[${MAIN:TemplateDir}$TEMPLATES_HASH.[$OBJECT.template_id].filename]
 # default сборка тела xml документа
 @getDocumentBodyDefault[]
 $result[
+<navigation>
+#	создаем дерево навигации
+	^ObjectByParent[$OBJECTS_HASH_TREE;0;
+		$.tag[branche]
+		$.attributes[^table::create{name^#OAid^#OAname^#OAdescription^#OAis_show_in_menu^#OAis_show_on_sitemap^#OAfull_path}]
+		]
+</navigation>
+<body>
+#	сборка блоков
+	^getBlocks[]
+</body>
 <system>
 	<!-- ID и URL сайта -->
 	<site id="$SYSTEM.siteID">$SYSTEM.siteUrl</site>
@@ -221,14 +232,6 @@ $result[
 #	<!-- keywords --> =debug
 #	<keywords>^kewords[]</keywors>
 </header>
-<navigation>
-#	создаем дерево навигации
-	^ObjectByParent[$OBJECTS_HASH_TREE;0;$.description[1]]
-</navigation>
-<body>
-#	сборка блоков
-	^getBlocks[]
-</body>
 ]
 #end @documentBodyDefault[]
 
@@ -379,7 +382,11 @@ $result[^switch[$sName]{
 ####################################################################################################
 # вывод дерева объектов
 @tree[hParam]
-$result[^ObjectByParent[$[$hParam.hash_name];$hParam.thread_id;$.description[1]]]
+$result[^ObjectByParent[$[$hParam.hash_name];$hParam.thread_id;
+		$.tag[branche]
+		$.attributes[^table::create{name^#OAid^#OAname^#OAdescription^#OAis_show_in_menu^#OAis_show_on_sitemap^#OAfull_path}]
+]
+]]
 #end @Tree[hParam]
 
 
@@ -507,6 +514,7 @@ $result[^executeBlock[$hParam.id;$hParam.param;$hParam.body;$hParam.field]]
 # А дальше будут деревья чтоб их разорвало
 @ObjectByParent[lparams;parent_id;params][tblLvlObj;_hParams]
 $_hParams[^hash::create[$params]]
+# =debug - уровень подсчитывается но нигде не используется
 ^if($_hParams.level){^_hParams.level.inc(1)}{$_hParams.level(1)}
 # есть ли дети у родителя?
 ^if($lparams.[$parent_id]){
@@ -524,24 +532,21 @@ $_hParams[^hash::create[$params]]
 ####################################################################################################
 # вывод ветви дерева xml
 @printItem[itemHash;childItems;lparams]
-$result[<branche id="$itemHash.id" name="$itemHash.name" level="$lparams.level"
-	^if(def $lparams.parent_id){ parent_id="$itemHash.parent_id"}
-	^if(def $lparams.thread_id){ thread_id="$itemHash.thread_id"}
-	^if(def $lparams.window_name){ window_name="^if(def $itemHash.window_name){$itemHash.window_name}{$itemHash.name}"}
-	^if(def $lparams.document_name){ document_name="^if(def $itemHash.document_name){$itemHash.document_name}{$itemHash.name}"}
-	^if(def $lparams.description){ description="$itemHash.description"}
+$result[
+<$lparams.tag 
+	^lparams.attributes.menu{
+		${lparams.attributes.name}="$itemHash.[$lparams.attributes.name]"
+	}
 	^if($itemHash.id == $OBJECT.id){ in="1" 
-			^if(def $form:year){
+			^if(def $form:id){
 				hit="0"
 			}{
 				hit="1"
 			}
 		}
-	is_show_on_menu="^itemHash.is_show_in_menu.int(0)" 
-	is_show_on_site_map="^itemHash.is_show_on_sitemap.int(0)" 
-	path="^if(def $itemHash.url){$itemHash.url}{$itemHash.full_path}"
+		level="$lparams.level"
 	^if(def $lparams.added){$lparams.added}
-	>$childItems</branche>]
+	>$childItems</$lparams.tag>]
 #end @printItem[itemHash;childItems;lparams]
 
 
@@ -585,8 +590,9 @@ $result($hRights.read + $hRights.edit + $hRights.delete + $hRights.comment + $hR
 
 ####################################################################################################
 # получение полного пути объекта
-@getFullPath[_iParentId;_sPath]
-$result[^if(^_iParentId.int(0)){$OBJECTS_HASH.[$_iParentId].full_path}{/}$_sPath/]
+@getFullPath[iParentId;sPath]
+$result[^if(^iParentId.int(0)){$OBJECTS_HASH.[$iParentId].full_path}{/}$sPath]
+$result[^if(def $sPath){$result/}{$result}]
 #end @getFullPath[_iParentId;_sPath]
 
 

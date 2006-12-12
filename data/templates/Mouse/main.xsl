@@ -95,13 +95,13 @@
 	</ul>
 </xsl:template>
 <xsl:template match="/document/navigation/branche" mode="topmenu"> 
-	<xsl:if test="@is_show_on_menu = 1">
+	<xsl:if test="@is_show_in_menu = 1">
 		<li>
-			<xsl:if test="not(@in=1)">
-				<a href="{@path}" title="{@document_name}"><xsl:value-of select="@name"/>
+			<xsl:if test="not(@in=1) or (@hit=0)">
+				<a href="{@full_path}" title="{@document_name}"><xsl:value-of select="@name"/>
 				<xsl:call-template name="topmenu" /></a>
 			</xsl:if>
-			<xsl:if test="(@in=1)">
+			<xsl:if test="(@in=1) and not(@hit=0)">
 				<b><xsl:value-of select="@name"/></b>
 				<xsl:call-template name="topmenu" />
        		</xsl:if>
@@ -121,11 +121,11 @@
 	</ul>
 </xsl:template>
 <xsl:template match="/document/navigation/branche|/document/navigation//branche/branche" mode="sidemenu" >
-	<xsl:if test="@is_show_on_menu = 1">
+	<xsl:if test="@is_show_in_menu = 1">
 			<li>
-				<xsl:if test="not (@in=1)"><a href="{@path}" title="{@description}"><xsl:value-of select="@name"/></a></xsl:if>
+				<xsl:if test="not (@in=1)"><a href="{@full_path}" title="{@description}"><xsl:value-of select="@name"/></a></xsl:if>
 				<xsl:if test="(@in=1)"><b><xsl:value-of select="@name"/></b></xsl:if>
-				<xsl:if test="(./branche[@is_show_on_menu=1])"><ul><xsl:apply-templates select="//branche/branche" mode="sidemenu" /></ul></xsl:if>
+				<xsl:if test="(./branche[@is_show_in_menu=1])"><ul><xsl:apply-templates select="//branche/branche" mode="sidemenu" /></ul></xsl:if>
 			</li>
 	</xsl:if>
 </xsl:template>
@@ -137,10 +137,10 @@
 </ul>
 </xsl:template>
 <xsl:template match="/document/navigation/branche|/document/navigation//branche/branche" mode="sitemap">
-<xsl:if test="@is_show_on_site_map = 1">
+<xsl:if test="@is_show_on_sitemap = 1">
 		<li>
-			<a href="{@path}" title="{@document_name}"><xsl:value-of select="@name"/></a> | <small><xsl:value-of select="@description"/></small>
-			<xsl:if test="(./branche[@is_show_on_site_map=1])"><ul><xsl:apply-templates select="//branche/branche" mode="sitemap" /></ul></xsl:if>
+			<a href="{@full_path}" title="{@document_name}"><xsl:value-of select="@name"/></a> | <small><xsl:value-of select="@description"/></small>
+			<xsl:if test="(./branche[@is_show_on_sitemap=1])"><ul><xsl:apply-templates select="//branche/branche" mode="sitemap" /></ul></xsl:if>
 		</li>
 </xsl:if>
 </xsl:template>
@@ -172,4 +172,51 @@
 <xsl:template match="date|name|author">
 </xsl:template>
 
+
+
+<!-- forum -->
+<xsl:template match="forum">
+<h1><a href="/forum">Форум</a></h1>
+<br/><hr/>
+	<h3><a href="#" onclick="$(this).hide();$('#forum_repeat').slideToggle('slow');">[Написать новое сообщение]</a></h3><br/>
+	<form action="" method="post" name="forum_repeat" enctype="multipart/form-data">
+	<div id="forum_repeat" class="form-builder-tab">
+		<div class="divider">
+			<label for="" class="title" id="title_name">Заголовок</label>
+			<small class="help">Заголовок сообщения</small>
+			<div class="container">
+				<input type="text" name="name" value="" class="input-text-long" />
+			</div>
+		</div>
+		<div class="divider">
+			<label for="" class="title" id="title_name">Содержание</label>
+			<small class="help">Текст сообщения</small>
+			<div class="container">
+				<textarea name="description" id="textarea_description" class="input-textarea-large"/>
+			</div>
+		</div>
+		<input type="hidden" name="new" value="do" />
+		<input type="submit" class="input-button" name="action" value="Отправить" />
+		<br/><br/><hr/>
+	</div>
+	<script type="text/javascript">
+		$('#forum_repeat').hide()
+	</script>
+	</form>
+	<ul>
+		<xsl:apply-templates />
+	</ul>
+</xsl:template>
+<xsl:template match="forum_message">
+	<li>
+		<h3><a href="?id={@id}"><xsl:value-of select="@title"/></a>,</h3>
+		<xsl:value-of select="@author"/>, [<xsl:value-of select="@dt"/>]
+		<xsl:if test="./forum_message">
+			<a href="#" onclick="$('#m{@id}').slideToggle('slow');">[*]</a>
+			<ul id="m{@id}">
+				<xsl:apply-templates />
+			</ul>
+		</xsl:if>
+	</li>
+</xsl:template>
 </xsl:stylesheet>
