@@ -100,7 +100,7 @@
 	<div style="text-align:center">
 	<form action="{@action}" method="{@method}" id="searchform">
 		<div align="center">
-			<xsl:apply-templates select="./field"/>
+			<xsl:apply-templates />
 		</div>
 	</form></div>
 </xsl:template>

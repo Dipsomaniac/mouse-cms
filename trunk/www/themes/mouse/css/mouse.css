@@ -19,7 +19,7 @@ body {
     background: #fff url('/themes/mouse/images/bg.jpg') no-repeat top right;
 }
 
-a:link { color: #666; }
+a:link { color: #333; }
 a:visited { color: #999; }
 a:hover, #sidebar ul li a:active { color: #c00; }
 
@@ -153,7 +153,10 @@ cite {
 #block{ margin: 5px 0 10px 0; }
 
 
-.post {	margin:30px 0 0 0; }
+.post {	margin:20px 0 10px 0; border-bottom: 1px solid #ccc;}
+
+div.forum-info li { margin: 20px 0 5px 20px;}
+div.forum-info li ul li { margin: 5px 0 5px 20px;}
 
 .post-date {
 	float: left; text-indent: 0px;
@@ -172,7 +175,7 @@ cite {
 	margin:3px 0;
 	border-top:#ccc 1px solid;	
 	font-family: Georgia, Verdana, Arial, serif;
-	font-size:12px;
+	font-size:1.1em;
 }
 
 .post-info

@@ -95,7 +95,7 @@ $sPath[$sPath.0]
 
 # -----------------------------------------------------------------------------------------------
 # создание основных объектов и инициализация engine
-$objSQL[^mysql::init[$SQL.connect-string; # SQL object
+$objSQL[^mysql::init[$SQL.connect-string;
 	$.is_debug($Debug)
 	$.cache_dir[${CacheDir}sql]
 	$.cache_interval(1/24)

@@ -13,29 +13,24 @@ $hRequest[^form:fields.foreach[field;value]{$.[^self._decode[$field]][^self._dec
 #end @auto[]
 
 #################################################################################################
-@init[hParams][_hParams]
-$_hParams[^hash::create[$hParams]]
-^if(def $_hParams.oAuth){$oAuth[$_hParams.oAuth]}{^throw[ajax;Initialization failure. ^$.oAuth option MUST be specified.]}
-^if(def $_hParams.oSql){$oSql[$_hParams.oSql]}{^throw[ajax;Initialization failure. ^$.oSql option MUST be specified.]}
+@init[hParams]
+^if(def $hParams.oAuth){$oAuth[$hParams.oAuth]}{^throw[ajax;Initialization failure. ^$.oAuth option MUST be specified.]}
+^if(def $hParams.oSql){$oSql[$hParams.oSql]}{^throw[ajax;Initialization failure. ^$.oSql option MUST be specified.]}
+^if(def $hParams.rights){$hRights[$hParams.rights]}{^throw[ajax;Initialization failure. ^$.rights option MUST be specified.]}
+$sLog[$hParams.log]
 # выполнен ли вход
-^if($oAuth.is_logon){
-# 	проверка на права администратора
-	^if(^oAuth.user.groups.locate[name;Admins]){
-		# 		получаем параметры запроса
-		$_sAction[$hRequest.action]
-		$_sWhere[$hRequest.where]
-# 		очистка кэша SQL
-		^if(def $hRequest.cache){^oSql.clear[] }
-# 		и удаляем их и лишнее
-		^hRequest.delete[where]
-		^hRequest.delete[action]
-		^hRequest.delete[cache]
-	}{
-	^throw[ajax;Action failure. User must be in Admins.]
-	}
-}{
-^throw[ajax;Action failure. User must be logon.]
-}
+^if(^hParams.rights.logon.int(0) && !$oAuth.is_logon){^throw[ajax;Action failure. User must be logon.]}
+^if(def $hParams.rights.group && !^oAuth.user.groups.locate[name;$hParams.rights.group]){^throw[ajax;Action failure. User group must be in ${hParams.rights.group}.]}
+# получаем параметры запроса
+$_sAction[$hRequest.action]
+$_sWhere[$hRequest.where]
+# очистка кэша SQL
+^if(def $hRequest.cache){^oSql.clear[] }
+#и удаляем их и лишнее
+^hRequest.delete[where]
+^hRequest.delete[submit]
+^hRequest.delete[action]
+^hRequest.delete[cache]
 #end @init[hParams][_hParams]
 
 #################################################################################################
@@ -47,21 +42,21 @@ $_sRequest[
 ^taint[# -----------------------------------------------------------------------------------------------]
 ^taint[# ^MAIN:dtNow.sql-string[]]
 ]
-^_sRequest.save[append;/../data/log/admin.log]
+^mSaveLog[$_sRequest]
 ^if(^hRequest.[$_sWhere].pos[,] > 0){
 	$_tWhere[^hRequest.[$_sWhere].split[,]]
 	^_tWhere.menu{	
 		$hRequest.[$_sWhere][$_tWhere.piece]
 		^_hTables.foreach[key;table]{
 			$_sRequest[^hHandlers.$_sAction[$hRequest;$table;$_sWhere]]
-			^_sRequest.save[append;/../data/log/admin.log]
+			^mSaveLog[$_sRequest]
 			^oSql.void{$_sRequest}
 		}
 	}
 }{
 		^_hTables.foreach[key;table]{
 			$_sRequest[^hHandlers.$_sAction[$hRequest;$table;$_sWhere]]
-			^_sRequest.save[append;/../data/log/admin.log]
+			^mSaveLog[$_sRequest]
 			^oSql.void{$_sRequest}
 		}
 }
@@ -70,12 +65,21 @@ $result[Запрос выполнен.]
 #end go[]
 
 
+
+#################################################################################################
+# логирование запросов
+@mSaveLog[sStr]
+^if(def $sLog){^sStr.save[append;$sLog]}
+#end @mSaveLog[sStr]
+
+
+
 #################################################################################################
 # ну что вставим? - вставим!
 @insert[hRequest;sTableName;sWhere][_hRequest;names;values]
 $_hRequest[^hash::create[$hRequest]]
 $names[^_hRequest.foreach[field;value]{$field}[,]]
-$values[^_hRequest.foreach[field;value]{'$value'}[,]]
+$values[^_hRequest.foreach[field;value]{^if(def $value){'$value'}{NULL}}[,]]
 $result[
 	INSERT
 		$sTableName
