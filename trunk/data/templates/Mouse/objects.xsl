@@ -61,4 +61,34 @@
 	</div>
 </xsl:template>
 
+<xsl:template match="lists">
+	<form action="/ajax/go.html" method="post" name="form_content" enctype="multipart/form-data">
+	<div class="mlabel">
+		<xsl:value-of select="@label"/>
+	</div>
+	<div id="tabs" class="form-builder-tabs">
+		<table class="table-builder-spreadsheet">
+		<thead class="table-builder-spreadsheet">
+		<tr>
+   			<td>
+   				<div style="padding: 0px; margin: 0px;">
+					<input type="checkbox" name="check_main" class="input-checkbox" onClick="checkAll();markAll()" />
+					<span style="cursor: default;" onClick="if (this.parentNode.childNodes[0].tagName=='INPUT') {e=this.parentNode.childNodes[0]} else {e=this.parentNode.childNodes[1]} if (e.checked) {e.checked=false} else {e.checked=true}" />
+				</div>
+			</td>
+			<xsl:apply-templates select="./th" />
+		</tr>
+		</thead>
+		<tbody class="table-builder-spreadsheet">
+			
+		</tbody>
+		</table>
+	</div>
+	</form>
+</xsl:template>
+
+<xsl:template match="th">
+<th id="{@id}"><xsl:value-of select="."/></th>
+</xsl:template>
+
 </xsl:stylesheet>

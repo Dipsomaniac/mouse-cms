@@ -61,6 +61,7 @@ $hList.tag[list]
 $hList.tags[lists]
 ^hList.add[$hParams]
 <$hList.tags label="$hList.label">
+^hList.names.menu{<th id="$hList.names.id">$hList.names.name</th>}
 ^table.menu{
 	<$hList.tag
 		^hList.names.menu{
