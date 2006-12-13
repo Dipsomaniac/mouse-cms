@@ -9,6 +9,11 @@ $sType[$form:cache]
 $oAjax[^ajax::init[
 	$.oAuth[$MAIN:objAuth]
 	$.oSql[$MAIN:objSQL]
+	$.rights[
+		$.logon(1)
+		$.group[Admins]
+	]
+	$.log[/../data/log/admin.log]
 ]]
 # для совместимости с spaw
 ^if(def $oAjax.hRequest.body){$oAjax.hRequest.body[^oAjax.hRequest.body.match[<br>][gi]{<br/>}]}

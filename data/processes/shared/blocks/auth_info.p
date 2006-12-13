@@ -1,4 +1,4 @@
-$lparams.body
+﻿$lparams.body
 <block_content>
 ^if($MAIN:objAuth.is_logon){
 <ul>
@@ -13,6 +13,11 @@ $lparams.body
 </ul>
 	^MAIN:objAuth.xmlFormLogout[$.target_url[./]]
 }{
-	^MAIN:objAuth.xmlFormLogon[$.target_url[./]]
+	^MAIN:objAuth.xmlFormLogon[
+		$.target_url[./]
+		$.addon[
+			<a href="$OBJECTS_HASH.4.full_path" title="Регистрация">Регистрация</a>
+		]
+	]
 }
 </block_content>

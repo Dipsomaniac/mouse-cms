@@ -85,7 +85,8 @@ $TEMPLATES_HASH[^TEMPLATES.hash[id]]
 #		определяем права авторизированного пользователя на объект
 		$RIGHTS(^MAIN:objAuth.getRightsToObject[$OBJECT;$OBJECT_THREAD;$ACL;^if($MAIN:objAuth.user.id == $OBJECT.auser_id){1}{0}])
 	}
-	$HASH_RIGHTS[^getHashRights[$RIGHTS]]				# получаем хэш прав
+#	получаем хэш прав
+	$HASH_RIGHTS[^getHashRights[$RIGHTS]]
 #	определение необходимого content и выдача его содержимого
 	^if($HASH_RIGHTS.read){
 		$result[^contentSwitcher[]]
@@ -185,6 +186,7 @@ $result[
 	^ObjectByParent[$OBJECTS_HASH_TREE;0;
 		$.tag[branche]
 		$.attributes[^table::create{name^#OAid^#OAname^#OAdescription^#OAis_show_in_menu^#OAis_show_on_sitemap^#OAfull_path}]
+		$.id($OBJECT.id)
 		]
 </navigation>
 <body>
@@ -385,6 +387,7 @@ $result[^switch[$sName]{
 $result[^ObjectByParent[$[$hParam.hash_name];$hParam.thread_id;
 		$.tag[branche]
 		$.attributes[^table::create{name^#OAid^#OAname^#OAdescription^#OAis_show_in_menu^#OAis_show_on_sitemap^#OAfull_path}]
+		$.id($OBJECT.id)
 ]
 ]]
 #end @Tree[hParam]
@@ -537,7 +540,7 @@ $result[
 	^lparams.attributes.menu{
 		${lparams.attributes.name}="$itemHash.[$lparams.attributes.name]"
 	}
-	^if($itemHash.id == $OBJECT.id){ in="1" 
+	^if($itemHash.id == $lparams.id){ in="1" 
 			^if(def $form:id){
 				hit="0"
 			}{
@@ -644,23 +647,22 @@ $result[^if(^_iParentId.int(0)){$OBJECTS_HASH.[$_iParentId].thread_id}{^OBJECTS_
 ####################################################################################################
 # метод формирующий и выполняющий sql запрос
 @getSql[hParams]
-$_hParams[^hash::create[$hParams]]
 $result[
 	^MAIN:objSQL.sql[table][
 		SELECT
-			^_hParams.names.foreach[key;value]{$key ^if(def $value){ AS $value }}[,]
+			^hParams.names.foreach[key;value]{$key ^if(def $value){ AS $value }}[,]
 		FROM
-			$_hParams.table
-		^if(def $_hParams.leftjoin){ LEFT JOIN $_hParams.leftjoin USING ($_hParams.using) }
-		^if(def $_hParams.where){ WHERE $_hParams.where }
-		^if(def $_hParams.group){GROUP BY $_hParams.group }
-		^if(def $_hParams.order){ORDER BY $_hParams.order }
-		^if(def $_hParams.having){HAVING $_hParams.having }
+			$hParams.table
+		^if(def $hParams.leftjoin){ LEFT JOIN $hParams.leftjoin USING ($hParams.using) }
+		^if(def $hParams.where){ WHERE $hParams.where }
+		^if(def $hParams.group){GROUP BY $hParams.group }
+		^if(def $hParams.order){ORDER BY $hParams.order }
+		^if(def $hParams.having){HAVING $hParams.having }
 	][
-		^if(def $_hParams.limit){$.limit($_hParams.limit)}
-		^if(def $_hParams.offset){$.offset($_hParams.offset)}
+		^if(def $hParams.limit){$.limit($hParams.limit)}
+		^if(def $hParams.offset){$.offset($hParams.offset)}
 	][
-		^if(!$MAIN:NoCache){$.file[${_hParams.cache}.cache]}]
+		^if(!$MAIN:NoCache && def $hParams.cache){$.file[${hParams.cache}.cache]}
 	]
 ]
 #end @getSql[hParams]

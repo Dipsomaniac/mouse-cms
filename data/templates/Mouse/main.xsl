@@ -91,11 +91,10 @@
 <!-- topmenu -->
 <xsl:template match="menu">
 	<ul id="topnav">
-		<xsl:apply-templates select="/document/navigation/branche" mode="topmenu" />
+		<xsl:apply-templates select="/document/navigation/branche[@is_show_in_menu=1]" mode="topmenu" />
 	</ul>
 </xsl:template>
-<xsl:template match="/document/navigation/branche" mode="topmenu"> 
-	<xsl:if test="@is_show_in_menu = 1">
+<xsl:template match="/document/navigation/branche[@is_show_in_menu=1]" mode="topmenu"> 
 		<li>
 			<xsl:if test="not(@in=1) or (@hit=0)">
 				<a href="{@full_path}" title="{@document_name}"><xsl:value-of select="@name"/>
@@ -106,7 +105,6 @@
 				<xsl:call-template name="topmenu" />
        		</xsl:if>
 		</li>
-	</xsl:if>
 </xsl:template>
 <xsl:template name="topmenu"> 
 	<xsl:if test = "not(position()=last())" >
@@ -117,17 +115,15 @@
 <!-- sidemenu -->
 <xsl:template match="sidemenu">
 	<ul>
-		<xsl:apply-templates select="/document/navigation/branche" mode="sidemenu" />
+		<xsl:apply-templates select="/document/navigation/branche[@is_show_in_menu=1]" mode="sidemenu" />
 	</ul>
 </xsl:template>
-<xsl:template match="/document/navigation/branche|/document/navigation//branche/branche" mode="sidemenu" >
-	<xsl:if test="@is_show_in_menu = 1">
+<xsl:template match="/document/navigation/branche[@is_show_in_menu=1]|/document/navigation//branche/branche[@is_show_in_menu=1]" mode="sidemenu" >
 			<li>
 				<xsl:if test="not (@in=1)"><a href="{@full_path}" title="{@description}"><xsl:value-of select="@name"/></a></xsl:if>
 				<xsl:if test="(@in=1)"><b><xsl:value-of select="@name"/></b></xsl:if>
 				<xsl:if test="(./branche[@is_show_in_menu=1])"><ul><xsl:apply-templates select="//branche/branche" mode="sidemenu" /></ul></xsl:if>
 			</li>
-	</xsl:if>
 </xsl:template>
 
 <!-- sitemap -->
@@ -176,43 +172,80 @@
 
 <!-- forum -->
 <xsl:template match="forum">
-<h1><a href="/forum">Форум</a></h1>
-<br/><hr/>
-	<h3><a href="#" onclick="$(this).hide();$('#forum_repeat').slideToggle('slow');">[Написать новое сообщение]</a></h3><br/>
-	<form action="" method="post" name="forum_repeat" enctype="multipart/form-data">
+<xsl:apply-templates select="buttons" /><hr/>
 	<div id="forum_repeat" class="form-builder-tab">
+	<form action="" method="post" name="form_forum_repeat" enctype="multipart/form-data">
 		<div class="divider">
 			<label for="" class="title" id="title_name">Заголовок</label>
 			<small class="help">Заголовок сообщения</small>
 			<div class="container">
-				<input type="text" name="name" value="" class="input-text-long" />
+				<input type="text" name="title" value="" class="input-text-long" />
 			</div>
 		</div>
 		<div class="divider">
 			<label for="" class="title" id="title_name">Содержание</label>
 			<small class="help">Текст сообщения</small>
 			<div class="container">
-				<textarea name="description" id="textarea_description" class="input-textarea-large"/>
+				<textarea name="body" id="message_body" class="input-textarea-large"/>
 			</div>
 		</div>
-		<input type="hidden" name="new" value="do" />
-		<input type="submit" class="input-button" name="action" value="Отправить" />
+		<input type="hidden" name="action" value="insert" />
+		<input type="hidden" name="cache" value="forums" />
+		<input type="hidden" name="dt_published" value="{@dt}" />
+		<input type="hidden" name="tables" value="
+			$.main[forum_message]
+		" />
+		<input type="hidden" name="parent_id" value="{@parent_id}" />
+		<input type="hidden" name="thread_id" value="{./thread_id}" />
+		<input type="submit" class="input-button" name="submit" value="Отправить" />
 		<br/><br/><hr/>
+		</form>
+	</div>
+	<div id="forum_search" class="form-builder-tab">
+		<form action="" method="post" name="form_forum_repeat" enctype="multipart/form-data">
+			<div class="divider">
+				<label for="" class="title" id="title_name">Строка поиска</label>
+				<small class="help">Ключевые слова</small>
+				<div class="container">
+					<input type="text" name="search" value="" class="input-text-long" />
+				</div>
+			</div>
+			<div class="divider">
+				<label for="" class="title" id="title_name">Автор</label>
+				<small class="help">Фильтр по автору</small>
+				<div class="container">
+					<input type="text" name="author" value="" class="input-text-medium" />
+				</div>
+			</div>
+		<br/>
+		<input type="hidden" name="action" value="search" />
+		<input type="submit" class="input-button" name="submit" value="Найти" />
+		</form>
 	</div>
 	<script type="text/javascript">
 		$('#forum_repeat').hide()
+		$('#forum_search').hide()
 	</script>
-	</form>
+	<xsl:apply-templates select="article"/>
 	<ul>
-		<xsl:apply-templates />
+		<div class="forum-info">
+			<xsl:apply-templates select="forum_message"/>
+		</div>
 	</ul>
 </xsl:template>
 <xsl:template match="forum_message">
 	<li>
-		<h3><a href="?id={@id}"><xsl:value-of select="@title"/></a>,</h3>
-		<xsl:value-of select="@author"/>, [<xsl:value-of select="@dt"/>]
+			<xsl:choose>
+				<xsl:when test="@in">
+			<h3><xsl:value-of select="@title"/><xsl:if test="(@is_empty = 1)"> ( - )</xsl:if></h3>
+				</xsl:when>
+				<xsl:otherwise>
+			<a href="?id={@id}"><xsl:value-of select="@title"/><xsl:if test="(@is_empty=1)"> ( - )</xsl:if></a>,
+			<xsl:value-of select="@author"/>, [<xsl:value-of select="@dt"/>]
+			<xsl:if test="./forum_message"><a href="#" onclick="$('#m{@id}').slideToggle('slow');">#</a></xsl:if>
+				</xsl:otherwise>
+			</xsl:choose>
 		<xsl:if test="./forum_message">
-			<a href="#" onclick="$('#m{@id}').slideToggle('slow');">[*]</a>
 			<ul id="m{@id}">
 				<xsl:apply-templates />
 			</ul>

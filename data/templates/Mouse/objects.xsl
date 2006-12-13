@@ -14,7 +14,14 @@
 	</div>
 </xsl:template>
 <xsl:template match="button" mode="draw">
-	<img src="/themes/mouse/icons/{@image}" name="{@name}" alt="{@alt}" title="{@alt}" class="input-image" onClick="{@onClick}" />
+	<xsl:choose>
+		<xsl:when test="@href">
+			<a href="{@href}" alt="{@alt}" title="{@alt}"><img src="/themes/mouse/icons/{@image}" class="input-image" /></a>
+		</xsl:when>
+		<xsl:otherwise>
+			<img src="/themes/mouse/icons/{@image}" name="{@name}" alt="{@alt}" title="{@alt}" class="input-image" onClick="{@onClick}" />
+		</xsl:otherwise>
+	</xsl:choose>
 	&nbsp;&nbsp;
 </xsl:template>
 <xsl:template match="button">
@@ -25,7 +32,7 @@
 	<h2>Mouse</h2>
 	<xsl:apply-templates/>
 </xsl:template>
-<xsl:template match="jq_object/branche|jq_object//branche">
+<xsl:template match="jq_object//branche">
 	<div>
 		<img src="/themes/mouse/icons/nil{@level}.gif" />
 		<xsl:if test="./branche">
@@ -52,18 +59,6 @@
 			</div>
 		</xsl:if>
 	</div>
-</xsl:template>
-
-<!-- jq_block -->
-<xsl:template match="jq_block">
-	<div id="objectsort">
-		<xsl:apply-templates />
-	</div>
-</xsl:template>
-<xsl:template match="jq_block/li">
-	<li id="d_{@id}" rel="{@id}" class="mode{@mode}">
-		[<xsl:value-of select="@mode"/>] <xsl:value-of select="."/>
-	</li>
 </xsl:template>
 
 </xsl:stylesheet>
