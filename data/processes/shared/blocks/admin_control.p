@@ -221,11 +221,11 @@ ID	id
 				</field>
 				<field type="checkbox" name="is_published"  label="Опубликовать" description="">$is_published</field>
 				<field type="select" name="parent_id"       label="Предок"       description="Родительский объект"     class="medium">
-					<option id="0" select="$parent_id">Корневое пространство</option>
+					<option id="0" value="0" select="$parent_id">Корневое пространство</option>
 					<system:method name="list">name[OBJECTS]added[select="$parent_id"]tag[option]</system:method>
 				</field>
 				<field type="select" name="template_id" label="Шаблон" description="Шаблон дизайна объекта" class="medium">
-					<option id="0" select="$OBJECTS_HASH.[$form:id].template_id">Не задан</option>
+					<option id="0" value="0" select="$OBJECTS_HASH.[$form:id].template_id">Не задан</option>
 					<system:method name="list">name[TEMPLATES]added[select="$OBJECTS_HASH.[$form:id].template_id"]tag[option]</system:method>
 				</field>
 				<field type="textarea" name="description"   label="Описание"     description="Описание объекта">$description</field>
@@ -245,11 +245,11 @@ ID	id
 					<system:method name="list">name[TYPES]added[select="$OBJECTS_HASH.[$form:id].object_type_id"]tag[option]</system:method>
 				</field>
 				<field type="select" name="data_process_id" description="Обработчик объекта" label="Обработчик" class="medium">
-					<option id="0" select="$OBJECTS_HASH.[$form:id].data_process_id">отсутствует</option>
+					<option id="0" value="0" select="$OBJECTS_HASH.[$form:id].data_process_id">отсутствует</option>
 					<system:method name="list">name[PROCESSES]added[select="$OBJECTS_HASH.[$form:id].data_process_id"]tag[option]</system:method>
 				</field>
 				<field type="select" name="link_to_object_id" description="Подменить содержимое, содержимым выбранного объекта" label="Ссылка"  class="medium">
-					<option id="0" select="$OBJECTS_HASH.[$form:id].link_to_object_id">не подменять</option>
+					<option id="0" value="0" select="$OBJECTS_HASH.[$form:id].link_to_object_id">не подменять</option>
 					<system:method name="list">name[OBJECTS]added[select="$OBJECTS_HASH.[$form:id].link_to_object_id"]tag[option]</system:method>
 				</field>
 			</tab>
@@ -264,7 +264,7 @@ ID	id
 				<field type="checkbox" name="rights_delete" label="Удаление" description="Права по умолчанию">$hRights.delete</field>
 #				<field type="text" name="rights" label="rights" description="Маска прав на объект" class="short">$OBJECTS_HASH.[$form:id].rights</field>
 				<field type="hidden" name="dt_update">^MAIN:dtNow.sql-string[]</field>
-				<field type="hidden" name="auser_id">$MAIN:objAuth.user.[$form:id]</field>
+				<field type="hidden" name="auser_id">$MAIN:objAuth.user.id</field>
 				^if($hAction.i & 6){
 					<field type="hidden" name="action">insert</field>
 				}
@@ -350,7 +350,7 @@ ID	id
 				</field>
 				<field type="checkbox" name="is_published"  label="Опубликовать">$BLOCKS_HASH.[$form:id].is_published</field>
 				<field type="select" name="data_process_id" label="Обработчик" description="Обработчик блока">
-					<option id="0" select="$BLOCKS_HASH.[$form:id].data_process_id">отсутствует</option>
+					<option id="0" value="0" select="$BLOCKS_HASH.[$form:id].data_process_id">отсутствует</option>
 ^PROCESSES.menu{
 					<option id="$PROCESSES.id" value="$PROCESSES.id" select="$BLOCKS_HASH.[$form:id].data_process_id">$PROCESSES.name</option>
 }
@@ -441,10 +441,10 @@ ID	id
 			^if($hAction.i & 1){
 				<field type="none"  name="data_process_id" label="ID" description="ID обработчика">$PROCESSES_HASH.[$form:id].id</field>
 			}
-			<field type="text" name="name" label="Имя" description="Имя обработчика">$PROCESSES_HASH.[$form:id].name</field>
+			<field type="text" name="name" label="Имя" description="Имя обработчика" class="long">$PROCESSES_HASH.[$form:id].name</field>
 			<field type="text" name="filename" label="Процесс" description=" Имя файла обработчика">$PROCESSES_HASH.[$form:id].filename</field>
 			<field type="text" name="sort_order" label="Порядок" description="Сортировка">$PROCESSES_HASH.[$form:id].sort_order</field>
-			<field type="select" name="data_process_type_id" label="Тип" description="Тип обработчика">
+			<field type="select" name="data_process_type_id" label="Тип" description="Тип обработчика" class="long">
 				<system:method name="list">name[DATA_PROCESS_TYPES]tag[option]added[select="$PROCESSES_HASH.[$form:id].data_process_type_id"]</system:method>
 			</field>
 			<field type="textarea" name="description" label="Описание" description="Функциональность обработчика">$PROCESSES_HASH.[$form:id].description</field>
