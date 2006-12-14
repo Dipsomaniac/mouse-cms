@@ -22,7 +22,6 @@ $result[
 <block_content>
 #	выдача данных блока
 	$hParams.body
-#	если вызван не режим "picker" выводим набор кнопок админки
 	<buttons>
 			<button image="24_sites.gif"      name="sites"     alt="Управление сайтами"        onClick="Go('$OBJECTS_HASH.80.full_path?type=sites','#container')" />
 			<button image="24_objects.gif"    name="objects"   alt="Управление объектами"      onClick="Go('$OBJECTS_HASH.80.full_path?type=objects','#container')" />
@@ -813,13 +812,7 @@ $_tData[^table::create[$hParams.data;$.limit($scroller.limit) $.offset($scroller
 	</thead>
 	<tbody class="table-builder-spreadsheet">
 	^_tData.menu{
-		<tr id="tr_${_tData.id}"  
-			^if($form:mode eq 'picker'){
-				onDblClick="setPick('$_tData.id','$_tData.name','$form:elem')"
-			}{
-				onDblClick="doEdit('$MAIN:sPath?action=edit&amp^;type=$form:type&amp^;id=$_tData.id','#container')"
-			}
-			>
+		<tr id="tr_${_tData.id}"  onDblClick="doEdit('$MAIN:sPath?action=edit&amp^;type=$form:type&amp^;id=$_tData.id','#container')">
       		<td>
          		<div style="padding: 0px^; margin: 0px^;">
 						<input type="checkbox" name="check_${_tData.id}" class="input-checkbox" onClick="markRow(${_tData.id})" />

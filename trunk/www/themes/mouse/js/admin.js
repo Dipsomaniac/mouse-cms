@@ -1,7 +1,3 @@
-$(document)
-.ready(function(){$("#container").load('/mc/admin/?type=objects')})
-.ajaxStart( function () {$('#loadingAjax').show()})
-.ajaxStop(  function () {$('#loadingAjax').hide()})
 // загрузка ajax
 function Go(s,object) 
 {
@@ -29,6 +25,18 @@ function saveForm(form,url,parent)
 	$(document.forms[form].elements).each( function() { if(this.checked) prop[this.name] = '1'; else prop[this.name] = escape(this.value); });
 	$.post('/ajax/go.html', prop, function(data){ alert(data); $(parent).load(url);})
 }
+
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+function saveForms(form,url,parent)
+{
+	var prop = {};
+	$(document.forms[form].elements).each( function() { if(this.checked) prop[this.name] = '1'; else prop[this.name] = escape(this.value); });
+	$.post('/forms/', prop, function(data){ alert(data) })
+}
+
+
+
 // копирование 
 function CopyChecked(s)
 {
@@ -51,7 +59,8 @@ function DeleteChecked(s,url,parent)
 			} else prop[this.name] =  escape(this.value) ;
     	});
     	prop[s] = del;
-		$.post('/ajax/go.html', prop, function(data){ alert(data); $(parent).load(url);})
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		$.post('/forms/', prop, function(data){ alert(data); $(parent).load(url);})
     }
 }
 // всплывающее окошко

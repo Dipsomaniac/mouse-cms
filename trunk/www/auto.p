@@ -125,7 +125,7 @@ $_hCacheOptions[^mGetCacheOptions[]]
 	$iIsExecuted(1) 
 	^trim[^oEngine.execute[]]
 }
-^_comments[$_hCacheOptions.key;$_hCacheOptions.time;$iIsExecuted]
+^if($_hCacheOptions.time){^_comments[$_hCacheOptions.key;$_hCacheOptions.time;$iIsExecuted]}
 ^if($Debug){$hUsageAfter[ $.rusage[$status:rusage] $.memory[$status:memory]]}
 #end @main[]
 

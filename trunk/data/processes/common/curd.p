@@ -22,7 +22,7 @@ $hObject.order[sort_order]
 # получение параметров
 ^hObject.add[$hParams]
 # получение структуры =debug
-$hObject.structure[^hObject.oSql.sql[table][SHOW COLUMNS FROM $hObject.table][][$.file[${hObject.table}_struct.cache]]]
+# $hObject.structure[^hObject.oSql.sql[table][SHOW COLUMNS FROM $hObject.table][][$.file[${hObject.table}_struct.cache]]]
 # создание объектов (таблица, хэш)
 $table[^mGetSql[$hObject]]
 $hash[^table.hash[id]]
@@ -55,19 +55,92 @@ $result[
 
 ####################################################################################################
 # метод выводящий список данных
-@list[hParams][hList]
+@list[hParams][hList;oScroller]
 $hList[^hash::create[]]
+$hList.tags[list]
 $hList.tag[list]
-$hList.tags[lists]
 ^hList.add[$hParams]
-<$hList.tags label="$hList.label">
-^hList.names.menu{<th id="$hList.names.id">$hList.names.name</th>}
-^table.menu{
-	<$hList.tag
-		^hList.names.menu{
-			$hList.names.id = "^if(def $hList.names.object){$hList.[${hList.names.object}].[${table.[$hList.names.id]}].name}{$table.[$hList.names.id]}"
-		}[ ]
-	/>
+# создание скролера при необходимости
+^if($hList.scroller){
+	$oScroller[^scroller::create[
+		$.path_param[page]
+		$.request[]
+		$.table_count(^table.count[])
+		$.number_per_section(^form:number.int(20))
+		$.section_per_page(5)
+		$.type[page]
+		$.r_selector[ next ]
+		$.l_selector[ prev ]
+		$.divider[ ]
+		$.r_divider[^]]
+		$.l_divider[^[]
+	]]
+$table[^table::create[$table;$.limit($oScroller.limit) $.offset($oScroller.offset)]]
 }
-</$hList.tags>
-#end @list[hParams]
+
+# построение списка
+^if(!^hList.simple.int(0)){<$hList.tags label="$hList.label">}
+# построение заголовков
+^if(!^hList.simple.int(0)){^hList.names.menu{<${hList.tag}_th id="$hList.names.id">$hList.names.name</${hList.tag}_th>}}
+# перебор строк
+
+^table.menu{
+	^if(!^hList.simple.int(0)){
+		<${hList.tag}_tr id="$table.id">
+		<${hList.tag}_code>^process{$hList.code}</${hList.tag}_code>}
+#		перебор колонок
+	^if(^hList.simple.int(0)){
+		<${hList.tag} 
+		^hList.names.menu{ 
+			$hList.names.id="$table.[$hList.names.id]" 
+			^if($hList.select eq $table.[$hList.names.id]){select="1"} 
+		} />
+	}{
+		^hList.names.menu{
+			<${hList.tag}_td
+				id="$hList.names.id"
+				value="^if(def $hList.names.object){$hList.[${hList.names.object}].[${table.[$hList.names.id]}].name}{$table.[$hList.names.id]}"
+				name="$table.[$hList.names.id]"
+			 />
+		}
+	}
+^if(!^hList.simple.int(0)){</${hList.tag}_tr>}
+}
+
+# скроллер
+^if($hList.scroller){
+	<${hList.tag}_scroller 
+		count="$oScroller.table_count" 
+		offset="$oScroller.offset" 
+		limit="$oScroller.limit"
+		now="^oScroller.offset.inc($oScroller.limit)$oScroller.offset"
+	>^oScroller.optimize[^oScroller.draw[]]</${hList.tag}_scroller>
+}
+^if(def $hList.added){$hList.added}
+^if(!^hList.simple.int(0)){</$hList.tags>}
+#end @list[hParams][hList;oScroller;tData]
+
+
+
+####################################################################################################
+# метод создающий форму для редактирования данных
+@form[hParams][hForm]
+# значения по умолчанию
+$hForm[^hash::create[]]
+$hForm.name[form_content]
+$hForm.form_id[form_content]
+$hForm.enctype[multipart/form-data]
+^hForm.add[$hParams]
+<form method="post" action="/ajax/go.html" name="$hForm.name" id="$hForm.form_id" enctype="$hForm.enctype" label="$hForm.label">
+<tabs>
+	<tab id="section-1" name="Основное">
+	^hForm.fields.menu{
+		<field type="$hForm.fields.type" name="$hForm.fields.name" label="$hForm.fields.label" description="$hForm.fields.description" class="$hForm.fields.class">
+			^if(def $hForm.fields.default){$hForm.[$hForm.fields.default]}{$hash.[$hForm.id].[$hForm.fields.name]}
+		</field>
+	}
+	</tab>
+</tabs>
+$hForm.added
+</form>
+#end @form[hParams]

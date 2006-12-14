@@ -61,8 +61,9 @@
 	</div>
 </xsl:template>
 
-<xsl:template match="lists">
-	<form action="/ajax/go.html" method="post" name="form_content" enctype="multipart/form-data">
+<!-- admin lists -->
+<xsl:template match="alists">
+	<form action="/forms/" method="post" name="form_content" enctype="multipart/form-data">
 	<div class="mlabel">
 		<xsl:value-of select="@label"/>
 	</div>
@@ -76,19 +77,92 @@
 					<span style="cursor: default;" onClick="if (this.parentNode.childNodes[0].tagName=='INPUT') {e=this.parentNode.childNodes[0]} else {e=this.parentNode.childNodes[1]} if (e.checked) {e.checked=false} else {e.checked=true}" />
 				</div>
 			</td>
-			<xsl:apply-templates select="./th" />
+			<xsl:apply-templates select="./alist_th" />
 		</tr>
 		</thead>
 		<tbody class="table-builder-spreadsheet">
-			
+			<xsl:apply-templates select="./alist_tr" />
 		</tbody>
+		<tfoot class="table-builder-spreadsheet">
+			<tr id="space"><td colspan="100"></td></tr>
+			<xsl:apply-templates select="./alist_scroller" />
+			<tr id="search">
+				<td colspan="100">
+					<div>
+						<label for="sys-search">Поиск:</label>
+    					<input type="text" id="sys-search" name="sys_svalue" value="{./form_find}" class="input-text-long" size="50" />
+    					<input type="button" class="input-button" value="Показать" 
+						onClick="Go('{./footer_attr}find=' + escape(document.getElementsByName('sys_svalue')[0].value) + '&amp;filter=' + document.getElementsByName('fquery')[0].value, '#container')" />
+					</div>
+					<div>
+    					<label for="sys-filter">Фильтр:</label>
+    					<input type="text" name="fquery" value="{./form_filter}" class="input-text-long" size="30" readonly="readonly" />
+    					<input type="hidden" name="sys_ffield" value="" />
+    					<input type="hidden" name="sys_fvalue" value="" />
+    					<img src="/themes/mouse/buttons/clear.gif" alt="x" class="input-image" onClick="clearFilter()" />
+    					(чтобы установить фильтр нажмите на значение в таблице)
+				</div>
+			</td>
+		</tr>
+		</tfoot>
 		</table>
+		<input type="hidden" name="form_engine" value="{./form_engine}" />
 	</div>
 	</form>
 </xsl:template>
 
-<xsl:template match="th">
-<th id="{@id}"><xsl:value-of select="."/></th>
+<xsl:template match="alist_th">
+<th	id="{@id}" onDblClick="Go('{../th_attr}order={@id}','#container')"><xsl:value-of select="."/></th>
 </xsl:template>
 
+<xsl:template match="alist_tr">
+	<tr id="tr_{@id}" onDblClick="doEdit('{../tr_attr}id={@id}','#container')">
+		<td>
+			<div style="padding: 0px; margin: 0px;">
+				<input type="checkbox" name="check_{@id}" class="input-checkbox" onClick="markRow({@id})" />
+				<span style="cursor: default;" onClick="if (this.parentNode.childNodes[0].tagName=='INPUT') {e=this.parentNode.childNodes[0]} else {e=this.parentNode.childNodes[1]} if (e.checked) {e.checked=false} else {e.checked=true}">
+				</span>
+			</div>
+					<div class="div-system-info" id="sysinfo_{@id}">
+						<xsl:apply-templates select="./alist_code" />
+					</div>
+				</td>
+		<xsl:apply-templates select="./alist_td" />
+	</tr>
+</xsl:template>
+
+<xsl:template match="alist_code">
+	<xsl:apply-templates />
+</xsl:template>
+
+<xsl:template match="alist_td">
+<td onClick="doMark({../@id})">
+	<span onClick="setFilter('{@id}', '{@name}')" class="arrow" onMouseover="ShowLocate('sysinfo_{../@id}', event)" onMouseout="Hide('sysinfo_{../@id}')">
+		<xsl:value-of select="@value"/>
+	</span>
+</td>
+</xsl:template>
+
+<xsl:template match="alist_scroller">
+<tr id="pages">
+	<td colspan="100">
+		<xsl:copy-of select="./span" />
+	</td>
+</tr>
+<tr id="perpage">
+	<td colspan="100">
+		<div class="form">
+    		<label for="sys-perpage">Объектов на страницу:</label>
+    		<input type="text" id="sys-perpage" name="sys_perpage" value="{@limit}" class="input-text-short" size="2" />
+   			<input type="button" value="Показать" class="input-button" onClick="Go('{../scroller_attr}number=' + document.getElementsByName('sys_perpage')[0].value , '#container')" />
+		</div>
+			<div class="total">
+				<xsl:text>Общее количество: </xsl:text>
+				<xsl:value-of select="@offset" /><xsl:text> </xsl:text>
+				<xsl:value-of select="@now" /><xsl:text> - </xsl:text>
+				<xsl:value-of select="@count" /> 
+			</div>
+	</td>
+</tr>
+</xsl:template>
 </xsl:stylesheet>
