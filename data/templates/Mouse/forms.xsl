@@ -82,6 +82,19 @@
 	</xsl:if>
 </xsl:template>
 
+<xsl:template match="field_option[not(@select)]">
+	<option value="{@id}"><xsl:value-of select="@name"/></option>
+</xsl:template>
+
+<xsl:template match="field_option[@select]">
+	<option value="{@id}" selected="selected"><xsl:value-of select="@name"/></option>
+</xsl:template>
+
+<!-- forms process data -->
+<xsl:template match="form_engine">
+	<input type="hidden" name="form_engine" value="{.}"/>
+</xsl:template>
+
 <!-- input -->
 <xsl:template match="input">
 		<input>

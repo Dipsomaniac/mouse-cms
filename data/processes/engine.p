@@ -399,12 +399,12 @@ $result[^ObjectByParent[$[$hParam.hash_name];$hParam.thread_id;
 @list[hParam][_jMethod]
 $result[
 ^try{
-  $_jMethod[$[$hParam.name]]
+  $_jMethod[$$hParam.name]
   ^_jMethod.menu{<$hParam.tag id="$_jMethod.id" value="$_jMethod.id"
 	^if(def $hParam.mode){mode="$_jMethod.[$hParam.mode]"}
   	$hParam.added
 	>$_jMethod.name</$hParam.tag> }
-}{ $exception.handled(1) }
+}{ $exception.handled(1) ^stop[comment: $hParam.name]}
 ]
 #end @list[hParam]
 
