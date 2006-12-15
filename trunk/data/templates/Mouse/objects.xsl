@@ -61,8 +61,8 @@
 	</div>
 </xsl:template>
 
-<!-- admin lists -->
-<xsl:template match="alists">
+<!-- atable -->
+<xsl:template match="atable">
 	<form action="/forms/" method="post" name="form_content" enctype="multipart/form-data">
 	<div class="mlabel">
 		<xsl:value-of select="@label"/>
@@ -77,15 +77,15 @@
 					<span style="cursor: default;" onClick="if (this.parentNode.childNodes[0].tagName=='INPUT') {e=this.parentNode.childNodes[0]} else {e=this.parentNode.childNodes[1]} if (e.checked) {e.checked=false} else {e.checked=true}" />
 				</div>
 			</td>
-			<xsl:apply-templates select="./alist_th" />
+			<xsl:apply-templates select="./arow_th" /> 
 		</tr>
 		</thead>
 		<tbody class="table-builder-spreadsheet">
-			<xsl:apply-templates select="./alist_tr" />
+			<xsl:apply-templates select="./arow_tr" />
 		</tbody>
 		<tfoot class="table-builder-spreadsheet">
 			<tr id="space"><td colspan="100"></td></tr>
-			<xsl:apply-templates select="./alist_scroller" />
+			<xsl:apply-templates select="./arow_scroller" />
 			<tr id="search">
 				<td colspan="100">
 					<div>
@@ -111,11 +111,13 @@
 	</form>
 </xsl:template>
 
-<xsl:template match="alist_th">
+<!-- arow_th -->
+<xsl:template match="arow_th">
 <th	id="{@id}" onDblClick="Go('{../th_attr}order={@id}','#container')"><xsl:value-of select="."/></th>
 </xsl:template>
 
-<xsl:template match="alist_tr">
+<!-- arow_tr -->
+<xsl:template match="arow_tr">
 	<tr id="tr_{@id}" onDblClick="doEdit('{../tr_attr}id={@id}','#container')">
 		<td>
 			<div style="padding: 0px; margin: 0px;">
@@ -124,29 +126,28 @@
 				</span>
 			</div>
 					<div class="div-system-info" id="sysinfo_{@id}">
-						<xsl:apply-templates select="./alist_code" />
+						<xsl:value-of select="." />
 					</div>
 				</td>
-		<xsl:apply-templates select="./alist_td" />
+		<xsl:apply-templates select="./arow_td" />
 	</tr>
 </xsl:template>
 
-<xsl:template match="alist_code">
-	<xsl:apply-templates />
-</xsl:template>
-
-<xsl:template match="alist_td">
+<!-- arow_td -->
+<xsl:template match="arow_td">
 <td onClick="doMark({../@id})">
-	<span onClick="setFilter('{@id}', '{@name}')" class="arrow" onMouseover="ShowLocate('sysinfo_{../@id}', event)" onMouseout="Hide('sysinfo_{../@id}')">
-		<xsl:value-of select="@value"/>
+	<span onClick="setFilter('{@id}', '{@value}')" class="arrow" onMouseover="ShowLocate('sysinfo_{../@id}', event)" onMouseout="Hide('sysinfo_{../@id}')">
+		<xsl:if test="@name"><xsl:value-of select="@name"/></xsl:if>
+		<xsl:if test="not(@name)"><xsl:value-of select="@value"/></xsl:if>
 	</span>
 </td>
 </xsl:template>
 
-<xsl:template match="alist_scroller">
+<!-- arow_scroller -->
+<xsl:template match="arow_scroller">
 <tr id="pages">
 	<td colspan="100">
-		<xsl:copy-of select="./span" />
+		<xsl:apply-templates />
 	</td>
 </tr>
 <tr id="perpage">
@@ -158,9 +159,9 @@
 		</div>
 			<div class="total">
 				<xsl:text>Общее количество: </xsl:text>
-				<xsl:value-of select="@offset" /><xsl:text> </xsl:text>
-				<xsl:value-of select="@now" /><xsl:text> - </xsl:text>
-				<xsl:value-of select="@count" /> 
+				<xsl:value-of select="@offset" /><xsl:text>-</xsl:text>
+				<xsl:value-of select="@now" /><xsl:text>  </xsl:text>
+				(<xsl:value-of select="@count" />)
 			</div>
 	</td>
 </tr>

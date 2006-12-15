@@ -9,11 +9,11 @@
 <block_content>
 $hParams.body
 <buttons>
-	<button image="24_sites.gif"      name="sites"     alt="Сайты"							onClick="Go('$SYSTEM.path?type=sites','#container')" />
-	<button image="24_objects.gif"    name="objects"   alt="Объекты"						onClick="Go('$SYSTEM.path?type=objects','#container')" />
-	<button image="24_blocks.gif"     name="blocks"    alt="Блоки"							onClick="Go('$SYSTEM.path?type=blocks','#container')" />
+	<button image="24_sites.gif"      name="sites"     alt="Сайты"							onClick="Go('$SYSTEM.path?type=site','#container')" />
+	<button image="24_objects.gif"    name="objects"   alt="Объекты"						onClick="Go('$SYSTEM.path?type=object','#container')" />
+	<button image="24_blocks.gif"     name="blocks"    alt="Блоки"							onClick="Go('$SYSTEM.path?type=block','#container')" />
 	<button image="24_process.gif"    name="process"   alt="Обработчики"					onClick="Go('$SYSTEM.path?type=process','#container')" />
-	<button image="24_templates.gif"  name="templates" alt="Шаблоны"						onClick="Go('$SYSTEM.path?type=templates','#container')" />
+	<button image="24_templates.gif"  name="templates" alt="Шаблоны"						onClick="Go('$SYSTEM.path?type=template','#container')" />
 	<button image="24_users.gif"      name="users"     alt="Gользователи и группы"	onClick="Go('$SYSTEM.path?type=users','#container')" />
 	<button image="24_rights.gif"     name="rigths"    alt="Назначение прав"			onClick="Go('$SYSTEM.path?type=rights','#container')" />
 	<button image="24_configure.gif"  name="configure" alt="Обслуживание системы"		onClick="Go('$SYSTEM.path?type=config','#container')" />
@@ -25,6 +25,11 @@ $hParams.body
 		<button image="24_save.gif"    name="save"      alt="Сохранить" onClick="saveForms('form_content','$SYSTEM.path?type=$form:type','#container')" />
 		<button image="24_retype.gif"  name="retype"    alt="Сбросить"  onClick="resetForm()" />
 		<button image="24_cancel.gif"  name="cancel"    alt="Отменить"  onClick="Cancel('$SYSTEM.path?type=$form:type')" />
+	}
+	^if(def $form:type && !def $form:action){
+		<button image="24_add.gif"    name="add"    alt="Добавить"   onClick="Go('$SYSTEM.path?type=$form:type&amp^;action=add','#container')" />
+		<button image="24_copy.gif"   name="copy"   alt="Копировать" onClick="CopyChecked('$SYSTEM.path?type=$form:type&amp^;action=copy')" />
+		<button image="24_delete.gif" name="delete" alt="Удалить"    onClick="DeleteChecked('${form:type}_id','$SYSTEM.path?type=$form:type','#container')" />
 	}
 </buttons>
 ^switch[$form:type]{
@@ -42,35 +47,31 @@ $hParams.body
 
 #################################################################################################
 # Управление сайтами
-@sites[][crdSite;hAction;c]
+@site[][crdSite;hAction]
+# -----------------------------------------------------------------------------------------------
 # создание курдов сайтов и объектов
 $crdSite[^mLoader[$.name[site]]]
 $crdObject[^mLoader[$.name[object]]]
+# -----------------------------------------------------------------------------------------------
 # определение вывода в зависимости от запроса
 ^if(def $form:action){
-$hAction[^mGetAction[$form:action]]
+# -----------------------------------------------------------------------------------------------
 # вывод формы редактирования
-^crdSite.form[
-	$.label[MOUSE CMS | Сайт | $hAction.label | $crdSite.hash.[$form:id].name]
-	$.id[$form:id]
-$c{name	label	type	description	class	default
-name	Название	text	Имя сайта	long
-domain	Домен	text	Доменнное имя	medium
-lang_id	Язык	select	Язык сайта	medium	Vlang
-^if($hAction.i & 1){e404_object_id	Ошибки	select	Страница ошибок	medium	Ve404_object_id}
-cache_time	Кэш	text	Время кэша (сек)	short
-sort_order	Сортировка	text	Порядок сортировки	short
-}
-	$.Vlang[<option value="1">Русский</option>]
-	$.Ve404_object_id[
-		^crdObject.list[
-			$.simple(1)
-			$.select($crdSite.hash.[$form:id].e404_object_id)
-			$.tag[field_option]
-			$.names[^table::create{name	id	object^#OAid	id^#OAname	name}]
-	]]
-	$.fields[^table::create{$c}]
-	$.added[
+$hAction[^mGetAction[$form:action]]
+<form method="post" action="$SYSTEM.path" name="form_content" id="form_content" enctype="multipart/form-data" 
+	label="MOUSE CMS | Сайты | $hAction.label | $crdSite.hash.[$form:id].name ">
+<tabs>
+	<tab id="section-1" name="Основное">
+		<field type="text"   name="name"           label="Название"   description="Имя сайта"              class="long">$crdSite.hash.[$form:id].name</field>
+		<field type="text"   name="domain"         label="Домен"      description="Доменное имя"           class="medium">$crdSite.hash.[$form:id].domain</field>
+		<field type="select" name="lang_id"        label="Язык"       description="Язык сайта"             class="short"><option value="1">Русский</option></field>
+	^if($hAction.i & 1){
+		<field type="select" name="e404_object_id" label="Ошибки"     description="Страница ошибок"        class="medium">
+			^crdObject.list[$.added[select="$crdSite.hash.[$form:id].e404_object_id"]]
+		</field>
+	}
+		<field type="text"   name="cache_time"     label="Кэш"        description="Время кэширования (сек)" class="short">$crdSite.hash.[$form:id].cache_time</field>
+		<field type="text"   name="sort_order"     label="Сортировка" description="Порядок сортировки"      class="short">$crdSite.hash.[$form:id].sort_order</field>
 		<form_engine>
 			^$.where[site_id]
 			^$.site_id[$form:id]
@@ -78,39 +79,29 @@ sort_order	Сортировка	text	Порядок сортировки	short
 			^if($hAction.i & 6){^$.action[insert]}
 			^if($hAction.i & 1){^$.action[update]}
 		</form_engine>
-]]
+	</tab>
+</tabs>
+</form>
 }{
+# -----------------------------------------------------------------------------------------------
 # вывод списка сайтов
-^crdSite.list[
-	$.scroller(1)
-	$.Vobject_hash[$crdObject.hash]
-	$.label[Mouse CMS | Сайты]
-	$.tags[alists]
-	$.tag[alist]
-	$.code[Язык: ^$table.lang_id <br />Сортировка: ^$table.sort_order]
-	$.added[
-		<th_attr>$SYSTEM.path?^form:fields.foreach[key;value]{^if($key eq 'order'){}{$key=$value&amp^;}}</th_attr>
-		<tr_attr>$SYSTEM.path?action=edit&amp^;type=$form:type&amp^;</tr_attr>
-		<scroller_attr>$SYSTEM.path?^form:fields.foreach[key;value]{^if($key ne 'number'){$key=$value&amp^;}}</scroller_attr>
-		<footer_attr>$SYSTEM.path?^form:fields.foreach[key;value]{^if($key eq 'find' || $key eq 'filter'){}{$key=$value&amp^;}}</footer_attr>
-		<form_find>$form:find</form_find>
-		<form_filter>$form:filter</form_filter>
-		<form_engine>
-			^$.where[site_id]
-			^$.action[delete]
-			^$.tables[^$.main[site]]
-		</form_engine>
-	]
-	$.names[^table::create{name	id	object
+<atable label="Mouse CMS | Сайты">
+	^crdSite.draw[
+		$.code{Язык: $hTable.table.lang_id <br />Сортировка: $hTable.table.sort_order}
+		$.names[^table::create{name	id	object
 ID	id
 Название	name
 Домен	domain
 Время кэша	cache_time
-Страница Ошибок	e404_object_id	Vobject_hash
+Страница Ошибок	e404_object_id	crdObject.hash
 }]]
-<button image="24_add.gif"    name="add"    alt="Добавить"   onClick="Go('$SYSTEM.path?type=$form:type&amp^;action=add','#container')" />
-<button image="24_copy.gif"   name="copy"   alt="Копировать" onClick="CopyChecked('$SYSTEM.path?type=$form:type&amp^;action=copy')" />
-<button image="24_delete.gif" name="delete" alt="Удалить"    onClick="DeleteChecked('site_id','$SYSTEM.path?type=$form:type','#container')" />
+	^added[]
+	<form_engine>
+		^$.where[site_id]
+		^$.action[delete]
+		^$.tables[^$.main[site]]
+	</form_engine>
+</atable>
 }
 #end @sites[][hAction]
 
@@ -118,17 +109,20 @@ ID	id
 
 #################################################################################################
 # Управление объектами
-@objects[][crdSite;crdObject;crdObjectType;crdDataProcess;hAction;c]
-# создание курдов сайтов, объектов, типов объектов, обработчиков, шаблонов
+@object[][crdSite;crdObject;crdObjectType;crdDataProcess;hAction]
+# -----------------------------------------------------------------------------------------------
+# создание курдов сайтов, объектов, типов объектов, обработчиков, шаблонов = debug после перевода engine на курды, поправить
 $crdSite[^mLoader[$.name[site]]]
 $crdObject[^mLoader[$.name[object]]]
 $crdObjectType[^mLoader[$.name[object_type]]]
 $crdDataProcess[^mLoader[$.name[data_process]]]
 $crdTemplate[^mLoader[$.name[template]]]
+# -----------------------------------------------------------------------------------------------
+# определение вывода в зависимости от запроса
 ^if(def $form:action){
-# редактирование объектов
-$hAction[^mGetAction[$form:action]]
+# -----------------------------------------------------------------------------------------------
 # вывод формы редактирования
+$hAction[^mGetAction[$form:action]]
 ^crdObject.form[
 	$.label[MOUSE CMS | Объект | $hAction.label | $crdObject.hash.[$form:id].name]
 	$.id[$form:id]
@@ -165,17 +159,10 @@ is_published	Опубликовать	checkbox			Vis_published
 	]
 ]
 }{
+# -----------------------------------------------------------------------------------------------
 # вывод списка объектов
-^crdObject.list[
-	$.scroller(1)
-	$.Vobject_type_hash[$crdObjectType.hash]
-	$.Vsite_hash[$crdSite.hash]
-	$.Vobject_hash[$crdObject.hash]
-	$.Vdata_process_hash[$crdDataProcess.hash]
-	$.Vtemplate_hash[$crdTemplate.hash]
-	$.label[Mouse CMS | Объекты ]
-	$.tags[alists]
-	$.tag[alist]
+<atable label="Mouse CMS | Объекты ">
+^crdObject.draw[
 	$.code[
 		Имя документа: ^$table.document_name <br />
 		Оконное имя: ^$table.window_name <br />
@@ -342,3 +329,16 @@ ID	id
 	}
 }
 #end @mLoader[hParams]
+
+
+
+#################################################################################################
+# добавление стандартных элементов списков админки
+@added[]
+<th_attr>$SYSTEM.path?^form:fields.foreach[key;value]{^if($key eq 'order'){}{$key=$value&amp^;}}</th_attr>
+<tr_attr>$SYSTEM.path?action=edit&amp^;type=$form:type&amp^;</tr_attr>
+<scroller_attr>$SYSTEM.path?^form:fields.foreach[key;value]{^if($key ne 'number'){$key=$value&amp^;}}</scroller_attr>
+<footer_attr>$SYSTEM.path?^form:fields.foreach[key;value]{^if($key eq 'find' || $key eq 'filter'){}{$key=$value&amp^;}}</footer_attr>
+<form_find>$form:find</form_find>
+<form_filter>$form:filter</form_filter>
+#end @added[]
