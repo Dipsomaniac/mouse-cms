@@ -231,6 +231,6 @@ $sStr[^dtNow.sql-string[]	$sPath	$hUserInfo.Ip	$hUserInfo.Proxy	$hUserInfo.Os	$h
 ####################################################################################################
 # =debug отладка просто чтобы ^trow долго не писать - ^stop[bla bla bla]
 @stop[str]
-^throw[stop;$str]
+^throw[stop;stop: $str]
 #end @stop[str]
 
