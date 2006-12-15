@@ -12,44 +12,55 @@ curd
 
 #################################################################################################
 # Инициализация класса
-@init[hParams]
+@init[hParams][hObject]
 # определение значений по умолчанию
 $hObject[
 	$.oSql[$MAIN:objSQL]
 	$.order[sort_order]
 ]]
 # проверка заданных параметров
-^if(!def $hParams.table){^throw[curd;Initialization failure. ^$.table option MUST be specified.]}
+^if(!def $hParams.name){^throw[curd;Initialization failure. ^$.name option MUST be specified.]}
 # получение параметров
 ^hObject.add[$hParams]
-# создание таблицы
-$table[^mGetSql[$hObject]]
-# создание хэша (с ключом $.table(1) не создается)
-^if(!^hObject.table.int(0)){$hash[^table.hash[id]]}
+# создание таблицы и хэша
+^if(!^hObject.h.int(0)){
+	$table[^mGetSql[$hObject;$hObject.oSql]]
+}{
+	$hObject.tab[^mGetSql[$hObject;$hObject.oSql]]
+}
+^if(!^hObject.t.int(0)){
+	^if(!^hObject.hash.int(0)){
+		$hash[^table.hash[id]]
+	}{
+		$hash[^hObject.tab.hash[id]]
+	}
+}
 # получение структуры =debug
 # $hObject.structure[^hObject.oSql.sql[table][SHOW COLUMNS FROM $hObject.table][][$.file[${hObject.table}_struct.cache]]]
-#end @init[hParams]
+#end @init[hParams][hObject]
 
 
 
 ####################################################################################################
 # метод формирующий и выполняющий sql запрос
-@mGetSql[hParams]
+@mGetSql[hParams;oSql]
 $result[
-	^hObject.oSql.sql[table][
+	^oSql.sql[table][
 		SELECT
 			^hParams.names.foreach[key;value]{$key ^if(def $value){ AS $value }}[,]
 		FROM
-			$hParams.table
-		^if(def $hParams.leftjoin){ LEFT JOIN $hParams.leftjoin USING ($hParams.using) }
-		^if(def $hParams.where){ WHERE $hParams.where }
-		^if(def $hParams.group){GROUP BY $hParams.group }
-		^if(def $hParams.order){ORDER BY $hParams.order }
-		^if(def $hParams.having){HAVING $hParams.having }
+			$hParams.name
+			^if(def $hParams.leftjoin){ LEFT JOIN $hParams.leftjoin USING ($hParams.using) }
+			^if(def $hParams.where){ WHERE $hParams.where }
+			^if(def $hParams.group){GROUP BY $hParams.group }
+			^if(def $hParams.order){ORDER BY $hParams.order }
+			^if(def $hParams.having){HAVING $hParams.having }
 	][
 		^if(def $hParams.limit){$.limit($hParams.limit)}
 		^if(def $hParams.offset){$.offset($hParams.offset)}
-	][$.file[${hParams.table}_^math:md5[${hParams.where}${hParams.order}${hParams.leftjoin}${hParams.using}].cache]]
+	][
+		$.file[${hParams.name}_^math:md5[${hParams.where}${hParams.order}${hParams.leftjoin}${hParams.using}].cache]
+	]
 ]
 #end @getSql[hParams]
 
@@ -99,13 +110,14 @@ $result[
 $hTable[$.tag[arow]$.scroller(1)]
 ^hTable.add[$hParams]
 # обрезание таблицы скроллером при необходимости
-^if($hTable.scroller){^hTable.add[^scroller[$table]]}
+^if($hTable.scroller){^hTable.add[^scroller[$table]]}{$hTable[$table]}
 # построение шапки таблицы
 ^hTable.names.menu{<${hTable.tag}_th id="$hTable.names.id">$hTable.names.name</${hTable.tag}_th>}
 # построение строк
 ^hTable.table.menu{
 <${hTable.tag}_tr id="$hTable.table.id">
-^untaint[as-is]{$hTable.code}
+^process{@code[hFields]^#OA$hTable.code}
+^code[$hTable.table.fields]
 #	перебор колонок
 	^hTable.names.menu{
 		<${hTable.tag}_td

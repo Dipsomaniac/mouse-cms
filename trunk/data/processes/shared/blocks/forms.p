@@ -5,7 +5,7 @@
 
 ####################################################################################################
 # Обработка админки
-@mRun[hParams][sType]
+@mRun[hParams][jMethod]
 # инициализируем объект forms
 $oForm[^vforms::init[
 	$.oAuth[$MAIN:objAuth]
@@ -15,9 +15,54 @@ $oForm[^vforms::init[
 		$.group[Admins]]
 	$.log[/../data/log/admin.log]
 ]]
+
+# проверка и обработка формы
+^if(def $oForm.hForm.param.process){
+	$jMethod[$[$oForm.hForm.param.process]]
+	^jMethod[]
+}
+# раз уж сюда дошли то удалим весь кэш
+^dir_delete[^MAIN:CacheDir.trim[end;/];$.is_recursive(1)]
 # попытка выполнения действия
-^oForm.hRequest.foreach[k;v]{$k=$v }
 ^oForm.go[]
+#end @mRun[hParams][jMethod]
+
+
+
+####################################################################################################
+# =debug Работа с объектами, писалась на коленке, место очень слабое
+@object[][tWhere]
+$oForm.hRequest.full_path[^MAIN:oEngine.getFullPath[$oForm.hRequest.parent_id;$oForm.hRequest.path]]
+$oForm.hRequest.thread_id[^MAIN:oEngine.getThreadId[$oForm.hRequest.parent_id;$oForm.hRequest.id]]
+^switch[$oForm.hForm.param.action]{
+	^case[insert]{^createObject[$oForm.hRequest.full_path]}
+	^case[delete]{
+		^if(^oForm.hRequest.object_id.pos[,] > 0){
+			$tWhere[^oForm.hRequest.object_id.split[,]]
+			^tWhere.menu{
+				^deleteObject[$MAIN:oEngine.OBJECTS_HASH.[$tWhere.piece].full_path]
+			}
+		}
+	}
+	^case[update]{
+		^moveObject[^MAIN:oEngine.OBJECTS_HASH.[$oForm.hRequest.object_id].full_path.trim[end;/];^oForm.hRequest.full_path.trim[end;/]]
+	}
+}
+# обработка прав
+^rights[]
+#end @object[][tWhere]
+
+
+
+####################################################################################################
+# =debug в лом было думать (обработка прав) место очень слабое
+@rights[]
+^if(def $oForm.hRequest.rights_read){$oForm.hRequest.rights($oForm.hRequest.rights    + ($oForm.hRequest.rights_read))      ^oForm.hRequest.delete[rights_read]}
+^if(def $oForm.hRequest.rights_edit){$oForm.hRequest.rights($oForm.hRequest.rights    + ($oForm.hRequest.rights_edit*2))    ^oForm.hRequest.delete[rights_edit]}
+^if(def $oForm.hRequest.rights_delete){$oForm.hRequest.rights($oForm.hRequest.rights  + ($oForm.hRequest.rights_delete*4))  ^oForm.hRequest.delete[rights_delete]}
+^if(def $oForm.hRequest.rights_comment){$oForm.hRequest.rights($oForm.hRequest.rights + ($oForm.hRequest.rights_comment*8))    ^oForm.hRequest.delete[rights_comment]}
+^if(def $oForm.hRequest.rights_supervisory){$oForm.hRequest.rights($oForm.hRequest.rights + ($oForm.hRequest.rights_supervisory*128))   ^oForm.hRequest.delete[rights_supervisory]}
+#end @rights[]
 
 
 
@@ -30,23 +75,6 @@ $sType[$form:cache]
 # =debug в лом было думать (авто заполнение полного пути и получение ветви и поля is_not_empty блока, работа с директориями объектов) место очень слабое
 ^if(def $sType){
 	^switch[$sType]{
-#		объекты
-		^case[objects]{
-			$oAjax.hRequest.full_path[^MAIN:oEngine.getFullPath[$oAjax.hRequest.parent_id;$oAjax.hRequest.path]]
-			$oAjax.hRequest.thread_id[^MAIN:oEngine.getThreadId[$oAjax.hRequest.parent_id;$oAjax.hRequest.id]]
-			^switch[$oAjax._sAction]{
-				^case[insert]{^createObject[$oAjax.hRequest.full_path]}
-				^case[delete]{
-					^if(^oAjax.hRequest.object_id.pos[,] > 0){
-					$_tWhere[^oAjax.hRequest.object_id.split[,]]
-					^_tWhere.menu{
-						^deleteObject[$MAIN:oEngine.OBJECTS_HASH.[$_tWhere.piece].full_path]
-				}}}
-				^case[update]{
-					^moveObject[^MAIN:oEngine.OBJECTS_HASH.[$oAjax.hRequest.object_id].full_path.trim[end;/];^oAjax.hRequest.full_path.trim[end;/]]
-				}
-			}
-		}
 #		блоки
 		^case[blocks]{
 			^if(def $oAjax.hRequest.data){$oAjax.hRequest.is_not_empty(1)}{$oAjax.hRequest.is_not_empty(0)}
@@ -54,12 +82,7 @@ $sType[$form:cache]
 	}
 }
 
-# =debug в лом было думать (обработка прав) место очень слабое
-^if(def $oAjax.hRequest.rights_read){$oAjax.hRequest.rights($oAjax.hRequest.rights    + ($oAjax.hRequest.rights_read))      ^oAjax.hRequest.delete[rights_read]}
-^if(def $oAjax.hRequest.rights_edit){$oAjax.hRequest.rights($oAjax.hRequest.rights    + ($oAjax.hRequest.rights_edit*2))    ^oAjax.hRequest.delete[rights_edit]}
-^if(def $oAjax.hRequest.rights_delete){$oAjax.hRequest.rights($oAjax.hRequest.rights  + ($oAjax.hRequest.rights_delete*4))  ^oAjax.hRequest.delete[rights_delete]}
-^if(def $oAjax.hRequest.rights_comment){$oAjax.hRequest.rights($oAjax.hRequest.rights + ($oAjax.hRequest.rights_comment*8))    ^oAjax.hRequest.delete[rights_comment]}
-^if(def $oAjax.hRequest.rights_supervisory){$oAjax.hRequest.rights($oAjax.hRequest.rights + ($oAjax.hRequest.rights_supervisory*128))   ^oAjax.hRequest.delete[rights_supervisory]}
+
 
 # установка пароля пользователю
 ^if(def $oAjax.hRequest.passwd){$oAjax.hRequest.passwd[^MAIN:objAuth.cryptPassword[$oAjax.hRequest.passwd]]}
@@ -70,16 +93,6 @@ $sType[$form:cache]
 	^MAIN:objSQL.void{INSERT auser_to_auser (auser_id, parent_id) VALUES ('$oAjax.hRequest.auser_id' , '$oAjax.hRequest.auth_parent_id') }
 }
 	^oAjax.hRequest.delete[auth_parent_id]
-^rem{
-=debug
-# при необходимости удаление файла _cache.cfg
-^try{^if(def $oAjax.hRequest.cache_time){
-	^MAIN:oEngine.DeleteFiles[$MAIN:CacheDir]
-	^file:delete[${MAIN:CacheDir}_cache.cfg]}
-}{$exception.handled(1)}}
-
-# раз уж сюда дошли то удалим весь кэш
-^dir_delete[^MAIN:CacheDir.trim[end;/];$.is_recursive(1)]
 
 # попытка выполнения действия
 ^oAjax.go[]
@@ -102,13 +115,17 @@ $_tTemp[^oAjax.hRequest._keys[]]
 }
 #end @main[][_hRequest]
 
+
+
 ####################################################################################################
 # Создание объектов
-@createObject[sFullPath][_sDummy]
-$_sDummy[@dummy[]
+@createObject[sFullPath][sDummy]
+$sDummy[@dummy[]
 ^$result[bla-bla]]
-^_sDummy.save[${sFullPath}index.html]
-#end @createObject[sFullPath][_sDummy]
+^sDummy.save[${sFullPath}index.html]
+#end @createObject[sFullPath][sDummy]
+
+
 
 ####################################################################################################
 # Перемещение объектов 
@@ -116,11 +133,15 @@ $_sDummy[@dummy[]
 ^if($sOldFullPath ne $sNewFullPath){^file:move[$sOldFullPath;$sNewFullPath]}
 #end @moveObject[sOldFullPath;sNewFullPath]
 
+
+
 ####################################################################################################
 # Удаление объектов
 @deleteObject[sFullPath]
 ^dir_delete[$sFullPath]
 #end @deleteObject[sFullPath]
+
+
 
 ####################################################################################################
 # Присваивание блоков
