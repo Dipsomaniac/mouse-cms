@@ -23,6 +23,8 @@ $oForm[^vforms::init[
 }
 # раз уж сюда дошли то удалим весь кэш
 ^dir_delete[^MAIN:CacheDir.trim[end;/];$.is_recursive(1)]
+# для совместимости с spaw
+^if(def $oForm.hRequest.body){$oForm.hRequest.body[^oForm.hRequest.body.match[<br>][gi]{<br/>}]}
 # попытка выполнения действия
 ^oForm.go[]
 #end @mRun[hParams][jMethod]
@@ -31,21 +33,32 @@ $oForm[^vforms::init[
 
 ####################################################################################################
 # =debug Работа с объектами, писалась на коленке, место очень слабое
-@object[][tWhere]
-$oForm.hRequest.full_path[^MAIN:oEngine.getFullPath[$oForm.hRequest.parent_id;$oForm.hRequest.path]]
-$oForm.hRequest.thread_id[^MAIN:oEngine.getThreadId[$oForm.hRequest.parent_id;$oForm.hRequest.id]]
+@object[][tWhere;crdObject]
+$crdObject[^curd::init[$.name[object]$.h(1)
+	$.names[
+		$.[object.object_id][id]
+		$.[object.full_path][]
+		$.[object.parent_id][]
+		$.[object.thread_id][]
+]]]
+^if(^oForm.hRequest.parent_id.int(0)){
+	$oForm.hRequest.full_path[^crdObject.hash.[$oForm.hRequest.parent_id].full_path.trim[end;/]]
+	$oForm.hRequest.thread_id[$crdObject.hash.[$oForm.hRequest.parent_id].thread_id]
+}{
+	$oForm.hRequest.thread_id[^crdObject.hash.[$oForm.hForm.param.object_id].id.int(0)]
+}
+$oForm.hRequest.full_path[$oForm.hRequest.full_path/$oForm.hRequest.path/]
+^if($oForm.hRequest.full_path eq '//'){$oForm.hRequest.full_path[/]}
 ^switch[$oForm.hForm.param.action]{
 	^case[insert]{^createObject[$oForm.hRequest.full_path]}
 	^case[delete]{
 		^if(^oForm.hRequest.object_id.pos[,] > 0){
 			$tWhere[^oForm.hRequest.object_id.split[,]]
-			^tWhere.menu{
-				^deleteObject[$MAIN:oEngine.OBJECTS_HASH.[$tWhere.piece].full_path]
-			}
+			^tWhere.menu{^deleteObject[$crdObject.hash.[$tWhere.piece].full_path]}
 		}
 	}
 	^case[update]{
-		^moveObject[^MAIN:oEngine.OBJECTS_HASH.[$oForm.hRequest.object_id].full_path.trim[end;/];^oForm.hRequest.full_path.trim[end;/]]
+		^moveObject[^crdObject.hash.[$oForm.hForm.param.object_id].full_path.trim[end;/];^oForm.hRequest.full_path.trim[end;/]]
 	}
 }
 # обработка прав
@@ -68,9 +81,6 @@ $oForm.hRequest.thread_id[^MAIN:oEngine.getThreadId[$oForm.hRequest.parent_id;$o
 
 @test[]
 $sType[$form:cache]
-
-# для совместимости с spaw
-^if(def $oAjax.hRequest.body){$oAjax.hRequest.body[^oAjax.hRequest.body.match[<br>][gi]{<br/>}]}
 # -----------------------------------------------------------------------------------------------
 # =debug в лом было думать (авто заполнение полного пути и получение ветви и поля is_not_empty блока, работа с директориями объектов) место очень слабое
 ^if(def $sType){
@@ -81,22 +91,14 @@ $sType[$form:cache]
 		}
 	}
 }
-
-
-
 # установка пароля пользователю
 ^if(def $oAjax.hRequest.passwd){$oAjax.hRequest.passwd[^MAIN:objAuth.cryptPassword[$oAjax.hRequest.passwd]]}
-
 # обработка тип пользователя(группа)
 ^if(^oAjax.hRequest.auth_parent_id.int(0)){
 	^MAIN:objSQL.void{DELETE FROM auser_to_auser WHERE auser_id="$oAjax.hRequest.auser_id"}
 	^MAIN:objSQL.void{INSERT auser_to_auser (auser_id, parent_id) VALUES ('$oAjax.hRequest.auser_id' , '$oAjax.hRequest.auth_parent_id') }
 }
 	^oAjax.hRequest.delete[auth_parent_id]
-
-# попытка выполнения действия
-^oAjax.go[]
-
 # а это опять блоки и это очень криво =debug
 $_tTemp[^oAjax.hRequest._keys[]]
 ^_tTemp.menu{

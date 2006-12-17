@@ -43,24 +43,20 @@ $hObject[
 
 ####################################################################################################
 # метод формирующий и выполняющий sql запрос
-@mGetSql[hParams;oSql]
+@mGetSql[hParams;oSql][sRequest]
+$sRequest[
+	SELECT
+		^hParams.names.foreach[key;value]{$key ^if(def $value){ AS $value }}[,]
+	FROM
+		$hParams.name
+		^if(def $hParams.leftjoin){ LEFT JOIN $hParams.leftjoin USING ($hParams.using) }
+		^if(def $hParams.where){ WHERE $hParams.where }
+		^if(def $hParams.group){GROUP BY $hParams.group }
+		^if(def $hParams.order){ORDER BY $hParams.order }
+		^if(def $hParams.having){HAVING $hParams.having }		
+]
 $result[
-	^oSql.sql[table][
-		SELECT
-			^hParams.names.foreach[key;value]{$key ^if(def $value){ AS $value }}[,]
-		FROM
-			$hParams.name
-			^if(def $hParams.leftjoin){ LEFT JOIN $hParams.leftjoin USING ($hParams.using) }
-			^if(def $hParams.where){ WHERE $hParams.where }
-			^if(def $hParams.group){GROUP BY $hParams.group }
-			^if(def $hParams.order){ORDER BY $hParams.order }
-			^if(def $hParams.having){HAVING $hParams.having }
-	][
-		^if(def $hParams.limit){$.limit($hParams.limit)}
-		^if(def $hParams.offset){$.offset($hParams.offset)}
-	][
-		$.file[${hParams.name}_^math:md5[${hParams.where}${hParams.order}${hParams.leftjoin}${hParams.using}].cache]
-	]
+	^oSql.sql[table][$sRequest][$.limit($hParams.limit)$.offset($hParams.offset)][$.file[${hParams.name}_^math:md5[${sRequest}${hParams.limit}${hParams.offset}].cache]]
 ]
 #end @getSql[hParams]
 

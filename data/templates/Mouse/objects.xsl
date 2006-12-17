@@ -46,13 +46,13 @@
 		</span>
 		<img src="/themes/mouse/icons/12_add.gif" 
 		alt="Создать потомок" title="Создать потомок" 
-		class="input-image" onClick="Go('/mc/admin/?type=objects&amp;action=add&amp;id={@id}', '#container')" />
+		class="input-image" onClick="Go('/test2/test/?type=object&amp;action=add&amp;id={@id}', '#container')" />
 		<img src="/themes/mouse/icons/12_copy.gif" 
 		alt="Создать потомок" title="Копировать" 
-		class="input-image" onClick="Go('/mc/admin/?type=objects&amp;action=copy&amp;id={@id}', '#container')" />
+		class="input-image" onClick="Go('/test2/test/?type=object&amp;action=copy&amp;id={@id}', '#container')" />
 		<img src="/themes/mouse/icons/12_blocks.gif" 
 		alt="Создать потомок" title="Управление блоками" 
-		class="input-image" onClick="Go('/mc/admin/?type=objects&amp;action=blocks&amp;id={@id}', '#container')" />
+		class="input-image" onClick="Go('/test2/test/?type=object&amp;action=blocks&amp;id={@id}', '#container')" />
 		<xsl:if test="./branche">
 			<div id="sections_{@id}">
 				<xsl:apply-templates />
@@ -106,7 +106,7 @@
 		</tr>
 		</tfoot>
 		</table>
-		<input type="hidden" name="form_engine" value="{./form_engine}" />
+		<xsl:apply-templates select="input" />
 	</div>
 	</form>
 </xsl:template>

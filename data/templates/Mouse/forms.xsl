@@ -93,11 +93,6 @@
 
 
 
-<!-- forms process data -->
-<xsl:template match="form_engine">
-	<input type="hidden" name="form_engine" value="{.}"/>
-</xsl:template>
-
 <!-- input -->
 <xsl:template match="input">
 		<input>

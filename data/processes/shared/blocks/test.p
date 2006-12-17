@@ -5,7 +5,6 @@
 #################################################################################################
 # Админка
 @mRun[hParams][jMethod]
-^use[curd.p]
 <block_content>
 $hParams.body
 <buttons>
@@ -70,13 +69,14 @@ $hAction[^mGetAction[$form:action]]
 	}
 		<field type="text"   name="cache_time"     label="Кэш"        description="Время кэширования (сек)" class="short">$crdSite.hash.[$form:id].cache_time</field>
 		<field type="text"   name="sort_order"     label="Сортировка" description="Порядок сортировки"      class="short">$crdSite.hash.[$form:id].sort_order</field>
-		<form_engine>
-			^$.where[site_id]
-			^$.site_id[$form:id]
-			^$.tables[^$.main[site]]
-			^if($hAction.i & 6){^$.action[insert]}
-			^if($hAction.i & 1){^$.action[update]}
-		</form_engine>
+		
+^form_engine[
+	^$.where[site_id]
+	^$.site_id[$form:id]
+	^$.tables[^$.main[site]]
+	^if($hAction.i & 6){^$.action[insert]}
+	^if($hAction.i & 1){^$.action[update]}
+	]
 	</tab>
 </tabs>
 </form>
@@ -96,11 +96,11 @@ ID	id
 Страница Ошибок	e404_object_id	crdObject.hash
 }]]
 	^added[]
-	<form_engine>
-		^$.where[site_id]
-		^$.action[delete]
-		^$.tables[^$.main[site]]
-	</form_engine>
+^form_engine[
+	^$.where[site_id]
+	^$.action[delete]
+	^$.tables[^$.main[site]]
+]
 </atable>
 }
 #end @sites[][hAction]
@@ -140,12 +140,12 @@ ID	id
 				}
 			</field>
 			<field type="none" />
-			<form_engine>
-				^$.where[object_id]
-				^$.object_id[$form:id]
-				^$.tables[^$.main[block_to_object]]
-				^$.action[delete]
-			</form_engine>
+^form_engine[
+	^$.where[object_id]
+	^$.object_id[$form:id]
+	^$.tables[^$.main[block_to_object]]
+	^$.action[delete]
+]
 		</tab>
 		</tabs>
 		</form>
@@ -173,7 +173,7 @@ ID	id
 		}
 		^if($hAction.i & 4){$hAction.parent_id[$form:id]}
 		<form method="post" action="/ajax/go.html" name="form_content" id="form_content" enctype="multipart/form-data"
-		label="MOUSE CMS | Объекты | $hAction.label | $crdObject.hash.[$form:id].name ">
+		label="MOUSE CMS | Объекты | $hAction.label | $crdObject.hash.[$form:id].name | $request:uri">
 		<tabs>
 		<tab id="section-1" name="Основное">
 			^if($hAction.i & 1){<field type="none" name="object_id" label="ID" description="ID объекта">$crdObject.hash.[$form:id].id</field>}
@@ -228,14 +228,14 @@ ID	id
 			<field type="checkbox" name="rights_delete" label="Удаление" description="Права по умолчанию">$hRights.delete</field>
 			<field type="hidden" name="dt_update">^MAIN:dtNow.sql-string[]</field>
 			<field type="hidden" name="auser_id">$MAIN:objAuth.user.id</field>
-			<form_engine>
-				^$.process[object]
-				^$.where[object_id]
-				^$.object_id[$form:id]
-				^$.tables[^$.main[object]]
-				^if($hAction.i & 6){^$.action[insert]}
-				^if($hAction.i & 1){^$.action[update]}
-			</form_engine>
+^form_engine[
+	^$.process[object]
+	^$.where[object_id]
+	^$.object_id[$form:id]
+	^$.tables[^$.main[object]]
+	^if($hAction.i & 6){^$.action[insert]}
+	^if($hAction.i & 1){^$.action[update]}
+]
 		</tab>
 		</tabs>
 		</form>
@@ -278,14 +278,55 @@ ID	id
 Время кэша	cache_time
 }]]
 	^added[]
-	<form_engine>
-			^$.where[object_id]
-			^$.action[delete]
-			^$.tables[^$.main[object]]
-	</form_engine>
+^form_engine[
+	^$.where[object_id]
+	^$.action[delete]
+	^$.tables[^$.main[object]]
+	^$.process[object]
+]
 </atable>
 }
 #end @objects[][hAction;c]
+
+
+
+#################################################################################################
+# Управление объектами
+@block[][hAction]
+# -----------------------------------------------------------------------------------------------
+# определение вывода в зависимости от запроса
+^if(def $form:action){
+	
+}{
+# -----------------------------------------------------------------------------------------------
+# вывод списка блоков
+$crdBlock[^mLoader[$.name[block]$.t(1)]]
+$crdDataProcess[^mLoader[$.name[data_process]$.h(1)]]
+$crdDataType[^mLoader[$.name[data_type]$.h(1)]]
+<atable label="Mouse CMS | Блоки">
+	^crdBlock.draw[
+		$.code[
+			Описание: ^$hFields.description <br/>
+			^^if(^$hFields.is_not_empty){Содержит данные <br/>}
+			^^if(^$hFields.is_published){Опубликован <br/>}
+			Изменен: ^$hFields.dt_update <br/>
+			Атрибуты: ^$hFields.attr <br/>
+		]
+		$.names[^table::create{name	id	object
+ID	id
+Название	name
+Обработчик	data_process_id	crdDataProcess.hash
+Тип данных	data_type_id	crdDataType.hash
+}]]
+	^added[]
+^form_engine[
+	^$.where[block_id]
+	^$.action[delete]
+	^$.tables[^$.main[block]^$.[block_to_object]]
+]
+</atable>
+}
+#end @block[][hAction]
 
 
 
@@ -384,6 +425,17 @@ $result[
 				]
 			]
 		}
+#		типы данных
+		^case[data_type]{
+			^curd::init[
+				$.name[data_type]
+				$.names[
+					$.[data_type.data_type_id][id]
+					$.[data_type.sort_order][]
+					$.[data_type.name][]
+				]
+			]
+		}
 #		шаблоны
 		^case[template]{
 			^curd::init[
@@ -424,6 +476,7 @@ $result[
 		^case[block]{
 			^curd::init[
 				$.name[block]
+				$.order[name]
 				$.names[
 					$.[block.block_id][id]
 					$.[block.name][]
@@ -485,3 +538,13 @@ $result[
 <form_find>$form:find</form_find>
 <form_filter>$form:filter</form_filter>
 #end @added[]
+
+
+
+#################################################################################################
+# генерация полей параметров формы и поля секретности
+@form_engine[sStr]
+$sStr[^sStr.match[\s+][g]{}]
+<input type="hidden" name="form_engine" value="$sStr"/>
+<input type="hidden" name="form_security" value="^MAIN:security[$sStr]"/>
+#end form_engine[sStr]
