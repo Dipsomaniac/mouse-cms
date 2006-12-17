@@ -12,15 +12,17 @@ $hHandlers[
 ]
 $tDecode[^self._getDecodeTable[]]
 $hRequest[^form:fields.foreach[field;value]{$.[^self._decode[$field]][^self._decode[$value]]}]
+# проверка ключа секретности
+^if(^MAIN:security[$hRequest.form_engine] ne $hRequest.form_security){^throw[vforms;Security failure.]}
 #end @auto[]
 
 
 
 ####################################################################################################
 @init[hParams]
-^if(!def $hParams.oAuth){^throw[ajax;Initialization failure. ^$.oAuth option MUST be specified.]}
-^if(!def $hParams.oSql){^throw[ajax;Initialization failure. ^$.oSql option MUST be specified.]}
-^if(!def $hParams.rights){^throw[ajax;Initialization failure. ^$.rights option MUST be specified.]}
+^if(!def $hParams.oAuth){^throw[vforms;Initialization failure. ^$.oAuth option MUST be specified.]}
+^if(!def $hParams.oSql){^throw[vforms;Initialization failure. ^$.oSql option MUST be specified.]}
+^if(!def $hParams.rights){^throw[vforms;Initialization failure. ^$.rights option MUST be specified.]}
 $hForm[^hash::create[$hParams]]
 # выполнен ли вход
 ^if(^hForm.rights.logon.int(0) && !$hForm.oAuth.is_logon){^throw[ajax;Action failure. User must be logon.]}
@@ -31,6 +33,7 @@ $hForm.param[^getStrToHash[$hRequest.form_engine]]
 ^hForm.oSql.clear[]
 # удаляем поле параметров
 ^hRequest.delete[form_engine]
+^hRequest.delete[form_security]
 # удаляем кнопалки
 ^hRequest.delete[submit]
 #end @init[hParams][hForm]

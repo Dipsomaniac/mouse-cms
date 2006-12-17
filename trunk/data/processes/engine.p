@@ -24,6 +24,8 @@ $SYSTEM[
 	$.siteID(^siteID.int(0))
 #	=debug
 	$.siteLangID(^siteLangID.int(0))
+#	= debug поправить во всех остальных местах (на это значение)
+	$.data[^MAIN:dtNow.sql-string[]]
 ]
 # ВСЕ ОПУБЛИКОВАННЫЕ объекты текущего сайта
 $OBJECTS[^getOBJECTS[$.where[m_object.site_id ='$SYSTEM.siteID' AND m_object.is_published ='1']]]
@@ -54,7 +56,13 @@ $TEMPLATES_HASH[^TEMPLATES.hash[id]]
 				^throw[$exception.type;$env:SERVER_NAME;Страница ошибок не найдена ($exception.comment)]
 			}
 		]
-#		$result[произошла ошибка "$exception.type" - $exception.comment]
+	}{
+#		если запрос не с локалхоста - прячем ошибку
+		^if($MAIN:hUserInfo.Ip ne '127.0.0.1'){
+			$exception.handled(1)
+			Mouse error... (comment me) please <a href="mailto:horneds@gmail.com">mail to admin</a>
+			^cache(0)
+		}
 	}
 }
 # end @execute[]
@@ -404,7 +412,7 @@ $result[
 	^if(def $hParam.mode){mode="$_jMethod.[$hParam.mode]"}
   	$hParam.added
 	>$_jMethod.name</$hParam.tag> }
-}{ $exception.handled(1) ^stop[comment: $hParam.name]}
+}{ $exception.handled(1)}
 ]
 #end @list[hParam]
 
@@ -588,23 +596,6 @@ $result[^hash::create[
 @getIntRights[hRights]
 $result($hRights.read + $hRights.edit + $hRights.delete + $hRights.comment + $hRights.supervisory)
 #end @getIntRights[hRights]
-
-
-
-####################################################################################################
-# получение полного пути объекта
-@getFullPath[iParentId;sPath]
-$result[^if(^iParentId.int(0)){$OBJECTS_HASH.[$iParentId].full_path}{/}$sPath]
-$result[^if(def $sPath){$result/}{$result}]
-#end @getFullPath[_iParentId;_sPath]
-
-
-
-####################################################################################################
-# получение ветви объекта
-@getThreadId[_iParentId;_iId]
-$result[^if(^_iParentId.int(0)){$OBJECTS_HASH.[$_iParentId].thread_id}{^OBJECTS_HASH.[$_iId].id.int(0)}]
-#end @getThreadId[_iParentId]
 
 
 

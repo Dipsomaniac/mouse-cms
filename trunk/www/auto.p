@@ -12,9 +12,8 @@ $response:content-type[
    $.charset[$response:charset]
 ]
 # -----------------------------------------------------------------------------------------------
-
-# -----------------------------------------------------------------------------------------------
 # получаем информацию о пользователе, сразу потому что маус ведет статистику и по кэшированным страницам
+# присвоить это SYSTEM в поле engine и удалить
 $hUserInfo[
 	$.Os[unix]
 	$.Browser[other]
@@ -43,8 +42,6 @@ $sTemp[mozilla]$cTemp
 $sTemp[safari]$cTemp
 $sTemp[netscape]$cTemp
 # -----------------------------------------------------------------------------------------------
-
-# -----------------------------------------------------------------------------------------------
 # основные настройки
 $SQL.connect-string[mysql://root:@localhost/mouse?charset=utf8]
 $CLASS_PATH[^table::create{path
@@ -64,19 +61,16 @@ $ProcessDir[${CfgDir}processes/shared/blocks/]
 # папка где живут логи
 $LogDir[${CfgDir}log/]
 # -----------------------------------------------------------------------------------------------
-
-# -----------------------------------------------------------------------------------------------
 # отладка
 ^if(^hUserInfo.Query.pos[mode=nocache] >= 0){$NoCache(1)}
 ^if(^hUserInfo.Query.pos[mode=debug] >= 0){$Debug(1)}
 ^if(^hUserInfo.Query.pos[mode=ncdebug] >= 0){$NoCache(1) $Debug(1)}
 ^if($Debug){$hUsageBegin[$.rusage[$status:rusage] $.memory[$status:memory]]}
 # -----------------------------------------------------------------------------------------------
-
-# -----------------------------------------------------------------------------------------------
 # подключение основных классов
 ^use[lib.p]
 # =debug
+^use[curd.p]
 ^use[dtf.p]
 ^use[scroller.p]
 ^use[mysql.p]
@@ -84,15 +78,11 @@ $LogDir[${CfgDir}log/]
 ^use[engine.p]
 # ^use[debug.p]			# = debug
 # -----------------------------------------------------------------------------------------------
-
-# -----------------------------------------------------------------------------------------------
 # прочее для совместимости =debug
 $dtNow[^date::now[]]
 # получаем путь к запрашиваемой странице
 $sPath[^hUserInfo.Request.split[?;lh]]
 $sPath[$sPath.0]
-# -----------------------------------------------------------------------------------------------
-
 # -----------------------------------------------------------------------------------------------
 # создание основных объектов и инициализация engine
 $objSQL[^mysql::init[$SQL.connect-string;
@@ -106,7 +96,8 @@ $objSQL[^mysql::init[$SQL.connect-string;
 }
 ^mStatistic[]
 # -----------------------------------------------------------------------------------------------
-
+# создание уникального ключа системы
+^security[]
 # -----------------------------------------------------------------------------------------------
 # убираем грязь
 $result[]
@@ -184,12 +175,18 @@ $result[
 
 
 ####################################################################################################
-@_comments[sKey;iTime;iIsExecuted][cTemp]
-$cTemp{<!-- ^dtNow.sql-string[] $sText Cache key: $sKey, cache time: $iTime secs -->}
+@_comments[sKey;iTime;iIsExecuted][sText]
+$cTemp{}
 ^if($iIsExecuted){
-	^if(-f "$sCacheDir/$sKey"){$sText[Point generated.]}{$sText[Point generated. Storing to cache skipped]}
-}{$sText[Point taked from cache.]}
-$result[$cTemp]
+	^if(-f "$sCacheDir/$sKey"){
+		$sText[Point generated. Storing to cache done.]
+	}{
+		$sText[Point generated. Storing to cache skipped.]
+	}
+}{
+	$sText[Point taked from cache.]
+}
+$result[<!-- ^dtNow.sql-string[] | $sText | Key: $sKey, Time: $iTime secs -->]
 #end @_comments[]
 
 
@@ -234,3 +231,14 @@ $sStr[^dtNow.sql-string[]	$sPath	$hUserInfo.Ip	$hUserInfo.Proxy	$hUserInfo.Os	$h
 ^throw[stop;stop: $str]
 #end @stop[str]
 
+
+
+####################################################################################################
+# раз в два часа генерирует уникальный ключ системы и очищает кэш
+# с параметром возращает строку закодированную с ключом
+@security[sStr]
+^if(def $sStr){
+	$result[^math:md5[${sStr}$MOUSE_KEY]]
+}{
+	$MOUSE_KEY[^cache[${CfgDir}security.key](7200){^math:md5[^dtNow.sql-string[]^math:random(1000)^dir_delete[^CacheDir.trim[end;/];$.is_recursive(1)]]}]
+}
