@@ -123,18 +123,18 @@ ID	id
 		label="MOUSE CMS | Объект | Управление блоками | $crdObject.hash.[$form:id].name ">
 		<tabs>
 		<tab id="section-1" name="Блоки объекта $crdObject.hash.[$form:id].name">
-			^crdBlock.table.append{9	none	1	0} 
+			^crdBlockToObject.table.append{9	none	1	0} 
 			<field type="none" label="$crdObject.hash.[$form:id].name" description="Блоки объекта">
 				<br/><br/><br/>
 				Mode: &nbsp^; &nbsp^; &nbsp^; &nbsp^; Sort_order: &nbsp^; &nbsp^; &nbsp^; &nbsp^; Name:<br/>
 #				объекту можно присвоить до 10 блоков =debug
 				^for[iCount](0;9){
-					^if(^CrdBlockToObject.table.count[] > $iCount){^CrdBlockToObject.table.offset[set]($iCount)}
-					<input  name="mode_$iCount" value="$CrdBlockToObject.table.mode" class="input-text-short"/>
-					<input  name="sort_order_$iCount" value="$CrdBlockToObject.table.sort_order" class="input-text-short"/>
+					^if(^crdBlockToObject.table.count[] > $iCount){^crdBlockToObject.table.offset[set]($iCount)}
+					<input  name="mode_$iCount" value="$crdBlockToObject.table.mode" class="input-text-short"/>
+					<input  name="sort_order_$iCount" value="$crdBlockToObject.table.sort_order" class="input-text-short"/>
 					<select name="block_id_$iCount" class="long">
 						<option value="0">none</option>
-						^crdBlock.list[$.added[select="$crdBlockToObject.table.[$form:id].id"]]
+						^crdBlock.list[$.added[select="$crdBlockToObject.table.id"]]
 					</select>
 					<br/>
 				}
@@ -248,6 +248,7 @@ $crdObject[^mLoader[$.name[object]]]
 $crdSite[^mLoader[$.name[site]$.h(1)]]
 $crdDataProcess[^mLoader[$.name[data_process]$.h(1)]]
 $crdTemplate[^mLoader[$.name[template]$.h(1)]]
+<button image="24_object_blocks.gif"   name="object_blocks"   alt="Блоки объекта" onClick="CopyChecked('$SYSTEM.path?type=$form:type&amp^;action=block_to_object')" />
 <atable label="Mouse CMS | Объекты">
 	^crdObject.draw[
 		$.code[
@@ -347,10 +348,10 @@ ID	id
 # Загрузчик курдов
 @mLoader[hParams]
 $result[
-	^switch[$hParams.name]{
-#		сайты
-		^case[site]{
-			^curd::init[
+	^curd::init[
+		^switch[$hParams.name]{
+#			сайты
+			^case[site]{
 				$.name[site]
 				$.names[
 					$.[site.site_id][id]
@@ -361,11 +362,9 @@ $result[
 					$.[site.cache_time][]
 					$.[site.sort_order][]
 				]
-			]
-		}
-#		объекты
-		^case[object]{
-			^curd::init[
+			}
+#			объекты
+			^case[object]{
 				$.name[object]
 				$.names[
 					$.[object.object_id][id]
@@ -393,11 +392,9 @@ $result[
 					$.[object.window_name][]
 					$.[object.description][]
 				]
-			]
-		}
-#		типы объектов
-		^case[object_type]{
-			^curd::init[
+			}
+#			типы объектов
+			^case[object_type]{
 				$.name[object_type]
 				$.names[
 					$.[object_type.object_type_id][id]
@@ -408,11 +405,9 @@ $result[
 					$.[object_type.name][]
 					$.[object_type.constructor][]
 				]
-			]
-		}
-#		обработчики
-		^case[data_process]{
-			^curd::init[
+			}
+#			обработчики
+			^case[data_process]{
 				$.name[data_process]
 				$.names[
 					$.[data_process.data_process_id][id]
@@ -423,22 +418,18 @@ $result[
 					$.[data_process.dt_update][]
 					$.[data_process.sort_order][]
 				]
-			]
-		}
-#		типы данных
-		^case[data_type]{
-			^curd::init[
+			}
+#			типы данных
+			^case[data_type]{
 				$.name[data_type]
 				$.names[
 					$.[data_type.data_type_id][id]
 					$.[data_type.sort_order][]
 					$.[data_type.name][]
 				]
-			]
-		}
-#		шаблоны
-		^case[template]{
-			^curd::init[
+			}
+#			шаблоны
+			^case[template]{
 				$.name[template]
 				$.names[
 					$.[template.template_id][id]
@@ -450,31 +441,22 @@ $result[
 					$.[template.dt_update][]
 					$.[template.sort_order][]
 				]
-			]
-		}
-#		блоки объекта
-		^case[block_to_object]{
-			^curd::init[
+			}
+#			блоки объекта
+			^case[block_to_object]{
 				$.name[block_to_object]
 				$.leftjoin[block]
 				$.using[block_id]
+				$.where[object_id = '$form:id']
 				$.names[
-					$.[block.block_id][id]
+					$.[block_to_object.block_id][id]
 					$.[block_to_object.sort_order][]
 					$.[block_to_object.mode][]
-					$.[block.data_process_id][]
 					$.[block.name][]
-					$.[block.attr][]
-					$.[block.data][]
-					$.[block.data_type_id][]
-					$.[block.is_not_empty][]
-					$.[block.is_parsed_manual][]
 				]
-			]
-		}
-#		блоки
-		^case[block]{
-			^curd::init[
+			}
+#			блоки
+			^case[block]{
 				$.name[block]
 				$.order[name]
 				$.names[
@@ -492,11 +474,9 @@ $result[
 					$.[block.is_shared][]
 					$.[block.is_parsed_manual][]
 				]
-			]
-		}
-#		пользователи
-		^case[auser]{
-			^curd::init[
+			}
+#			пользователи
+			^case[auser]{
 				$.name[auser]
 				$.leftjoin[asession]
 				$.using[auser_id]
@@ -518,11 +498,11 @@ $result[
 					$.[auser.is_default][]
 					$.[MAX(asession.dt_access)][dt_access]
 				]
-			]
+			}
 		}
-	}
-	$.h($hParams.h)
-	$.t{$hParams.t}
+		$.h($hParams.h)
+		$.t($hParams.t)
+	]
 ]
 #end @mLoader[hParams]
 

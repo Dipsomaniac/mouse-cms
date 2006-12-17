@@ -23,18 +23,11 @@ $hObject[
 # получение параметров
 ^hObject.add[$hParams]
 # создание таблицы и хэша
-^if(!^hObject.h.int(0)){
-	$table[^mGetSql[$hObject;$hObject.oSql]]
-}{
-	$hObject.tab[^mGetSql[$hObject;$hObject.oSql]]
-}
-^if(!^hObject.t.int(0)){
-	^if(!^hObject.hash.int(0)){
-		$hash[^table.hash[id]]
-	}{
-		$hash[^hObject.tab.hash[id]]
-	}
-}
+$hObject.tab[^mGetSql[$hObject;$hObject.oSql]]
+^if(^hObject.t.int(0) || !def $hObject.h){$table[$hObject.tab]}
+^if(^hObject.h.int(0) || !def $hObject.t){
+#	^if($hObject.name ne 'object'){^stop[hash $hObject.h table $hObject.t name $hObject.name]}
+	$hash[^hObject.tab.hash[id]]}
 # получение структуры =debug
 # $hObject.structure[^hObject.oSql.sql[table][SHOW COLUMNS FROM $hObject.table][][$.file[${hObject.table}_struct.cache]]]
 #end @init[hParams][hObject]
