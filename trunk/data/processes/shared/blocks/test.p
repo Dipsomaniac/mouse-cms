@@ -349,10 +349,10 @@ ID	id
 @mLoader[hParams]
 $result[
 	^curd::init[
+		$.name[$hParams.name]
 		^switch[$hParams.name]{
 #			сайты
 			^case[site]{
-				$.name[site]
 				$.names[
 					$.[site.site_id][id]
 					$.[site.name][]
@@ -365,7 +365,6 @@ $result[
 			}
 #			объекты
 			^case[object]{
-				$.name[object]
 				$.names[
 					$.[object.object_id][id]
 					$.[object.sort_order][]
@@ -395,7 +394,6 @@ $result[
 			}
 #			типы объектов
 			^case[object_type]{
-				$.name[object_type]
 				$.names[
 					$.[object_type.object_type_id][id]
 					$.[object_type.sort_order][]
@@ -408,7 +406,6 @@ $result[
 			}
 #			обработчики
 			^case[data_process]{
-				$.name[data_process]
 				$.names[
 					$.[data_process.data_process_id][id]
 					$.[data_process.data_process_type_id][]
@@ -421,7 +418,6 @@ $result[
 			}
 #			типы данных
 			^case[data_type]{
-				$.name[data_type]
 				$.names[
 					$.[data_type.data_type_id][id]
 					$.[data_type.sort_order][]
@@ -430,7 +426,6 @@ $result[
 			}
 #			шаблоны
 			^case[template]{
-				$.name[template]
 				$.names[
 					$.[template.template_id][id]
 					$.[template.template_type_id][]
@@ -444,7 +439,6 @@ $result[
 			}
 #			блоки объекта
 			^case[block_to_object]{
-				$.name[block_to_object]
 				$.leftjoin[block]
 				$.using[block_id]
 				$.where[object_id = '$form:id']
@@ -457,7 +451,6 @@ $result[
 			}
 #			блоки
 			^case[block]{
-				$.name[block]
 				$.order[name]
 				$.names[
 					$.[block.block_id][id]
@@ -477,7 +470,6 @@ $result[
 			}
 #			пользователи
 			^case[auser]{
-				$.name[auser]
 				$.leftjoin[asession]
 				$.using[auser_id]
 				$.order[name]
