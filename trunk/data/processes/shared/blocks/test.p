@@ -282,7 +282,7 @@ ID	id
 ^form_engine[
 	^$.where[object_id]
 	^$.action[delete]
-	^$.tables[^$.main[object]]
+	^$.tables[^$.main[object]^$.connect[block_to_object]]
 	^$.process[object]
 ]
 </atable>
