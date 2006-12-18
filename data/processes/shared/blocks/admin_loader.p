@@ -16,7 +16,7 @@ $TYPES_HASH[^TYPES.hash[id]]
 $BLOCKS[^getBLOCKS[]]			# блоки
 $BLOCKS_HASH[^BLOCKS.hash[id]]
 $BLOCKS_TO_OBJECT[^getBLOCKS_TO_OBJECT[]]			# связи блоков
-$BLOCKS_TO_OBJECT_HASH[^BLOCKS_TO_OBJECT.hash[id]]
+# $BLOCKS_TO_OBJECT_HASH[^BLOCKS_TO_OBJECT.hash[id]]
 $DATA_TYPES[^getDATA_TYPES[]]			# типы данных
 $DATA_TYPES_HASH[^DATA_TYPES.hash[id]]
 $DATA_PROCESS_TYPES[^getDATA_PROCESS_TYPES[]]			# обработчики

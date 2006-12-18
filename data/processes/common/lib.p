@@ -536,10 +536,10 @@ $result[^node2str[$node;$tag]]
 
 
 ###########################################################################
-@getStrToHash[sString]
-^process{^$_hTemp[^^hash::create[$sString]]}
-$result[$_hTemp]
-$_hTemp[]
+@getStrToHash[sStr]
+^process{^$hTemp[^^hash::create[$sStr]]}
+$result[$hTemp]
+$hTemp[]
 #end @getStrToHash[sString]
 
 ###########################################################################

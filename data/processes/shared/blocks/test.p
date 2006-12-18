@@ -8,17 +8,17 @@
 <block_content>
 $hParams.body
 <buttons>
-	<button image="24_sites.gif"      name="sites"     alt="Сайты"							onClick="Go('$SYSTEM.path?type=site','#container')" />
-	<button image="24_objects.gif"    name="objects"   alt="Объекты"						onClick="Go('$SYSTEM.path?type=object','#container')" />
-	<button image="24_blocks.gif"     name="blocks"    alt="Блоки"							onClick="Go('$SYSTEM.path?type=block','#container')" />
-	<button image="24_process.gif"    name="process"   alt="Обработчики"					onClick="Go('$SYSTEM.path?type=process','#container')" />
-	<button image="24_templates.gif"  name="templates" alt="Шаблоны"						onClick="Go('$SYSTEM.path?type=template','#container')" />
-	<button image="24_users.gif"      name="users"     alt="Gользователи и группы"	onClick="Go('$SYSTEM.path?type=users','#container')" />
-	<button image="24_rights.gif"     name="rigths"    alt="Назначение прав"			onClick="Go('$SYSTEM.path?type=rights','#container')" />
-	<button image="24_configure.gif"  name="configure" alt="Обслуживание системы"		onClick="Go('$SYSTEM.path?type=config','#container')" />
-	<button image="24_files.gif"      name="files"     alt="Загрузка файлов"			onClick="Go('$SYSTEM.path?type=files','#container')" />
-	<button image="24_articles.gif"   name="articles"  alt="Работа со статьями"		onClick="Go('$SYSTEM.path?type=article','#container')" />
-	<button image="24_category.gif"   name="categoey"  alt="Работа с категориями"		onClick="Go('$SYSTEM.path?type=category','#container')" />
+	<button image="24_sites.gif"      name="site"         alt="Сайты"							onClick="Go('$SYSTEM.path?type=site','#container')" />
+	<button image="24_objects.gif"    name="object"       alt="Объекты"						onClick="Go('$SYSTEM.path?type=object','#container')" />
+	<button image="24_blocks.gif"     name="block"        alt="Блоки"							onClick="Go('$SYSTEM.path?type=block','#container')" />
+	<button image="24_process.gif"    name="data_process" alt="Обработчики"					onClick="Go('$SYSTEM.path?type=data_process','#container')" />
+	<button image="24_templates.gif"  name="template"     alt="Шаблоны"						onClick="Go('$SYSTEM.path?type=template','#container')" />
+	<button image="24_users.gif"      name="auser"        alt="Gользователи и группы"	onClick="Go('$SYSTEM.path?type=auser','#container')" />
+	<button image="24_rights.gif"     name="acl"          alt="Назначение прав"			onClick="Go('$SYSTEM.path?type=acl','#container')" />
+	<button image="24_configure.gif"  name="configure"    alt="Обслуживание системы (отключено)"		onClick="Go('$SYSTEM.path?type=config','#container')" />
+	<button image="24_files.gif"      name="files"        alt="Загрузка файлов (отключено)"			onClick="Go('$SYSTEM.path?type=files','#container')" />
+	<button image="24_articles.gif"   name="articles"     alt="Работа со статьями"		onClick="Go('$SYSTEM.path?type=article','#container')" />
+	<button image="24_category.gif"   name="categoey"     alt="Работа с категориями"		onClick="Go('$SYSTEM.path?type=article_type','#container')" />
 	<button image="24_divider.gif" />
 	^if(def $form:action && $form:action ne 'config'){
 		<button image="24_save.gif"    name="save"      alt="Сохранить" onClick="saveForms('form_content','$SYSTEM.path?type=$form:type','#container')" />
@@ -31,14 +31,8 @@ $hParams.body
 		<button image="24_delete.gif" name="delete" alt="Удалить"    onClick="DeleteChecked('${form:type}_id','$SYSTEM.path?type=$form:type','#container')" />
 	}
 </buttons>
-^switch[$form:type]{
-	^case[article]{^executeSystemProcess[$.id[5] $.param[article]]}
-	^case[category]{^executeSystemProcess[$.id[5] $.param[category]]}
-	^case[DEFAULT]{
-		$jMethod[$[$form:type]]
-		^jMethod[]
-	}
-}
+	$jMethod[$[$form:type]]
+	^jMethod[]
 </block_content>
 #end @mRun[hParams][jMethod]
 
@@ -119,7 +113,7 @@ ID	id
 		$crdObject[^mLoader[$.name[object]]]
 		$crdBlock[^mLoader[$.name[block]$.t(1)]]
 		$crdBlockToObject[^mLoader[$.name[block_to_object]$.t(1)]]
-		<form method="post" action="/ajax/go.html" name="form_content" id="form_content" enctype="multipart/form-data"
+		<form method="post" action="$SYSTEM.path" name="form_content" id="form_content" enctype="multipart/form-data"
 		label="MOUSE CMS | Объект | Управление блоками | $crdObject.hash.[$form:id].name ">
 		<tabs>
 		<tab id="section-1" name="Блоки объекта $crdObject.hash.[$form:id].name">
@@ -145,6 +139,7 @@ ID	id
 	^$.object_id[$form:id]
 	^$.tables[^$.main[block_to_object]]
 	^$.action[delete]
+	^$.process[block_to_object]
 ]
 		</tab>
 		</tabs>
@@ -172,8 +167,8 @@ ID	id
 			$hAction.parent_id[$crdObject.hash.[$form:id].parent_id]
 		}
 		^if($hAction.i & 4){$hAction.parent_id[$form:id]}
-		<form method="post" action="/ajax/go.html" name="form_content" id="form_content" enctype="multipart/form-data"
-		label="MOUSE CMS | Объекты | $hAction.label | $crdObject.hash.[$form:id].name | $request:uri">
+		<form method="post" action="$SYSTEM.path" name="form_content" id="form_content" enctype="multipart/form-data"
+		label="MOUSE CMS | Объекты | $hAction.label | $crdObject.hash.[$form:id].name ">
 		<tabs>
 		<tab id="section-1" name="Основное">
 			^if($hAction.i & 1){<field type="none" name="object_id" label="ID" description="ID объекта">$crdObject.hash.[$form:id].id</field>}
@@ -226,7 +221,7 @@ ID	id
 			<field type="checkbox" name="rights_read" label="Просмотр" description="Права по умолчанию">$hRights.read</field>
 			<field type="checkbox" name="rights_edit" label="Правка" description="Права по умолчанию">$hRights.edit</field>
 			<field type="checkbox" name="rights_delete" label="Удаление" description="Права по умолчанию">$hRights.delete</field>
-			<field type="hidden" name="dt_update">^MAIN:dtNow.sql-string[]</field>
+			<field type="hidden" name="dt_update">$SYSTEM.date</field>
 			<field type="hidden" name="auser_id">$MAIN:objAuth.user.id</field>
 ^form_engine[
 	^$.process[object]
@@ -292,19 +287,65 @@ ID	id
 
 
 #################################################################################################
-# Управление объектами
+# Управление блоками
 @block[][hAction]
 # -----------------------------------------------------------------------------------------------
 # определение вывода в зависимости от запроса
 ^if(def $form:action){
-	
+# -----------------------------------------------------------------------------------------------
+#	вывод формы редактирования
+	$hAction[^mGetAction[$form:action]]
+#	загрузка данных
+	$crdBlock[^mLoader[$.name[block]$.h(1)]]
+	$crdDataProcess[^mLoader[$.name[data_process]$.t(1)]]
+	$crdDataType[^mLoader[$.name[data_type]$.t(1)]]
+	<form method="post" action="$SYSTEM.path" name="form_content" id="form_content" enctype="multipart/form-data"
+	label="MOUSE CMS | Блоки | $hAction.label | $crdBlock.hash.[$form:id].name ">
+	<tabs>
+	<tab id="section-1" name="Основное">
+		^if($hAction.i & 1){
+			<field type="none"  name="block_id" label="ID" description="ID блока">$crdBlock.hash.[$form:id].id</field>
+		}
+		<field type="text" name="name" label="Имя" description="Название блока" class="medium">$crdBlock.hash.[$form:id].name</field>
+		<field type="checkbox" name="is_published"  label="Опубликовать">$crdBlock.hash.[$form:id].is_published</field>
+		<field type="select" name="data_process_id" label="Обработчик" description="Обработчик блока">
+			<option id="0" value="0" select="$crdBlock.hash.[$form:id].data_process_id">отсутствует</option>
+			^crdDataProcess.list[$.added[select="$crdBlock.hash.[$form:id].data_process_id"]]
+		</field>
+		<field type="textarea" name="description"   label="Описание"  description="Описание блока" >$crdBlock.hash.[$form:id].description</field>
+	</tab>
+	<tab id="section-2" name="Дополнительное">
+		<field type="checkbox" name="is_parsed_manual" label="Ручной вызов">$crdBlock.hash.[$form:id].is_parsed_manual</field>
+		<field type="checkbox" name="is_shared" label="Общий блок">$crdBlock.hash.[$form:id].is_parsed_manual</field>
+		<field type="textarea" name="attr" label="Атрибуты" description="Атрибуты блока">$crdBlock.hash.[$form:id].attr</field>
+		<field type="select" name="data_type_id" label="Данные" description="Тип данных блока">
+			^crdDataType.list[$.added[select="$crdBlock.hash.[$form:id].data_type_id"]]
+		</field>
+	</tab>
+	<tab id="section-3" name="Данные">
+		<field type="textarea" name="data" label="Данные" ws="true" description="Данные блока">$crdBlock.hash.[$form:id].data</field>
+	</tab>
+	</tabs>
+	<field type="hidden" name="dt_update">$SYSTEM.date</field>
+^form_engine[
+	^$.process[block]
+	^$.where[block_id]
+	^$.block_id[$form:id]
+	^$.tables[^$.main[block]]
+	^if($hAction.i & 6){^$.action[insert]}
+	^if($hAction.i & 1){^$.action[update]}
+]
+	</form>
+# -----------------------------------------------------------------------------------------------
+#	запрет постпросессинга данных блока
+	$SYSTEM.postProcess(0)
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод списка блоков
 $crdBlock[^mLoader[$.name[block]$.t(1)]]
 $crdDataProcess[^mLoader[$.name[data_process]$.h(1)]]
 $crdDataType[^mLoader[$.name[data_type]$.h(1)]]
-<atable label="Mouse CMS | Блоки">
+<atable label="Mouse CMS | Блоки ">
 	^crdBlock.draw[
 		$.code[
 			Описание: ^$hFields.description <br/>
@@ -323,11 +364,433 @@ ID	id
 ^form_engine[
 	^$.where[block_id]
 	^$.action[delete]
-	^$.tables[^$.main[block]^$.[block_to_object]]
+	^$.tables[^$.main[block]^$.connect[block_to_object]]
 ]
 </atable>
 }
 #end @block[][hAction]
+
+
+
+#################################################################################################
+# Управление обработчиками
+@data_process[][hAction]
+# -----------------------------------------------------------------------------------------------
+# определение вывода в зависимости от запроса
+^if(def $form:action){
+# -----------------------------------------------------------------------------------------------
+#	вывод формы редактирования
+	$hAction[^mGetAction[$form:action]]
+#	загрузка данных
+	$crdDataProcess[^mLoader[$.name[data_process]$.h(1)]]
+	$crdDataProcessType[^mLoader[$.name[data_process_type]$.t(1)]]
+	<form method="post" action="$SYSTEM.path" name="form_content" id="form_content" enctype="multipart/form-data"
+	label="MOUSE CMS | Обработчики | $hAction.label | $crdDataProcess.hash.[$form:id].name ">
+	<tabs>
+	<tab id="section-1" name="Основное">
+		^if($hAction.i & 1){
+			<field type="none"  name="data_process_id" label="ID" description="ID обработчика">$crdDataProcess.hash.[$form:id].id</field>
+		}
+		<field type="text" name="name" label="Имя" description="Имя обработчика" class="long">$crdDataProcess.hash.[$form:id].name</field>
+		<field type="text" name="filename" label="Процесс" description=" Имя файла обработчика">$crdDataProcess.hash.[$form:id].filename</field>
+		<field type="text" name="sort_order" label="Порядок" description="Сортировка">$crdDataProcess.hash.[$form:id].sort_order</field>
+		<field type="select" name="data_process_type_id" label="Тип" description="Тип обработчика" class="long">
+			^crdDataProcessType.list[$.added[select="$crdDataProcess.hash.[$form:id].data_process_type_id"]]
+		</field>
+		<field type="textarea" name="description" label="Описание" description="Функциональность обработчика">$crdDataProcess.hash.[$form:id].description</field>
+		<field type="hidden" name="dt_update">$SYSTEM.date</field>
+	</tab>
+	</tabs>
+^form_engine[
+	^$.where[data_process_id]
+	^$.data_process_id[$form:id]
+	^$.tables[^$.main[data_process]]
+	^if($hAction.i & 6){^$.action[insert]}
+	^if($hAction.i & 1){^$.action[update]}
+]
+	</form>
+}{
+# -----------------------------------------------------------------------------------------------
+# вывод списка обработчиков
+$crdDataProcess[^mLoader[$.name[data_process]$.t(1)]]
+$crdDataProcessType[^mLoader[$.name[data_process_type]$.h(1)]]
+<atable label="Mouse CMS | Обработчики ">
+	^crdDataProcess.draw[
+		$.code[
+			Описание: ^$hFields.description <br/>
+			Изменен: ^$hFields.dt_update <br/>
+			Сортировка: ^$hFields.sort_order <br/>
+		]
+		$.names[^table::create{name	id	object
+ID	id
+Название	name
+Имя файла	filename
+Тип данных	data_process_type_id	crdDataProcessType.hash
+}]]
+	^added[]
+^form_engine[
+	^$.where[data_process_id]
+	^$.action[delete]
+	^$.tables[^$.main[data_process]]
+]
+</atable>
+}
+#end @data_process[][hAction]
+
+
+
+#################################################################################################
+# Управление шаблонами
+@template[][hAction]
+# -----------------------------------------------------------------------------------------------
+# определение вывода в зависимости от запроса
+^if(def $form:action){
+# -----------------------------------------------------------------------------------------------
+#	вывод формы редактирования
+	$hAction[^mGetAction[$form:action]]
+#	загрузка данных
+	$crdTemplate[^mLoader[$.name[template]$.h(1)]]
+	<form method="post" action="$SYSTEM.path" name="form_content" id="form_content" enctype="multipart/form-data"
+	label="MOUSE CMS | Шаблоны | $hAction.label | $crdTemplate.hash.[$form:id].name ">
+	<tabs>
+	<tab id="section-1" name="Основное">
+		^if($hAction.i & 1){
+			<field type="none"  name="template_id" label="ID" description="ID шаблона">$crdTemplate.hash.[$form:id].id</field>
+		}
+		<field type="text" name="name"       label="Имя"        description="Имя шаблона">$crdTemplate.hash.[$form:id].name</field>
+		<field type="text" name="filename"   label="Шаблон"     description=" Имя файла шаблона"  class="medium">$crdTemplate.hash.[$form:id].filename</field>
+		<field type="text" name="params"     label="Файл стиля" description=" Имя файла стиля"  class="medium">$crdTemplate.hash.[$form:id].params</field>
+		<field type="text" name="sort_order" label="Порядок"    description="Сортировка" class="short">$crdTemplate.hash.[$form:id].sort_order</field>
+		<field type="textarea" name="description" label="Описание" description="Функциональность шаблона">$crdTemplate.hash.[$form:id].description</field>
+		<field type="hidden" name="dt_update">$SYSTEM.date</field>
+	</tab>
+	</tabs>
+^form_engine[
+	^$.where[template_id]
+	^$.template_id[$form:id]
+	^$.tables[^$.main[template]]
+	^if($hAction.i & 6){^$.action[insert]}
+	^if($hAction.i & 1){^$.action[update]}
+]
+	</form>
+}{
+# -----------------------------------------------------------------------------------------------
+# вывод списка шаблонов
+$crdTemplate[^mLoader[$.name[template]$.t(1)]]
+<atable label="Mouse CMS | Шаблоны ">
+	^crdTemplate.draw[
+		$.code[
+			Описание: ^$hFields.description <br/>
+			Изменен: ^$hFields.dt_update <br/>
+		]
+		$.names[^table::create{name	id	object
+ID	id
+Название	name
+Имя файла	filename
+Имя файла стиля	params
+}]]
+	^added[]
+^form_engine[
+	^$.where[template_id]
+	^$.action[delete]
+	^$.tables[^$.main[template]]
+]
+</atable>
+}
+#end @template[][hAction]
+
+
+
+#################################################################################################
+# Управление пользователями
+@auser[][hAction;hRights]
+# -----------------------------------------------------------------------------------------------
+# определение вывода в зависимости от запроса
+^if(def $form:action){
+# -----------------------------------------------------------------------------------------------
+#	вывод формы редактирования
+	$hAction[^mGetAction[$form:action]]
+#	загрузка данных
+	$crdAuser[^mLoader[$.name[auser]]]
+	$crdAuserToAuser[^mLoader[$.name[auser_to_auser]$.h(1)]]
+	^if($hAction.i & 2){$crdAuser.hash.[$form:id].name[]}
+	<form method="post" action="$SYSTEM.path" name="form_content" id="form_content" enctype="multipart/form-data"
+	label="MOUSE CMS | Пользователи и группы | $hAction.label | $crdAuser.hash.[$form:id].name ">
+	<tabs>
+	<tab id="section-1" name="Основное">
+		^if($hAction.i & 1){
+			<field type="none"  name="auser_id" label="ID" description="ID пользователя" class="short">$crdAuser.hash.[$form:id].id</field>
+		}
+		<field type="text" name="name" label="Имя" description="Имя пользователя" class="medium">$crdAuser.hash.[$form:id].name</field>
+		<field type="select" name="auser_type_id" label="Тип" description="Тип пользователя" class="medium">
+			<option value="0" select="$crdAuser.hash.[$form:id].auser_type_id">Пользователь</option>
+			<option value="1" select="$crdAuser.hash.[$form:id].auser_type_id">Группа</option>
+			<option value="2" select="$crdAuser.hash.[$form:id].auser_type_id">Владелец</option>
+		</field>
+		<field type="text" name="email" label="E-Mail" description="Электронная почта" class="medium">$crdAuser.hash.[$form:id].email</field>
+		<field type="checkbox" name="is_published" label="Опубликовать" description="" class="medium">$crdAuser.hash.[$form:id].is_published</field>
+		<field type="textarea" name="description" label="Описание" description="Описание пользователя">$crdAuser.hash.[$form:id].description</field>
+		<field type="text" name="passwd" label="Пароль" description="Установить (сменить) пароль" class="medium"></field>
+	</tab>
+	<tab id="section-3" name="Атрибуты">
+		<field type="select" name="auth_parent_id" label="Группа" description="Группа пользователя" class="medium">
+			<option value="0" select="$crdAuserToAuser.hash.[$form:id].parent_id">none</option>
+			^crdAuser.table.menu{^if($crdAuser.table.auser_type_id == 1){
+				<option value="$crdAuser.table.id" select="$crdAuserToAuser.hash.[$form:id].parent_id">$crdAuser.table.name</option>
+			}}
+		</field>
+		$hRights[^getHashRights($crdAuser.hash.[$form:id].rights)]
+		<field type="checkbox" name="rights_read" label="Просмотр" description="Права по умолчанию">$hRights.read</field>
+		<field type="checkbox" name="rights_edit" label="Правка" description="Права по умолчанию">$hRights.edit</field>
+		<field type="checkbox" name="rights_delete" label="Удаление" description="Права по умолчанию">$hRights.delete</field>
+		<field type="checkbox" name="rights_comment" label="Комментарии" description="Права по умолчанию">$hRights.comment</field>
+		<field type="checkbox" name="rights_supervisory" label="Может все" description="Права по умолчанию">$hRights.supervisory</field>
+		^if($hAction.i & 6){
+			<field type="hidden" name="dt_register">$SYSTEM.date</field>
+		}
+	</tab>
+	</tabs>
+^form_engine[
+	^$.process[auser]
+	^$.where[auser_id]
+	^$.auser_id[$form:id]
+	^$.tables[^$.main[auser]]
+	^if($hAction.i & 6){^$.action[insert]}
+	^if($hAction.i & 1){^$.action[update]}
+]
+	</form>
+}{
+# -----------------------------------------------------------------------------------------------
+# вывод списка пользователей
+$crdAuser[^mLoader[$.name[auser]$.t(1)]]
+$hAuser_type[
+	$.0[$.name[user]]
+	$.1[$.name[group]]
+	$.2[$.name[owner]]
+]
+<atable label="Mouse CMS | Пользователи и группы ">
+	^crdAuser.draw[
+		$.code[
+			Описание: ^$hFields.description <br/>
+			Зарегистрировался: ^$hFields.dt_register <br/>
+			Последний доступ: ^$hFields.dt_access <br/>
+		]
+		$.names[^table::create{name	id	object
+ID	id
+Имя	name
+Тип	auser_type_id	hAuser_type
+Права	rights
+E-mail	email
+Вход	dt_logon
+Выход	dt_logout
+Событие	event_type
+}]]
+	^added[]
+^form_engine[
+	^$.where[auser_id]
+	^$.action[delete]
+	^$.tables[^$.main[auser]^$.connect[asession]^$.connect2[aevent_log]^$.connect3[acl]]
+]
+</atable>
+}
+#end @auser[][hAction]
+
+
+
+#################################################################################################
+# Управление правами
+@acl[][hAction;hRights]
+# -----------------------------------------------------------------------------------------------
+# определение вывода в зависимости от запроса
+^if(def $form:action){
+# -----------------------------------------------------------------------------------------------
+#	вывод формы редактирования
+	$hAction[^mGetAction[$form:action]]
+#	загрузка данных
+	$crdAcl[^mLoader[$.name[acl]$.h(1)]]
+	$crdAuser[^mLoader[$.name[auser]$.t(1)]]
+	$crdObject[^mLoader[$.name[object]$.t(1)]]
+	<form method="post" action="$SYSTEM.path" name="form_content" id="form_content" enctype="multipart/form-data"
+	label="MOUSE CMS | Управление правами | $hAction.label  ">
+	<tabs>
+	<tab id="section-1" name="Основное">
+		<field type="select" name="object_id" label="Объект" description="Выбор объекта" class="medium">
+			^crdObject.list[$.added[select="$crdAcl.hash.[$form:id].object_id"]]
+		</field>
+		<field type="select" name="auser_id" label="Пользователь(группа)" description="Выбор пользователя" class="medium">
+			^crdAuser.list[$.added[select="$crdAcl.hash.[$form:id].auser_id"]]
+		</field>
+		$hRights[^getHashRights($crdAcl.hash.[$form:id].rights)]
+		<field type="checkbox" name="rights_read" label="Просмотр" description="Права по умолчанию">$hRights.read</field>
+		<field type="checkbox" name="rights_edit" label="Правка" description="Права по умолчанию">$hRights.edit</field>
+		<field type="checkbox" name="rights_delete" label="Удаление" description="Права по умолчанию">$hRights.delete</field>
+		<field type="checkbox" name="rights_comment" label="Комментарии" description="Права по умолчанию">$hRights.comment</field>
+		<field type="checkbox" name="rights_supervisory" label="Может все" description="Права по умолчанию">$hRights.supervisory</field>
+	</tab>
+	</tabs>
+^form_engine[
+	^$.process[auser]
+	^$.where[acl_id]
+	^$.acl_id[$form:id]
+	^$.tables[^$.main[acl]]
+	^if($hAction.i & 6){^$.action[insert]}
+	^if($hAction.i & 1){^$.action[update]}
+]
+	</form>
+}{
+# -----------------------------------------------------------------------------------------------
+# вывод прав
+$crdAcl[^mLoader[$.name[acl]$.t(1)]]
+$crdAuser[^mLoader[$.name[auser]$.h(1)]]
+$crdObject[^mLoader[$.name[object]$.h(1)]]
+<atable label="Mouse CMS | Управление правами ">
+	^crdAcl.draw[
+		$.code[
+			Описание: ^$hFields.description <br/>
+			Зарегистрировался: ^$hFields.dt_register <br/>
+			Последний доступ: ^$hFields.dt_access <br/>
+		]
+		$.names[^table::create{name	id	object
+Объект	object_id	crdObject.hash
+Пользователь(группа)	auser_id	crdAuser.hash
+Права	rights
+}]]
+	^added[]
+^form_engine[
+	^$.where[acl_id]
+	^$.action[delete]
+	^$.tables[^$.main[acl]]
+]
+</atable>
+}
+#end @acl[][hAction]
+
+
+
+#################################################################################################
+# управление статьями
+@article[][hAction]
+# -----------------------------------------------------------------------------------------------
+# определение вывода в зависимости от запроса
+^if(def $form:action){
+# -----------------------------------------------------------------------------------------------
+#	вывод формы редактирования
+	$hAction[^mGetAction[$form:action]]
+#	загрузка данных
+	$crdArticle[^mLoader[$.name[article]$.h(1)]]
+	$crdArticleType[^mLoader[$.name[article_type]$.t(1)]]
+	<form method="post" action="$SYSTEM.path" name="form_content" id="form_content" enctype="multipart/form-data"
+	label="MOUSE CMS | Статьи | $hAction.label" >
+	<tabs>
+	<tab id="section-1" name="Основное">
+		<field type="text" name="title" label="Название" description=" Название статьи " class="medium">$crdArticle.hash.[$form:id].title</field>
+		<field type="select" name="article_type_id" label="Категория" description="Категория статьи" class="medium">
+			^crdArticleType.list[$.added[select="$crdArticle.hash.[$form:id].article_type_id"]]
+		</field>
+		<field type="checkbox" name="is_published"  label="Опубликовать">$crdArticle.hash.[$form:id].is_published</field>
+		<field type="textarea" name="lead"   label="Анонс"     description="Краткое содержание">$crdArticle.hash.[$form:id].lead</field>
+		<field type="hidden" name="dt">$SYSTEM.date</field>
+		<field type="hidden" name="dt_published">$SYSTEM.date</field>
+		</tab>
+		<tab id="section-2" name="Содержание">
+			<field type="textarea" name="body" ws="true"  label="Анонс"   description="Краткое содержание">$crdArticle.hash.[$form:id].body</field>
+		</tab>
+	</tabs>
+^form_engine[
+	^$.process[article]
+	^$.where[article_id]
+	^$.article_id[$form:id]
+	^$.tables[^$.main[article]]
+	^if($hAction.i & 6){^$.action[insert]}
+	^if($hAction.i & 1){^$.action[update]}
+]
+	</form>
+}{
+# -----------------------------------------------------------------------------------------------
+# вывод статей
+	$crdArticle[^mLoader[$.name[article]$.t(1)]]
+	$crdArticleType[^mLoader[$.name[article_type]$.h(1)]]
+<atable label="Mouse CMS | Статьи ">
+	^crdArticle.draw[
+		$.code[
+			Анонс: ^$hFields.lead <br/>
+			^^if(^$hFields.is_not_empty){Содержит данные <br/>}
+			Создана: ^$hFields.dt_published <br/>
+		]
+		$.names[^table::create{name	id	object
+ID	id
+Название	title
+Опубликована	is_published
+Дата публикации	dt_published
+Категория	article_type_id	crdArticleType.hash
+}]]
+	^added[]
+^form_engine[
+	^$.where[article_id]
+	^$.action[delete]
+	^$.tables[^$.main[article]]
+]
+</atable>
+}
+#end @article[][hAction]
+
+
+
+#################################################################################################
+# управление категориями
+@article_type[][hAction;hRights]
+# -----------------------------------------------------------------------------------------------
+# определение вывода в зависимости от запроса
+^if(def $form:action){
+# -----------------------------------------------------------------------------------------------
+#	вывод формы редактирования
+	$hAction[^mGetAction[$form:action]]
+#	загрузка данных
+	$crdArticleType[^mLoader[$.name[article_type]$.h(1)]]
+	<form method="post" action="$SYSTEM.path" name="form_content" id="form_content" enctype="multipart/form-data"
+	label="MOUSE CMS | Категории | $hAction.label" >
+	<tabs>
+	<tab id="section-1" name="Основное">
+		<field type="text" name="name" label="Название" description=" Название категории " class="medium">$crdArticleType.hash.[$form:id].name</field>
+		<field type="text" name="path" label="Путь" description=" Виртуальный путь " class="medium">$crdArticleType.hash.[$form:id].path</field>
+		$hRights[^getHashRights($crdArticleType.hash.[$form:id].rights)]
+		<field type="checkbox" name="rights_read" label="Просмотр" description="Права по умолчанию">$hRights.read</field>
+		<field type="checkbox" name="rights_edit" label="Правка" description="Права по умолчанию">$hRights.edit</field>
+		<field type="checkbox" name="rights_delete" label="Удаление" description="Права по умолчанию">$hRights.delete</field>
+		<field type="checkbox" name="rights_comment" label="Комментарии" description="Права по умолчанию">$hRights.comment</field>
+		<field type="checkbox" name="rights_supervisory" label="Может все" description="Права по умолчанию">$hRights.supervisory</field>
+	</tab>
+	</tabs>
+^form_engine[
+	^$.process[article_type]
+	^$.where[article_type_id]
+	^$.article_type_id[$form:id]
+	^$.tables[^$.main[article_type]]
+	^if($hAction.i & 6){^$.action[insert]}
+	^if($hAction.i & 1){^$.action[update]}
+]
+	</form>
+}{
+# -----------------------------------------------------------------------------------------------
+# вывод категорий
+	$crdArticleType[^mLoader[$.name[article_type]$.t(1)]]
+<atable label="Mouse CMS | Категории ">
+	^crdArticleType.draw[
+		$.names[^table::create{name	id	object
+ID	id
+Название	name
+Путь	path
+Права	rights
+}]]
+	^added[]
+^form_engine[
+	^$.where[article_type_id]
+	^$.action[delete]
+	^$.tables[^$.main[article_type]]
+]
+</atable>
+}
+#end @article_type[][hAction;hRights]
 
 
 
@@ -404,39 +867,6 @@ $result[
 					$.[object_type.constructor][]
 				]
 			}
-#			обработчики
-			^case[data_process]{
-				$.names[
-					$.[data_process.data_process_id][id]
-					$.[data_process.data_process_type_id][]
-					$.[data_process.name][]
-					$.[data_process.description][]
-					$.[data_process.filename][]
-					$.[data_process.dt_update][]
-					$.[data_process.sort_order][]
-				]
-			}
-#			типы данных
-			^case[data_type]{
-				$.names[
-					$.[data_type.data_type_id][id]
-					$.[data_type.sort_order][]
-					$.[data_type.name][]
-				]
-			}
-#			шаблоны
-			^case[template]{
-				$.names[
-					$.[template.template_id][id]
-					$.[template.template_type_id][]
-					$.[template.name][]
-					$.[template.description][]
-					$.[template.filename][]
-					$.[template.params][]
-					$.[template.dt_update][]
-					$.[template.sort_order][]
-				]
-			}
 #			блоки объекта
 			^case[block_to_object]{
 				$.leftjoin[block]
@@ -468,6 +898,47 @@ $result[
 					$.[block.is_parsed_manual][]
 				]
 			}
+#			типы данных
+			^case[data_type]{
+				$.names[
+					$.[data_type.data_type_id][id]
+					$.[data_type.sort_order][]
+					$.[data_type.name][]
+				]
+			}
+#			обработчики
+			^case[data_process]{
+				$.names[
+					$.[data_process.data_process_id][id]
+					$.[data_process.data_process_type_id][]
+					$.[data_process.name][]
+					$.[data_process.description][]
+					$.[data_process.filename][]
+					$.[data_process.dt_update][]
+					$.[data_process.sort_order][]
+				]
+			}
+#			типы обработчиков
+			^case[data_process_type]{
+				$.names[
+					$.[data_process_type.data_process_type_id][id]
+					$.[data_process_type.sort_order][]
+					$.[data_process_type.name][]
+				]
+			}
+#			шаблоны
+			^case[template]{
+				$.names[
+					$.[template.template_id][id]
+					$.[template.template_type_id][]
+					$.[template.name][]
+					$.[template.description][]
+					$.[template.filename][]
+					$.[template.params][]
+					$.[template.dt_update][]
+					$.[template.sort_order][]
+				]
+			}
 #			пользователи
 			^case[auser]{
 				$.leftjoin[asession]
@@ -489,6 +960,50 @@ $result[
 					$.[auser.is_published][]
 					$.[auser.is_default][]
 					$.[MAX(asession.dt_access)][dt_access]
+				]
+			}
+#			связи пользователей
+			^case[auser_to_auser]{
+				$.order[]
+				$.names[
+					$.[auser_to_auser.auser_id][id]
+					$.[auser_to_auser.parent_id][]
+					$.[auser_to_auser.rights][]
+				]
+			}
+#			права на объекты
+			^case[acl]{
+				$.order[]
+				$.names[
+					$.[acl.acl_id][id]
+					$.[acl.object_id][]
+					$.[acl.auser_id][]
+					$.[acl.rights][]
+				]
+			}
+#			статьи
+			^case[article]{
+				$.order[article_id]
+				$.names[
+					$.[article.article_id][id]
+					$.[article.article_type_id][]
+					$.[article.title][]
+					$.[article.lead][]
+					$.[article.is_not_empty][]
+					$.[article.is_published][]
+					$.[article.body][]
+					$.[article.dt][]
+					$.[article.dt_published][]
+				]
+			}
+#			категории статей
+			^case[article_type]{
+				$.order[article_type_id]
+				$.names[
+					$.[article_type.article_type_id][id]
+					$.[article_type.path][]
+					$.[article_type.name][]
+					$.[article_type.rights][]
 				]
 			}
 		}

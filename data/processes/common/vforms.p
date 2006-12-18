@@ -51,7 +51,7 @@ $sRequest[
 ^if(^hRequest.[$hForm.param.where].pos[,] > 0){
 	$tWhere[^hRequest.[$hForm.param.where].split[,]]
 	^tWhere.menu{	
-		$hRequest.[$hForm.param.where][$tWhere.piece]
+		$hForm.param.[$hForm.param.where][$tWhere.piece]
 		^hForm.param.tables.foreach[key;table]{
 			$sRequest[^hHandlers.[$hForm.param.action][$table;$hForm.param]]
 			^mSaveLog[$sRequest]
@@ -59,11 +59,11 @@ $sRequest[
 		}
 	}
 }{
-		^hForm.param.tables.foreach[key;table]{
-			$sRequest[^hHandlers.[$hForm.param.action][$table;$hForm.param]]
-			^mSaveLog[$sRequest]
-			^hForm.oSql.void{$sRequest}
-		}
+	^hForm.param.tables.foreach[key;table]{
+		$sRequest[^hHandlers.[$hForm.param.action][$table;$hForm.param]]
+		^mSaveLog[$sRequest]
+		^hForm.oSql.void{$sRequest}
+	}
 }
 $result[Запрос выполнен.]
 #end go[]
@@ -116,7 +116,7 @@ $result[
 	DELETE FROM
 		$sTableName
 	WHERE
-		$hParam.where="$hRequest.[$hParam.where]"
+		$hParam.where="$hParam.[$hParam.where]"
 ]
 #end @delete[sTableName;hParam]
 

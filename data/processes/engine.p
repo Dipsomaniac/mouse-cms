@@ -25,7 +25,7 @@ $SYSTEM[
 #	=debug
 	$.siteLangID(^siteLangID.int(0))
 #	= debug поправить во всех остальных местах (на это значение)
-	$.data[^MAIN:dtNow.sql-string[]]
+	$.date[^MAIN:dtNow.sql-string[]]
 ]
 # ВСЕ ОПУБЛИКОВАННЫЕ объекты текущего сайта
 $OBJECTS[^getOBJECTS[$.where[m_object.site_id ='$SYSTEM.siteID' AND m_object.is_published ='1']]]
