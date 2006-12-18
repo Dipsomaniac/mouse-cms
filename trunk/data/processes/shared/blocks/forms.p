@@ -23,8 +23,6 @@ $oForm[^vforms::init[
 }
 # раз уж сюда дошли то удалим весь кэш
 ^dir_delete[^MAIN:CacheDir.trim[end;/];$.is_recursive(1)]
-# для совместимости с spaw
-^if(def $oForm.hRequest.body){$oForm.hRequest.body[^oForm.hRequest.body.match[<br>][gi]{<br/>}]}
 # попытка выполнения действия
 ^oForm.go[]
 #end @mRun[hParams][jMethod]
@@ -79,43 +77,86 @@ $oForm.hRequest.full_path[$oForm.hRequest.full_path/$oForm.hRequest.path/]
 
 
 
-@test[]
-$sType[$form:cache]
-# -----------------------------------------------------------------------------------------------
-# =debug в лом было думать (авто заполнение полного пути и получение ветви и поля is_not_empty блока, работа с директориями объектов) место очень слабое
-^if(def $sType){
-	^switch[$sType]{
-#		блоки
-		^case[blocks]{
-			^if(def $oAjax.hRequest.data){$oAjax.hRequest.is_not_empty(1)}{$oAjax.hRequest.is_not_empty(0)}
-		}
-	}
-}
-# установка пароля пользователю
-^if(def $oAjax.hRequest.passwd){$oAjax.hRequest.passwd[^MAIN:objAuth.cryptPassword[$oAjax.hRequest.passwd]]}
-# обработка тип пользователя(группа)
-^if(^oAjax.hRequest.auth_parent_id.int(0)){
-	^MAIN:objSQL.void{DELETE FROM auser_to_auser WHERE auser_id="$oAjax.hRequest.auser_id"}
-	^MAIN:objSQL.void{INSERT auser_to_auser (auser_id, parent_id) VALUES ('$oAjax.hRequest.auser_id' , '$oAjax.hRequest.auth_parent_id') }
-}
-	^oAjax.hRequest.delete[auth_parent_id]
+####################################################################################################
+# =debug работа с блоками объекта
 # а это опять блоки и это очень криво =debug
-$_tTemp[^oAjax.hRequest._keys[]]
-^_tTemp.menu{
-	^if(^_tTemp.key.pos[mode_] >= 0){
-		$_iTemp[^_tTemp.key.mid(5)]
-		^if($oAjax.hRequest.block_id_$_iTemp ne '0'){
-			^MAIN:objSQL.void{
+@block_to_object[][tFields;iId;sRequest]
+$sRequest[
+	DELETE FROM
+		$oForm.hForm.param.tables.main
+	WHERE
+		object_id = $oForm.hForm.param.object_id
+]
+^MAIN:objSQL.void{$sRequest}
+^if(def $oForm.hForm.log){^sRequest.save[append;$oForm.hForm.log]}
+$tFields[^oForm.hRequest._keys[]]
+^tFields.menu{
+	^if(^tFields.key.pos[mode_] >= 0){
+#		^stop[^oForm.hRequest.foreach[sKey;sValue]{$sKey = $sValue}]
+		$iId[^tFields.key.mid(5)]
+		^if($oForm.hRequest.block_id_$iId ne '0'){
+			$sRequest[
 				INSERT 
-					m_block_to_object
+					$oForm.hForm.param.tables.main
 					(object_id, block_id, sort_order, mode)
 				VALUES
-					('$oAjax.hRequest.object_id','$oAjax.hRequest.block_id_$_iTemp','$oAjax.hRequest.sort_order_$_iTemp','$oAjax.hRequest.mode_$_iTemp')
-				}
+					('$oForm.hForm.param.object_id','$oForm.hRequest.block_id_$iId','$oForm.hRequest.sort_order_$iId','$oForm.hRequest.mode_$iId')
+			]
+			^if(def $oForm.hForm.log){^sRequest.save[append;$oForm.hForm.log]}
+			^MAIN:objSQL.void{$sRequest}
 		}
 	}
 }
-#end @main[][_hRequest]
+$oForm.hForm.param.object_id[]
+#end @block_to_object[]
+
+
+####################################################################################################
+# =debug работа с блоками
+@block[]
+^if(def $oForm.hRequest.data){$oForm.hRequest.is_not_empty(1)}{$oForm.hRequest.is_not_empty(0)}
+#end @block[]
+
+
+
+####################################################################################################
+# =debug работа с пользователями
+@auser[][sRequest]
+^if(def $oForm.hRequest.passwd){$oForm.hRequest.passwd[^MAIN:objAuth.cryptPassword[$oForm.hRequest.passwd]]}
+^if(^oForm.hRequest.auth_parent_id.int(0)){
+	$sRequest[DELETE FROM auser_to_auser WHERE auser_id="$oForm.hRequest.auser_id"]
+	^if(def $oForm.hForm.log){^sRequest.save[append;$oForm.hForm.log]}
+	^MAIN:objSQL.void{$sRequest}
+	$sRequest[INSERT auser_to_auser (auser_id, parent_id) VALUES ('$oForm.hRequest.auser_id' , '$oForm.hRequest.auth_parent_id')]
+	^if(def $oForm.hForm.log){^sRequest.save[append;$oForm.hForm.log]}
+	^MAIN:objSQL.void{$sRequest}
+}
+^oForm.hRequest.delete[auth_parent_id]
+# обработка прав
+^rights[]
+#end @auser[]
+
+
+
+####################################################################################################
+# =debug работа со статьями
+@article[]
+$oForm.hRequest.is_not_empty(0)
+# для совместимости с spaw
+^if(def $oForm.hRequest.body){
+	$oForm.hRequest.body[^oForm.hRequest.body.match[<br>][gi]{<br/>}]
+	$oForm.hRequest.is_not_empty(1)
+}
+#end @article[]
+
+
+
+####################################################################################################
+# =debug работа с категориями
+@article_type[]
+# обработка прав
+^rights[]
+#end @article_type[]
 
 
 
@@ -142,11 +183,3 @@ $sDummy[@dummy[]
 @deleteObject[sFullPath]
 ^dir_delete[$sFullPath]
 #end @deleteObject[sFullPath]
-
-
-
-####################################################################################################
-# Присваивание блоков
-@blocks[]
-	^oAjax.go[]
-#end 
