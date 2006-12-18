@@ -32,7 +32,7 @@ function saveForms(form,url,parent)
 {
 	var prop = {};
 	$(document.forms[form].elements).each( function() { if(this.checked) prop[this.name] = '1'; else prop[this.name] = escape(this.value); });
-	$.post('/forms/', prop, function(data){ alert(data) })
+	$.post('/forms/', prop, function(data){ alert(data); $(parent).load(url);})
 }
 
 

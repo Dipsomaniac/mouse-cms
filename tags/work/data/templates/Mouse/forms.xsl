@@ -82,12 +82,15 @@
 	</xsl:if>
 </xsl:template>
 
+
+
+<!-- field_option -->
 <xsl:template match="field_option">
 	<option value="{@id}">
 		<xsl:if test="@id=@select">
 			<xsl:attribute name="selected">selected</xsl:attribute> 
 		</xsl:if>
-		<xsl:value-of select="@value"/>
+		<xsl:value-of select="@name"/>
 	</option>
 </xsl:template>
 

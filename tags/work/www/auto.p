@@ -43,7 +43,7 @@ $sTemp[safari]$cTemp
 $sTemp[netscape]$cTemp
 # -----------------------------------------------------------------------------------------------
 # основные настройки
-$SQL.connect-string[mysql://root:@localhost/new_mouse?charset=utf8]
+$SQL.connect-string[mysql://root:@localhost/mouse2?charset=utf8]
 $CLASS_PATH[^table::create{path
 /../data
 /../data/processes

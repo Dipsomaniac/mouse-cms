@@ -39,7 +39,7 @@ $hObject.tab[^mGetSql[$hObject;$hObject.oSql]]
 @mGetSql[hParams;oSql][sRequest]
 $sRequest[
 	SELECT
-		^hParams.names.foreach[key;value]{$key ^if(def $value){ AS $value }}[,]
+		^untaint[as-is]{^hParams.names.foreach[key;value]{$key ^if(def $value){ AS $value }}[,]}
 	FROM
 		$hParams.name
 		^if(def $hParams.leftjoin){ LEFT JOIN $hParams.leftjoin USING ($hParams.using) }
@@ -60,7 +60,7 @@ $result[
 @list[hParams][hList]
 $hList[$.tag[field_option]$.id[id]$.value[name]]
 ^hList.add[$hParams]
-$result[^table.menu{<$hList.tag id="$table.[$hList.id]" value="$table.[$hList.value]" $hList.added />}]
+$result[^table.menu{<$hList.tag ${hList.id}="$table.[$hList.id]" ${hList.value}="$table.[$hList.value]" $hList.added />}]
 #end @list[hParams][hList]
 
 
