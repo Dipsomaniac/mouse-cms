@@ -189,14 +189,10 @@
 				<textarea name="body" id="message_body" class="input-textarea-large"/>
 			</div>
 		</div>
-		<input type="hidden" name="action" value="insert" />
-		<input type="hidden" name="cache" value="forums" />
 		<input type="hidden" name="dt_published" value="{@dt}" />
-		<input type="hidden" name="tables" value="
-			$.main[forum_message]
-		" />
 		<input type="hidden" name="parent_id" value="{@parent_id}" />
 		<input type="hidden" name="thread_id" value="{./thread_id}" />
+		<xsl:apply-templates select="input" />
 		<input type="submit" class="input-button" name="submit" value="Отправить" />
 		<br/><br/><hr/>
 		</form>

@@ -147,6 +147,7 @@ $result[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
 <!DOCTYPE site_page [
 	^getEntitySet[]
 ]>
+# =debug пространство имен system переименовать в mouse
 <document xmlns:system="http://klen.zoxt.net/doc/" lang="$SYSTEM.siteLangID" server="$SYSTEM.siteUrl" template="^getStylesheet[]">
   ^getDocumentBodyDefault[]
 </document>
@@ -158,16 +159,13 @@ $result[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
 ####################################################################################################
 # очистка памяти перед результирующей трансформацией =debug
 @clearMemory[]
-# системные переменные =debug вывести из админки
-$SYSTEM[] $crdSite[]
-$hObjectNow[] $crdObject[] $hObjectTree[]
-$crdTemplate[] $crdProcess[]
-
-$TYPES[] $TYPES_HASH[]
-$ACL[] $ACL_HASH[]
-$BLOCKS[] $BLOCKS_HASH[]
-$TYPES[] $TYPES_HASH[]
-$USERS[] $USERS_HASH[]
+$SYSTEM[]          $crdSite[]         $hObjectNow[]
+$crdObject[]       $hObjectTree[]     $crdTemplate[]
+$crdProcess[]      $crdBlock[]        $crdBlockToObject[]
+$crdTemplate[]     $crdObjectType[]   $crdDataProcess[] 
+$crdAuser[]        $crdDataType[]     $crdDataProcessType[]
+$crdAuserToAuser[] $crdAcl[]          $crdArticle[]
+$crdArticleType[]
 # очистка памяти
 ^memory:compact[]
 #end @clearMemory[]
@@ -210,7 +208,7 @@ $result[
 	<!-- QUERY объекта  -->
 	<request-query>$request:query</request-query>
 	<!-- дата и время  -->
-	<datetime>^MAIN:dtNow.sql-string[]</datetime>
+	<datetime>$SYSTEM.date</datetime>
 </system>
 <header>
 	<!-- ID объекта -->
@@ -294,9 +292,9 @@ $result[
 		>$sBlockData</block>
 	}
 	^if(^hBlockParams.Cache.int(0)){
-		<!-- ^MAIN:dtNow.sql-string[] Begin Block Cache key: blocks_code_${hBlockFields.id}, cache time: $hBlockParams.Cache secs -->
+		<!-- $SYSTEM.date Begin Block Cache key: blocks_code_${hBlockFields.id}, cache time: $hBlockParams.Cache secs -->
 		^cache[${MAIN:CacheDir}sql/blocks_code_${hBlockFields.id}.cache]($hBlockParams.Cache){$cBlock}
-		<!-- ^MAIN:dtNow.sql-string[] Ended Block Cache key: blocks_code_${hBlockFields.id}, cache time: $hBlockParams.Cache secs -->
+		<!-- $SYSTEM.date Ended Block Cache key: blocks_code_${hBlockFields.id}, cache time: $hBlockParams.Cache secs -->
 	}{
 		$cBlock
 	}
@@ -329,17 +327,14 @@ $result[$sBlockData]
 
 
 ####################################################################################################
-# обработка параметров
+# обработка параметров =debug не проверено на курдах
 @getSystemParams[sParams][_hParams]
 $_tDub[^sParams.split[^]]]
 ^_tDub.append{^taint[^#0A]}
 $result[^getParams[]]
 #end @getSystemParams[sParams]
-
-
-
 ####################################################################################################
-# обработка параметров
+# обработка параметров =debug не проверено на курдах
 @getParams[name;value]
 $result[
 	^hash::create[
@@ -356,7 +351,7 @@ $result[
 
 
 ####################################################################################################
-# виртуальная фабрика методов
+# виртуальная фабрика методов =debug не проверено на курдах
 @getSystemMethod[sName;sParams][_jMethod;_hParams]
 $result[
 	$_jMethod[$$sName] 
@@ -367,7 +362,7 @@ $result[
 
 
 ####################################################################################################
-# виртуальная фабрика объектов
+# виртуальная фабрика объектов =debug не проверено на курдах
 @getSystemObject[sName;sKey;sField][_sField]
 $_sField[$sKey]
 	^switch[$sName]{
@@ -380,7 +375,7 @@ $_sField[$sKey]
 
 
 ####################################################################################################
-# получение системных значений
+# получение системных значений =debug не проверено на курдах
 @getParser[sName;sField]
 $result[^switch[$sName]{
 	^case[request]{$request:[$sField]}
@@ -394,7 +389,7 @@ $result[^switch[$sName]{
 
 
 ####################################################################################################
-# вывод дерева объектов
+# вывод дерева объектов =debug не проверено на курдах
 @tree[hParam]
 $result[^ObjectByParent[$[$hParam.hash_name];$hParam.thread_id;
 		$.tag[branche]
@@ -407,7 +402,7 @@ $result[^ObjectByParent[$[$hParam.hash_name];$hParam.thread_id;
 
 
 ####################################################################################################
-# вывод полей объектов
+# вывод полей объектов =debug не проверено на курдах
 @list[hParam][_jMethod]
 $result[
 ^try{
@@ -423,7 +418,7 @@ $result[
 
 
 ####################################################################################################
-# получение и создание объека
+# получение и создание объека =debug не проверено на курдах
 @sql[hParam][_jMethod]
 ^try{
 # 	получаем метод для создания объекта
@@ -438,9 +433,9 @@ $result[]
 
 ####################################################################################################
 # обработка условий
-@select[hParam][_jMethod]
+@select[hParam]
 $result[^if(${hParam.name} eq ${hParam.value}){${hParam.true}}{${hParam.false}}]
-#end @sql[hParam]
+#end @select[hParam]
 
 
 
@@ -448,7 +443,7 @@ $result[^if(${hParam.name} eq ${hParam.value}){${hParam.true}}{${hParam.false}}]
 # вызов любого определенного обработчика
 @executeSystemProcess[hParam]
 $result[^executeBlock[$hParam.id;$hParam.param;$hParam.body;$hParam.field]]
-#end @process[hParam]
+#end @executeSystemProcess[hParam]
 
 
 
@@ -466,7 +461,7 @@ $result[^executeBlock[$hParam.id;$hParam.param;$hParam.body;$hParam.field]]
 #	нужно убрать кактус с подоконника
 	$result[]
 }
-#end @executeProcess[]
+#end @executeProcess[dataProcessID]
 
 
 
@@ -638,6 +633,7 @@ $result($hRights.read + $hRights.edit + $hRights.delete + $hRights.comment + $hR
 #end @getEntitySet[]
 
 
+
 #################################################################################################
 # Загрузчик курдов
 @mLoader[hParams]
@@ -645,6 +641,10 @@ $result[
 	^curd::init[
 		$.name[$hParams.name]
 		$.where[$hParams.where]
+		$.limit($hParams.limit)
+		$.offset($hParams.offset)
+		$.h($hParams.h)
+		$.t($hParams.t)
 		^switch[$hParams.name]{
 #			сайты
 			^case[site]{
@@ -726,10 +726,6 @@ $result[
 				]
 			}
 		}
-		$.h($hParams.h)
-		$.t($hParams.t)
-		$.limit($hParams.limit)
-		$.offset($hParams.offset)
 	]
 ]
 #end @mLoader[hParams]
