@@ -3,11 +3,11 @@
 -- http://www.phpmyadmin.net
 -- 
 -- Хост: localhost
--- Время создания: Дек 19 2006 г., 00:49
+-- Время создания: Дек 19 2006 г., 01:14
 -- Версия сервера: 4.1.16
 -- Версия PHP: 4.4.4
 -- 
--- БД: `mouse2`
+-- БД: `mouse3`
 -- 
 
 -- --------------------------------------------------------
@@ -16,7 +16,6 @@
 -- Структура таблицы `acl`
 -- 
 
-DROP TABLE IF EXISTS `acl`;
 CREATE TABLE `acl` (
   `acl_id` int(10) unsigned NOT NULL auto_increment,
   `object_id` int(10) unsigned NOT NULL default '0',
@@ -39,7 +38,6 @@ INSERT INTO `acl` VALUES (7, 9, 2, 143);
 -- Структура таблицы `aevent_log`
 -- 
 
-DROP TABLE IF EXISTS `aevent_log`;
 CREATE TABLE `aevent_log` (
   `aevent_log_id` int(10) unsigned NOT NULL auto_increment,
   `auser_id` int(10) unsigned NOT NULL default '0',
@@ -49,7 +47,7 @@ CREATE TABLE `aevent_log` (
   `content` varchar(255) collate utf8_bin default NULL,
   PRIMARY KEY  (`aevent_log_id`),
   KEY `ix_aevent_log_0` (`auser_id`,`dt`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=39 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=40 ;
 
 -- 
 -- Дамп данных таблицы `aevent_log`
@@ -86,6 +84,7 @@ INSERT INTO `aevent_log` VALUES (35, 4, 1, 0, '2006-12-13 18:28:47', 0x3132372e3
 INSERT INTO `aevent_log` VALUES (36, 4, 1, 0, '2006-12-18 20:16:03', 0x3132372e302e302e313a4e554c4c);
 INSERT INTO `aevent_log` VALUES (37, 4, 2, 0, '2006-12-19 00:07:12', 0x3132372e302e302e313a4e554c4c);
 INSERT INTO `aevent_log` VALUES (38, 4, 1, 0, '2006-12-19 00:07:19', 0x3132372e302e302e313a4e554c4c);
+INSERT INTO `aevent_log` VALUES (39, 3, 1, 0, '2006-12-19 00:58:07', 0x3132372e302e302e313a4e554c4c);
 
 -- --------------------------------------------------------
 
@@ -93,7 +92,6 @@ INSERT INTO `aevent_log` VALUES (38, 4, 1, 0, '2006-12-19 00:07:19', 0x3132372e3
 -- Структура таблицы `article`
 -- 
 
-DROP TABLE IF EXISTS `article`;
 CREATE TABLE `article` (
   `article_type_id` int(11) NOT NULL default '0',
   `article_id` int(11) NOT NULL auto_increment,
@@ -122,7 +120,6 @@ INSERT INTO `article` VALUES (1, 2, 0xd092d182d0bed180d0b0d18f20d182d0b5d181d182
 -- Структура таблицы `article_type`
 -- 
 
-DROP TABLE IF EXISTS `article_type`;
 CREATE TABLE `article_type` (
   `article_type_id` int(11) NOT NULL auto_increment,
   `path` varchar(255) collate utf8_bin NOT NULL default '',
@@ -145,7 +142,6 @@ INSERT INTO `article_type` VALUES (2, '', 0xd094d0bed0bad183d0bcd0b5d0bdd182d0b0
 -- Структура таблицы `asession`
 -- 
 
-DROP TABLE IF EXISTS `asession`;
 CREATE TABLE `asession` (
   `asession_id` int(10) unsigned NOT NULL auto_increment,
   `auser_id` int(10) unsigned NOT NULL default '0',
@@ -158,7 +154,7 @@ CREATE TABLE `asession` (
   KEY `ix_asession_0` (`auser_id`),
   KEY `ix_asession_1` (`auid`,`dt_access`),
   KEY `ix_asession_2` (`dt_access`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=11 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=12 ;
 
 -- 
 -- Дамп данных таблицы `asession`
@@ -172,6 +168,7 @@ INSERT INTO `asession` VALUES (7, 0, 0x3132372e302e302e313a4e554c4c3d33636233656
 INSERT INTO `asession` VALUES (8, 4, 0x3132372e302e302e313a4e554c4c3d3537323333383961626262353863313139636363366465383636323066313062, 0x3132372e302e302e313a4e554c4c3d3437383364643533303134366139633330623438306239656534326361336138, '2006-12-15 21:32:12', '2006-12-12 21:32:05', '2006-12-11 16:54:43');
 INSERT INTO `asession` VALUES (9, 0, 0x3132372e302e302e313a4e554c4c3d6233323365333164626339376131353839366630616463643737663937383436, 0x3132372e302e302e313a4e554c4c3d6361643766656332643232366562333362383538386134613530323932343834, '2006-12-14 21:42:58', NULL, NULL);
 INSERT INTO `asession` VALUES (10, 4, 0x3132372e302e302e313a4e554c4c3d3265366166393035356666326639396132333364613864353965383135653565, 0x3132372e302e302e313a4e554c4c3d6436356566333037613366393239323334333338363136306439336235666162, '2006-12-18 20:32:36', '2006-12-18 20:16:03', '2006-12-13 18:26:52');
+INSERT INTO `asession` VALUES (11, 3, 0x3132372e302e302e313a4e554c4c3d3936616334366431646130306239383962363131363965343466316234393038, 0x3132372e302e302e313a4e554c4c3d3263613336326431643766333839343839373764316463383563636665303764, '2006-12-19 00:58:07', '2006-12-19 00:58:07', NULL);
 
 -- --------------------------------------------------------
 
@@ -179,7 +176,6 @@ INSERT INTO `asession` VALUES (10, 4, 0x3132372e302e302e313a4e554c4c3d3265366166
 -- Структура таблицы `auser`
 -- 
 
-DROP TABLE IF EXISTS `auser`;
 CREATE TABLE `auser` (
   `auser_id` int(10) unsigned NOT NULL auto_increment,
   `auser_type_id` tinyint(3) unsigned NOT NULL default '0',
@@ -210,7 +206,7 @@ CREATE TABLE `auser` (
 
 INSERT INTO `auser` VALUES (1, 2, 143, 0x4f776e6572, 0xd0a1d0bed0b7d0b4d0b0d182d0b5d0bbd18c20d0bed0b1d18ad0b5d0bad182d0b0, 0x6f776e6572, 0x6f6e776e6572, NULL, '2006-05-18 10:39:47', NULL, NULL, 1, 0, 1, 0);
 INSERT INTO `auser` VALUES (2, 1, 143, 0x41646d696e73, 0xd093d180d183d0bfd0bfd0b020d0b0d0b4d0bcd0b8d0bdd0b8d181d182d180d0b0d182d0bed180d0bed0b220d181d0b8d181d182d0b5d0bcd18b, 0x67726f7570, 0x67726f7570, NULL, '2006-05-18 10:39:47', NULL, NULL, 1, 0, 1, 0);
-INSERT INTO `auser` VALUES (3, 0, 16777215, 0x61646d696e, '', 0x6d697368614064657369676e2e7275, 0x2461707231247651793064697456244e5444734f4d536d617752476c35694e51446833692f, NULL, '2006-05-18 10:39:47', '2006-12-05 12:18:35', NULL, 1, 0, 1, 0);
+INSERT INTO `auser` VALUES (3, 0, 16777215, 0x61646d696e, '', 0x6d697368614064657369676e2e7275, 0x2461707231246e4b6a4c716b586b24535770416d4a6a506e46626d703839704d5035724f2f, NULL, '2006-05-18 10:39:47', '2006-12-19 00:58:07', NULL, 1, 0, 1, 0);
 INSERT INTO `auser` VALUES (4, 0, 16777215, 0x6b6c656e, 0xd09ad0bbd0b5d0bdd0bed0b220d09ad0b8d180d0b8d0bbd0bb20d0add0b4d183d0b0d180d0b4d0bed0b2d0b8d1872032, 0x6b6c656e2e636f6d406d61696c2e7275, 0x246170723124572f5478654d654c24716f6a754831743063456342577939596f435668362e, NULL, '2006-05-18 11:05:02', '2006-12-19 00:07:19', '2006-12-19 00:07:12', 1, 0, 1, 147);
 INSERT INTO `auser` VALUES (11, 0, 1, 0x7465737432, 0xd0a2d0b5d181d182d0bed0b2d18bd0b920d0bfd0bed0bbd18cd0b7d0bed0b2d0b0d182d0b5d0bbd18c, 0x7465737440746573742e7275, '', NULL, '2006-11-08 00:31:52', NULL, NULL, 1, 0, 1, 0);
 INSERT INTO `auser` VALUES (5, 0, 143, 0xd09cd183d0b7d0b020d092d0bbd0b0d0b4d0b8d0bcd0b8d180d0bed0b2d0bdd0b0, 0xd0a1d0b8d180d0bed182d0b0, 0x6d757361406d61696c2e7275, 0x2461707231244a664f3669466e3824543352656f785a5a4b57777a314a467832503732512e, NULL, '2006-10-15 12:04:48', '2006-10-15 12:30:40', NULL, 1, 0, 1, 147);
@@ -222,7 +218,6 @@ INSERT INTO `auser` VALUES (10, 1, 1, 0x54657374657273, 0xd093d180d183d0bfd0bfd0
 -- Структура таблицы `auser_to_auser`
 -- 
 
-DROP TABLE IF EXISTS `auser_to_auser`;
 CREATE TABLE `auser_to_auser` (
   `auser_id` int(10) unsigned NOT NULL default '0',
   `parent_id` int(10) unsigned NOT NULL default '0',
@@ -246,7 +241,6 @@ INSERT INTO `auser_to_auser` VALUES (12, 13, 0);
 -- Структура таблицы `block`
 -- 
 
-DROP TABLE IF EXISTS `block`;
 CREATE TABLE `block` (
   `block_id` int(11) NOT NULL auto_increment,
   `data_process_id` tinyint(4) NOT NULL default '0',
@@ -262,7 +256,7 @@ CREATE TABLE `block` (
   `description` varchar(255) collate utf8_bin default NULL,
   `data` text collate utf8_bin,
   PRIMARY KEY  (`block_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin PACK_KEYS=0 AUTO_INCREMENT=228 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin PACK_KEYS=0 AUTO_INCREMENT=229 ;
 
 -- 
 -- Дамп данных таблицы `block`
@@ -292,7 +286,6 @@ INSERT INTO `block` VALUES (17, 9, 0xd0a4d0bed180d183d0bc, 8, 0x30, 0x31, 0x30, 
 -- Структура таблицы `block_template`
 -- 
 
-DROP TABLE IF EXISTS `block_template`;
 CREATE TABLE `block_template` (
   `m_block_template_id` int(11) NOT NULL auto_increment,
   `sort_order` tinyint(4) NOT NULL default '0',
@@ -318,7 +311,6 @@ CREATE TABLE `block_template` (
 -- Структура таблицы `block_to_object`
 -- 
 
-DROP TABLE IF EXISTS `block_to_object`;
 CREATE TABLE `block_to_object` (
   `block_to_object_id` int(11) NOT NULL auto_increment,
   `block_id` int(11) NOT NULL default '0',
@@ -327,7 +319,7 @@ CREATE TABLE `block_to_object` (
   `mode` int(4) NOT NULL default '1',
   PRIMARY KEY  (`block_to_object_id`),
   KEY `ix_object_id` (`object_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=21 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=22 ;
 
 -- 
 -- Дамп данных таблицы `block_to_object`
@@ -360,7 +352,6 @@ INSERT INTO `block_to_object` VALUES (20, 17, 6, 1, 1);
 -- Структура таблицы `data_process`
 -- 
 
-DROP TABLE IF EXISTS `data_process`;
 CREATE TABLE `data_process` (
   `data_process_id` int(11) NOT NULL auto_increment,
   `sort_order` tinyint(4) NOT NULL default '0',
@@ -392,7 +383,6 @@ INSERT INTO `data_process` VALUES (9, 9, 3, '2006-12-18', 0xd0a4d0bed180d183d0bc
 -- Структура таблицы `data_process_type`
 -- 
 
-DROP TABLE IF EXISTS `data_process_type`;
 CREATE TABLE `data_process_type` (
   `data_process_type_id` int(11) NOT NULL auto_increment,
   `sort_order` int(11) NOT NULL default '0',
@@ -415,7 +405,6 @@ INSERT INTO `data_process_type` VALUES (4, 4, 0xd090d0b4d0bcd0b8d0bdd0bad0b0202d
 -- Структура таблицы `data_type`
 -- 
 
-DROP TABLE IF EXISTS `data_type`;
 CREATE TABLE `data_type` (
   `data_type_id` int(11) NOT NULL auto_increment,
   `sort_order` tinyint(4) NOT NULL default '0',
@@ -445,7 +434,6 @@ INSERT INTO `data_type` VALUES (9, 3, 0xd090d0b4d0bcd0b8d0bdd0b8d181d182d180d0b8
 -- Структура таблицы `forum_message`
 -- 
 
-DROP TABLE IF EXISTS `forum_message`;
 CREATE TABLE `forum_message` (
   `forum_message_id` int(10) unsigned NOT NULL auto_increment,
   `forum_id` mediumint(8) unsigned NOT NULL default '1',
@@ -487,7 +475,6 @@ INSERT INTO `forum_message` VALUES (14, 1, 0, 14, 1, '2006-12-19 00:39:19', 0x6b
 -- Структура таблицы `lang`
 -- 
 
-DROP TABLE IF EXISTS `lang`;
 CREATE TABLE `lang` (
   `lang_id` tinyint(4) NOT NULL default '0',
   `sort_order` tinyint(4) NOT NULL default '0',
@@ -508,7 +495,6 @@ INSERT INTO `lang` VALUES (1, 0, 0x7275, 0x77696e31323531);
 -- Структура таблицы `object`
 -- 
 
-DROP TABLE IF EXISTS `object`;
 CREATE TABLE `object` (
   `object_id` int(5) unsigned NOT NULL auto_increment,
   `object_type_id` tinyint(4) NOT NULL default '0',
@@ -551,7 +537,7 @@ INSERT INTO `object` VALUES (7, 1, 0xd090d0b2d182d0bed0b4d0bed0ba, 0x2f6175746f6
 INSERT INTO `object` VALUES (8, 1, 0x416a617841646d696e, 0x2f6d632f61646d696e2f, 1, 9, 9, 0, 5, 0, 5, 0x30, 0, 0x61646d696e, '', 0, 0, 4, 0x31, '2006-12-18', 0xd090d0b4d0bcd0b8d0bdd0b8d181d182d180d0b8d180d0bed0b2d0b0d0bdd0b8d0b5, 0xd090d0b4d0bcd0b8d0bdd0b8d181d182d180d0b8d180d0bed0b2d0b0d0bdd0b8d0b5, 0xd0a2d0b5d181d182d0bed0b2d18bd0b920d0bed0b1d18ad0b5d0bad18220d0b4d0bbd18f20d0bed182d0bbd0b0d0b4d0bad0b820d0bad0bed0b4d0b0, 8);
 INSERT INTO `object` VALUES (9, 1, 0xd090d0b4d0bcd0b8d0bd, 0x2f6d632f, 1, 0, 9, 0, 4, 0, 5, 0x30, 1, 0x6d63, '', 0, 0, 4, 0x31, '2006-12-18', 0xd090d0b4d0bcd0b8d0bdd0b8d181d182d180d0b8d180d0bed0b2d0b0d0bdd0b8d0b5, 0xd090d0b4d0bcd0b8d0bdd0b8d181d182d180d0b8d180d0bed0b2d0b0d0bdd0b8d0b5, 0xd0a2d0b5d181d182d0bed0b2d18bd0b920d0bed0b1d18ad0b5d0bad18220d0b4d0bbd18f20d0bed182d0bbd0b0d0b4d0bad0b820d180d0b5d0b0d0bbd0b8d0b7d0b0d186d0b8d0b820d0b0d0b4d0bcd0b8d0bdd0bad0b820d187d0b5d180d0b5d0b720d0bad183d180d0b4d18b, 9);
 INSERT INTO `object` VALUES (10, 5, 0x56466f726d73, 0x2f666f726d732f, 1, 0, 10, 7, 0, 1, 0, 0x30, 0, 0x666f726d73, '', 0, 0, 4, 0x31, '2006-12-14', 0xd092d0b8d180d182d183d0b0d0bbd18cd0bdd18bd0b920d0bed0b1d18ad0b5d0bad18220d0bed0b1d180d0b0d0b1d0bed182d0bad0b820d184d0bed180d0bc, 0xd092d0b8d180d182d183d0b0d0bbd18cd0bdd18bd0b920d0bed0b1d18ad0b5d0bad18220d0bed0b1d180d0b0d0b1d0bed182d0bad0b820d184d0bed180d0bc, 0xd09ed0b1d18ad0b5d0bad18220d0bdd0b520d0b8d0bcd0b5d0b5d18220d181d0b2d0bed0b5d0b3d0be20d0bfd180d0b5d0b4d181d182d0b0d0b2d0bbd0b5d0bdd0b8d18f20d0bdd0b020d181d0b0d0b9d182d0b52c20d0bfd0bed0bbd183d187d0b0d0b5d18220d0b820d0bed0b1d180d0b0d0b1d0b0d182d18bd0b2d0b0d0b5d18220d0b4d0b0d0bdd0bdd18bd0b520d184d0bed180d0bc20d0bed18220616a617820d0b820706f73742f67657420d0b7d0b0d0bfd180d0bed181d0bed0b2, 10);
-INSERT INTO `object` VALUES (11, 6, 0xd097d0b0d0b3d180d183d0b7d0b8d182d18c, 0x2f66696c65732f, 1, 0, 0, 0, 4, 1, 300, 0x31, 1, 0x66696c6573, NULL, 0, 0, 4, 0x31, '2006-12-19', 0xd097d0b0d0b3d180d183d0b7d0b8d182d18c204d6f75736520434d53, 0xd097d0b0d0b3d180d183d0b7d0b8d182d18c204d6f75736520434d53, 0xd0a1d182d180d0b0d0bdd0b8d186d0b020d0b7d0b0d0b3d180d183d0b7d0bad0b8204d6f75736520434d53, 9);
+INSERT INTO `object` VALUES (11, 6, 0xd097d0b0d0b3d180d183d0b7d0b8d182d18c, 0x2f66696c65732f, 1, 0, 11, 0, 4, 1, 300, 0x31, 1, 0x66696c6573, 0x2f66696c65732f696e7374616c6c2e7a6970, 0, 0, 3, 0x31, '2006-12-19', 0xd097d0b0d0b3d180d183d0b7d0b8d182d18c204d6f75736520434d53, 0xd097d0b0d0b3d180d183d0b7d0b8d182d18c204d6f75736520434d53, 0xd09ed0b1d18ad0b5d0bad1822dd181d181d18bd0bbd0bad0b020d0bdd0b020d0b8d0bdd181d182d0b0d0bbd18fd186d0b8d18e204d6f75736520434d53, 9);
 
 -- --------------------------------------------------------
 
@@ -559,7 +545,6 @@ INSERT INTO `object` VALUES (11, 6, 0xd097d0b0d0b3d180d183d0b7d0b8d182d18c, 0x2f
 -- Структура таблицы `object_type`
 -- 
 
-DROP TABLE IF EXISTS `object_type`;
 CREATE TABLE `object_type` (
   `object_type_id` tinyint(4) NOT NULL auto_increment,
   `sort_order` tinyint(4) NOT NULL default '0',
@@ -588,7 +573,6 @@ INSERT INTO `object_type` VALUES (6, 4, 0x31, 0x30, 0x6c697665, 0xd09ed0b1d18ad0
 -- Структура таблицы `site`
 -- 
 
-DROP TABLE IF EXISTS `site`;
 CREATE TABLE `site` (
   `site_id` int(11) NOT NULL auto_increment,
   `lang_id` tinyint(4) NOT NULL default '0',
@@ -604,7 +588,7 @@ CREATE TABLE `site` (
 -- Дамп данных таблицы `site`
 -- 
 
-INSERT INTO `site` VALUES (1, 1, 3, 250, 3, 0x4d6f757365, 0x7777772e6d6f7573652e7275);
+INSERT INTO `site` VALUES (1, 1, 3, 250, 3, 0x4d6f757365, 0x7777772e6d6f757365322e7275);
 
 -- --------------------------------------------------------
 
@@ -612,7 +596,6 @@ INSERT INTO `site` VALUES (1, 1, 3, 250, 3, 0x4d6f757365, 0x7777772e6d6f7573652e
 -- Структура таблицы `template`
 -- 
 
-DROP TABLE IF EXISTS `template`;
 CREATE TABLE `template` (
   `template_id` int(11) NOT NULL auto_increment,
   `sort_order` tinyint(4) NOT NULL default '0',
@@ -639,7 +622,6 @@ INSERT INTO `template` VALUES (5, 5, 1, '2006-11-15', 0x4d6f75736520616a6178, 0x
 -- Структура таблицы `template_group`
 -- 
 
-DROP TABLE IF EXISTS `template_group`;
 CREATE TABLE `template_group` (
   `template_group_id` int(11) NOT NULL auto_increment,
   `sort_order` tinyint(4) NOT NULL default '0',

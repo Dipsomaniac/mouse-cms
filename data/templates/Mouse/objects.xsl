@@ -40,19 +40,19 @@
 				<img src="/themes/mouse/icons/plus.gif" />
 			</span>
 		</xsl:if>
-		<span class="pick" onClick="Go('/mc/admin/?type=objects&amp;action=edit&amp;id={@id}', '#container')"
+		<span class="pick" onClick="Go('/mc/admin/?type=object&amp;action=edit&amp;id={@id}', '#container')"
 		onMouseover="this.className='pick-hover'" title="{@description}" onMouseout="this.className='pick'">
 			<xsl:value-of select="@name"/>
 		</span>
 		<img src="/themes/mouse/icons/12_add.gif" 
 		alt="Создать потомок" title="Создать потомок" 
-		class="input-image" onClick="Go('/test2/test/?type=object&amp;action=add&amp;id={@id}', '#container')" />
+		class="input-image" onClick="Go('/mc/admin/?type=object&amp;action=add&amp;id={@id}', '#container')" />
 		<img src="/themes/mouse/icons/12_copy.gif" 
 		alt="Создать потомок" title="Копировать" 
-		class="input-image" onClick="Go('/test2/test/?type=object&amp;action=copy&amp;id={@id}', '#container')" />
+		class="input-image" onClick="Go('/mc/admin/?type=object&amp;action=copy&amp;id={@id}', '#container')" />
 		<img src="/themes/mouse/icons/12_blocks.gif" 
 		alt="Создать потомок" title="Управление блоками" 
-		class="input-image" onClick="Go('/test2/test/?type=object&amp;action=blocks&amp;id={@id}', '#container')" />
+		class="input-image" onClick="Go('/mc/admin/?type=object&amp;action=block_to_object&amp;id={@id}', '#container')" />
 		<xsl:if test="./branche">
 			<div id="sections_{@id}">
 				<xsl:apply-templates />
