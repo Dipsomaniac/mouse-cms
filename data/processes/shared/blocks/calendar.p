@@ -1,14 +1,24 @@
-	^rem{ *** $form:id не определена: показываем календарь со списком новостей *** }
-	$lparams.body
-	^rem{ *** получаем информацию о календаре и выводим его *** }
-	$calendar[^getCalendar[$.path[$SYSTEM.path]]]
-	<block_content>
-		<div>
-		<![CDATA[^printCalendar[$calendar]]]>
-		</div>
-	</block_content>
+^CalendarRun[$lparams]
 
 
+
+####################################################################################################
+# обработка календаря
+@CalendarRun[lparams][calendar]
+$lparams.body
+^rem{ *** получаем информацию о календаре и выводим его *** }
+$calendar[^getCalendar[$.path[$SYSTEM.path]]]
+<block_content>
+	<div>
+	<![CDATA[^printCalendar[$calendar]]]>
+	</div>
+</block_content>
+#end @CalendarRun[lparams][calendar]
+
+
+
+####################################################################################################
+# вывод календаря
 @printCalendar[calendar][now;curr_year;curr_month;y_hash;ym_hash;i;m]
 ^if($calendar){
 	$now[^date::now[]]
@@ -58,15 +68,15 @@ $result[^MAIN:objSQL.table{
 		^MAIN:objSQL.month[dt] AS month,
 		^MAIN:objSQL.year[dt] AS year
 	FROM
-		m_b_article
+		article
 	LEFT JOIN
-		m_b_article_type
+		article_type
 	USING
 		(article_type_id)
 	WHERE
-		m_b_article.is_published = 1 AND
-		m_b_article.dt_published <= ^MAIN:objSQL.now[] AND
-		m_b_article_type.path = '$params.path'
+		article.is_published = 1 AND
+		article.dt_published <= ^MAIN:objSQL.now[] AND
+		article_type.path = '$params.path'
 	GROUP BY
 		year,
 		month

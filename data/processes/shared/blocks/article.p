@@ -3,24 +3,32 @@
 
 
 #################################################################################################
-# Вывод данных
-@mArticleRun[hParams][tArticles]
-$tArticles[^getArticles[
-	$.path[$SYSTEM.path]
-	$.id[$form:id]
-	^if(^form:year.int(0)){$.where[dt >= '^form:year.int(0)-^form:month.int(0)-00' AND dt <= '^form:year.int(0)-^form:month.int(0)-31']}{$.limit(20)}
+# Вывод данных =debug воспользоваться методом курда list
+@mArticleRun[hParams][crdArticles]
+$crdArticle[
+	^mLoader[
+		$.name[article]
+		$.t(1)
+		$.where[
+			article.is_published = 1 AND
+			article.dt_published <= ^MAIN:objSQL.now[] AND
+			article_type.path = '$SYSTEM.path'
+			^if(^form:id.int(0)){ AND article.article_id = ^form:id.int(0) }
+			^if(^form:year.int(0)){ AND dt >= '^form:year.int(0)-^form:month.int(0)-00' AND dt <= '^form:year.int(0)-^form:month.int(0)-31'}
+		]
+		^if(!^form:year.int(0)){$.limit(20)}
 	]
 ]
 <block_content>
 $hParams.body
 <ul>
 ^untaint[as-is]{
-	^tArticles.menu{
+	^crdArticle.table.menu{
 		<article>
-			<date>^dtf:format[%d %B %Y;$article.dt]</date>
-			<name><a href="?id=$tArticles.id">$tArticles.title</a></name>
-			<author>$tArticles.author</author>
-			^if(^form:id.int(0)){<body>$tArticles.body</body>}{<anonce>$tArticles.lead</anonce>}
+			<date>^dtf:format[%d %B %Y;$crdArticle.table.dt]</date>
+			<name><a href="?id=$crdArticle.table.id">$crdArticle.table.title</a></name>
+			<author>$crdArticle.table.author</author>
+			^if(^form:id.int(0)){<body>$crdArticle.table.body</body>}{<anonce>$crdArticle.table.lead</anonce>}
 		</article>
 	}
 }
@@ -32,31 +40,22 @@ $hParams.body
 
 #################################################################################################
 # загрузка данных
-@getArticles[params]
+@mLoader[hParams]
 $result[
-	^getSql[
-		$.names[^hash::create[
-			$.[m_b_article.article_id][id]
-         $.[m_b_article.title][]
-			$.[m_b_article.lead][]
-			$.[m_b_article.dt][]
-			$.[m_b_article.author][]
-			^if(^params.id.int(0)){$.[m_b_article.body][]}
-		]]
-		$.table[m_b_article]
-		$.leftjoin[m_b_article_type]
-		$.using[article_type_id]
-		$.where[
-			m_b_article.is_published = 1 AND
-			m_b_article.dt_published <= ^MAIN:objSQL.now[] AND
-			m_b_article_type.path = '$params.path'
-			^if(^params.id.int(0)){ AND m_b_article.article_id = ^params.id.int(0) }
-			^if(def $params.where){ AND $params.where }
+	^curd::init[
+		$.name[$hParams.name]
+		$.where[$hParams.where]
+		$.names[
+			$.[article.article_id][id]
+         $.[article.title][]
+			$.[article.lead][]
+			$.[article.dt][]
+			$.[article.author][]
+			^if(^form:id.int(0)){$.[article.body][]}
 		]
+		$.leftjoin[article_type]
+		$.using[article_type_id]
 		$.order[dt DESC]
-		$.cache[articles${params.id}^math:md5[$params.path].cache]
-		^if(def $params.limit){$.limit($params.limit)}
-		^if(def $params.offset){$.offset($params.offset)}
 	]
 ]
-#end @getArticles[params]
+#end @mLoader[hParams]

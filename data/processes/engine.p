@@ -8,12 +8,11 @@ engine
 
 ####################################################################################################
 # Конструктор инициализация и выполнение engine
-@init[]
-# получаем ВСЕ сайты
-$SITES[^getSITES[]]
-$SITES_HASH[^SITES.hash[id]]
+@init[][siteID;siteLangID]
+# загрузка сайтов
+$crdSite[^mLoader[$.name[site]]]
 # получение ID сайта и ID языка сайта =debug а если такого сайта нету?
-^if(^SITES.locate[domain;$env:SERVER_NAME]){$siteID($SITES.id) $siteLangID($SITES.lang_id)}
+^if(^crdSite.table.locate[domain;$env:SERVER_NAME]){$siteID($crdSite.table.id) $siteLangID($crdSite.table.lang_id)}
 $SYSTEM[
 	$.siteUrl[$env:SERVER_NAME]
 #	полный путь запрошенного объекта (/admin/index.html)
@@ -28,15 +27,13 @@ $SYSTEM[
 	$.date[^MAIN:dtNow.sql-string[]]
 ]
 # ВСЕ ОПУБЛИКОВАННЫЕ объекты текущего сайта
-$OBJECTS[^getOBJECTS[$.where[m_object.site_id ='$SYSTEM.siteID' AND m_object.is_published ='1']]]
-$OBJECTS_HASH[^OBJECTS.hash[id]]
+$crdObject[^mLoader[
+	$.name[object]
+	$.where[object.site_id ='$SYSTEM.siteID' AND object.is_published ='1']
+]]
 # обработчики и шаблоны получаем в любом случае
-# таблица обработчиков
-$PROCESSES[^getPROCESSES[]]
-$PROCESSES_HASH[^PROCESSES.hash[id]]
-# таблица шаблонов
-$TEMPLATES[^getTEMPLATES[]]
-$TEMPLATES_HASH[^TEMPLATES.hash[id]]
+$crdDataProcess[^mLoader[$.name[data_process]$.h(1)]]
+$crdTemplate[^mLoader[$.name[template]$.h(1)]]
 #end @init[]
 
 
@@ -45,13 +42,15 @@ $TEMPLATES_HASH[^TEMPLATES.hash[id]]
 # Обработка исскуственно сгенерированных ошибок CMS
 # "Чух, чух, чух" - Поехали!
 @execute[]
-^try{$result[^create[]]}{
+^try{
+	$result[^create[]]
+}{
 	^if(^exception.type.pos[cms] == 0){
 # 		перехватываем и отправляем по адресу странице ошибок
 		$exception.handled(1)
 		$result[
-  			^if(^OBJECTS.locate[id;$SITES_HASH.[$SYSTEM.siteID].e404_object_id]){
-    				^location[$OBJECTS.full_path?error=$exception.type&url=$SYSTEM.path;$.is_external(1)]
+			^if(^crdObject.table.locate[id;$crdSite.hash.[$SYSTEM.siteID].e404_object_id]){
+    				^location[$crdObject.table.full_path?error=$exception.type&url=$SYSTEM.path;$.is_external(1)]
 			}{
 				^throw[$exception.type;$env:SERVER_NAME;Страница ошибок не найдена ($exception.comment)]
 			}
@@ -71,32 +70,32 @@ $TEMPLATES_HASH[^TEMPLATES.hash[id]]
 
 ####################################################################################################
 # создание объекта страницы и определение прав пользователя
-@create[][RIGHTS;ACL]
+@create[][iRights;ACL;tObjectThread]
 # если зажжен флажок отсутствия кэш файла - создаем его
 ^if(^MAIN:bCacheFile.int(0)){^createCacheFile[]}
 # проверка существования запрошенного объекта, существует - создаем, иначе отправка на страницу ошибок
-^OBJECTS.menu{^if($OBJECTS.full_path eq $SYSTEM.path){$OBJECT[$OBJECTS.fields]}}
-^if(!def $OBJECT){^throw[cms.404;$request:uri;Страница не найдена]}
-^if(def $OBJECT.url){
-#	если определено поле $OBJECT.url - location по адресу 
-	$result[^location[^taint[as-is][$OBJECT.url]]]
+^crdObject.table.menu{^if($crdObject.table.full_path eq $SYSTEM.path){$hObjectNow[$crdObject.table.fields]}}
+^if(!def $hObjectNow){^throw[cms.404;$request:uri;Страница не найдена]}
+^if(def $hObjectNow.url){
+#	если определено поле $hObjectNow.url - location по адресу 
+	$result[^location[^taint[as-is][$hObjectNow.url]]]
 }{
 # 	ветвь текущего объекта
-	$OBJECT_THREAD[^OBJECTS.select($OBJECTS.thread_id == $OBJECT.thread_id)]
+	$tObjectThread[^crdObject.table.select($crdObject.table.thread_id == $hObjectNow.thread_id)]
 #	хэш объектов по parent_id (для наследования навигации)
-	$OBJECTS_HASH_TREE[^OBJECTS.hash[parent_id][$.distinct[tables]]]
+	$hObjectTree[^crdObject.table.hash[parent_id][$.distinct[tables]]]
 # права объекта по умолчанию
-	$RIGHTS($OBJECT.rights)
+	$iRights($hObjectNow.rights)
 	^if($MAIN:objAuth.is_logon){
 #		достаем назначения прав текущему пользователю на все объекты треда
-		$ACL[^MAIN:objAuth.getFullACL[$OBJECT_THREAD]]	
+		$ACL[^MAIN:objAuth.getFullACL[$tObjectThread]]	
 #		определяем права авторизированного пользователя на объект
-		$RIGHTS(^MAIN:objAuth.getRightsToObject[$OBJECT;$OBJECT_THREAD;$ACL;^if($MAIN:objAuth.user.id == $OBJECT.auser_id){1}{0}])
+		$iRights(^MAIN:objAuth.getRightsToObject[$hObjectNow;$tObjectThread;$ACL;^if($MAIN:objAuth.user.id == $hObjectNow.auser_id){1}{0}])
 	}
 #	получаем хэш прав
-	$HASH_RIGHTS[^getHashRights[$RIGHTS]]
+	$hRights[^getHashRights[$iRights]]
 #	определение необходимого content и выдача его содержимого
-	^if($HASH_RIGHTS.read){
+	^if($hRights.read){
 		$result[^contentSwitcher[]]
 	}{
 		^throw[cms.403;$uri;доступ к объекту запрещен]
@@ -110,7 +109,7 @@ $TEMPLATES_HASH[^TEMPLATES.hash[id]]
 # создание файла кэша
 @createCacheFile[][tCache]
 $tCache[^table::create{id	full_path	cache_time^#0A
-^OBJECTS.menu{$OBJECTS.id	$OBJECTS.full_path	$OBJECTS.cache_time^#0A}}]
+^crdObject.table.menu{$crdObject.table.id	$crdObject.table.full_path	$crdObject.table.cache_time^#0A}}]
 ^tCache.save[${MAIN:CacheDir}_cache.cfg]
 #end @createCacheFile[]
 
@@ -122,8 +121,8 @@ $tCache[^table::create{id	full_path	cache_time^#0A
 # путь к стилю
 $sStylesheet[^getStylesheet[]]
 #	если задан обработчик объекта передаем ему управление
-^if(^OBJECT.data_process_id.int(0)){
-	$result[^executeProcess[$OBJECT.data_process_id]]
+^if(^hObjectNow.data_process_id.int(0)){
+	$result[^executeProcess[$hObjectNow.data_process_id]]
 }{
 # 	Xdoc сборка страницы
 	$xDoc[^getDocumentXML[]]
@@ -159,12 +158,12 @@ $result[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
 ####################################################################################################
 # очистка памяти перед результирующей трансформацией =debug
 @clearMemory[]
-# системные переменные
-$SYSTEM[] $SITES[] $SITES_HASH
-$OBJECT[] $OBJECTS_HASH[] $OBJECTS[] $OBJECT_THREAD[] $OBJECTS_HASH_TREE[]
+# системные переменные =debug вывести из админки
+$SYSTEM[] $crdSite[]
+$hObjectNow[] $crdObject[] $hObjectTree[]
+$crdTemplate[] $crdProcess[]
+
 $TYPES[] $TYPES_HASH[]
-$TEMPLATES[] $TEMPLATES_HASH[]
-$PROCESSES[] $PROCESSES_HASH[]
 $ACL[] $ACL_HASH[]
 $BLOCKS[] $BLOCKS_HASH[]
 $TYPES[] $TYPES_HASH[]
@@ -179,7 +178,7 @@ $USERS[] $USERS_HASH[]
 #создание XSLT обработчика
 @getStylesheet[][sFileName]
 # имя файла шаблона
-$sFileName[${MAIN:TemplateDir}$TEMPLATES_HASH.[$OBJECT.template_id].filename]
+$sFileName[${MAIN:TemplateDir}$crdTemplate.hash.[$hObjectNow.template_id].filename]
 ^if(-f $sFileName){$result[$sFileName]}{$result[]}
 #end @getStylesheet[][sFileName]
 
@@ -191,10 +190,10 @@ $sFileName[${MAIN:TemplateDir}$TEMPLATES_HASH.[$OBJECT.template_id].filename]
 $result[
 <navigation>
 #	создаем дерево навигации
-	^ObjectByParent[$OBJECTS_HASH_TREE;0;
+	^ObjectByParent[$hObjectTree;0;
 		$.tag[branche]
 		$.attributes[^table::create{name^#OAid^#OAname^#OAdescription^#OAis_show_in_menu^#OAis_show_on_sitemap^#OAfull_path}]
-		$.id($OBJECT.id)
+		$.id($hObjectNow.id)
 		]
 </navigation>
 <body>
@@ -215,30 +214,30 @@ $result[
 </system>
 <header>
 	<!-- ID объекта -->
-	<object-id>$OBJECT.id</object-id>
+	<object-id>$hObjectNow.id</object-id>
 	<!-- ID родителя -->
-	<parent-id>$OBJECT.parent_id</parent-id>
+	<parent-id>$hObjectNow.parent_id</parent-id>
 	<!-- Имя XSLT шаблона -->
 	<template>^getStylesheet[]</template>
 	<!-- ID обработчика -->
-	<data_process-id>$OBJECT.data_process_id</data_process-id>
+	<data_process-id>$hObjectNow.data_process_id</data_process-id>
 	<!-- ID типа объекта -->
-	<object_type-id>$OBJECT.object_type_id</object_type-id>
+	<object_type-id>$hObjectNow.object_type_id</object_type-id>
 	<!-- ссылка на объект (ID) --> 
 # 	=debug нет работы с типом ссылки (link_to_object_id_type)
-	<link_to_object-id>$OBJECT.link_to_object_id</link_to_object-id>
+	<link_to_object-id>$hObjectNow.link_to_object_id</link_to_object-id>
 	<!-- имя объекта -->
-	<name>$OBJECT.name</name>
+	<name>$hObjectNow.name</name>
 	<!-- title страницы -->
-	<window_name>^if(def $OBJECT.window_name){$OBJECT.window_name}{$OBJECT.name}</window_name>
+	<window_name>^if(def $hObjectNow.window_name){$hObjectNow.window_name}{$hObjectNow.name}</window_name>
 	<!-- заголовок страницы -->
-	<document_name>^if(def $OBJECT.document_name){$OBJECT.document_name}{$OBJECT.name}</document_name>
+	<document_name>^if(def $hObjectNow.document_name){$hObjectNow.document_name}{$hObjectNow.name}</document_name>
 	<!-- реальный объекта на сайте -->
-	<full_path>$OBJECT.full_path</full_path>
+	<full_path>$hObjectNow.full_path</full_path>
 # 	=debug работа с кэшем не реализована
-	<cache-time>$OBJECT.cache_time</cache-time>
+	<cache-time>$hObjectNow.cache_time</cache-time>
 	<!-- основной файл стиля CSS -->
-	<css source="$TEMPLATES_HASH.[$OBJECT.template_id].params" />
+	<css source="$crdTemplate.hash.[$hObjectNow.template_id].params" />
 #	<!-- keywords --> =debug
 #	<keywords>^kewords[]</keywors>
 </header>
@@ -249,20 +248,25 @@ $result[
 
 ####################################################################################################
 # обработка блоков объекта
-@getBlocks[][tBlocksNow]
+@getBlocks[][crdBlock]
 # опубликованнные блоки текущего объекта и (=debug не работает подчиненных) подчиненных объектов предназначенные для автоматической обработки
-$tBlocksNow[^getBLOCK_TO_OBJECT[$.where[
-	object_id IN ( 
-#		если тип объекта не "уникальный" =debug зачем я это сделал?
-		^if($OBJECT.object_type_id != 3){
-#			приходят блоки всех глобальных объектов
-			^OBJECTS.menu{^if(^OBJECTS.object_type_id.int(0) == 2){$OBJECTS.id ,}}
-		}
-#		eсли определено поле link_to_object_id объект получит информацию другого объекта
-		^if(^OBJECT.link_to_object_id.int(0)){	$OBJECT.link_to_object_id }{ $OBJECT.id }
-	)
-	AND m_block.is_published = 1 AND m_block.is_parsed_manual != 1]]]
-$result[^tBlocksNow.menu{^getBlock[$tBlocksNow.fields]}]
+$crdBlock[^mLoader[
+	$.name[block_to_object]
+	$.where[
+		object_id IN ( 
+#			если тип объекта не "уникальный" =debug зачем я это сделал?
+			^if($hObjectNow.object_type_id != 3){
+#				приходят блоки всех глобальных объектов
+				^crdObject.table.menu{^if(^crdObject.table.object_type_id.int(0) == 2){$crdObject.table.id ,}}
+			}
+#			eсли определено поле link_to_object_id объект получит информацию другого объекта
+			^if(^hObjectNow.link_to_object_id.int(0)){$hObjectNow.link_to_object_id }{ $hObjectNow.id }		
+		)
+		AND block.is_published = 1 AND block.is_parsed_manual != 1
+	]
+	$.t(1)
+]]
+$result[^crdBlock.table.menu{^getBlock[$crdBlock.table.fields]}]
 #end @getBlocks[][tBlocksNow]
 
 
@@ -395,7 +399,7 @@ $result[^switch[$sName]{
 $result[^ObjectByParent[$[$hParam.hash_name];$hParam.thread_id;
 		$.tag[branche]
 		$.attributes[^table::create{name^#OAid^#OAname^#OAdescription^#OAis_show_in_menu^#OAis_show_on_sitemap^#OAfull_path}]
-		$.id($OBJECT.id)
+		$.id($hObjectNow.id)
 ]
 ]]
 #end @Tree[hParam]
@@ -442,9 +446,9 @@ $result[^if(${hParam.name} eq ${hParam.value}){${hParam.true}}{${hParam.false}}]
 
 ####################################################################################################
 # вызов любого определенного обработчика
-@executeSystemProcess[hParam][_jMethod]
+@executeSystemProcess[hParam]
 $result[^executeBlock[$hParam.id;$hParam.param;$hParam.body;$hParam.field]]
-#end @process[hParam][_jMethod]
+#end @process[hParam]
 
 
 
@@ -455,9 +459,9 @@ $result[^executeBlock[$hParam.id;$hParam.param;$hParam.body;$hParam.field]]
 # подготовка обработчика к использованию
 ^prepareProcesess[$dataProcessID]
 # запуск обработчика
-^if($PROCESSES_HASH.[$dataProcessID].main is junction){
+^if($crdDataProcess.hash.[$dataProcessID].main is junction){
 # запуск обработчика
-	$result[^PROCESSES_HASH.[$dataProcessID].main[]]
+	$result[^crdDataProcess.hash.[$dataProcessID].main[]]
 }{
 #	нужно убрать кактус с подоконника
 	$result[]
@@ -472,8 +476,8 @@ $result[^executeBlock[$hParam.id;$hParam.param;$hParam.body;$hParam.field]]
 # подготовка обработчика к использованию
 ^prepareProcesess[$dataProcessID]
 # запуск обработчика
-^if($PROCESSES_HASH.[$dataProcessID].main is junction){
-	$result[^PROCESSES_HASH.[$dataProcessID].main[
+^if($crdDataProcess.hash.[$dataProcessID].main is junction){
+	$result[^crdDataProcess.hash.[$dataProcessID].main[
 		$.param[$blockParam]
 		$.body[$blockBody]
 		$.table[$blockFields]
@@ -489,12 +493,12 @@ $result[^executeBlock[$hParam.id;$hParam.param;$hParam.body;$hParam.field]]
 # грузит + кеширует + процессит + исполняет код обработчика
 @prepareProcesess[dataProcessID][dataProcessMain;dataProcessFileName;dataProcessFile;dataProcessBody]
 # обработчик может быть еще не загружен
-^if(!$PROCESSES_HASH.[$dataProcessID].processBodyLoaded){
+^if(!$crdDataProcess.hash.[$dataProcessID].processBodyLoaded){
 #	замена имени @main[...] обработчика
 	$dataProcessMain[process_${dataProcessID}_main]
 	^try{
 #		полный путь до обработчика
-		$dataProcessFileName[${MAIN:ProcessDir}$PROCESSES_HASH.[$dataProcessID].filename]
+		$dataProcessFileName[${MAIN:ProcessDir}$crdDataProcess.hash.[$dataProcessID].filename]
 		$dataProcessFile[^file::load[text;$dataProcessFileName]]
 #		тело обработчика
 		$dataProcessBody[^taint[as-is][$dataProcessFile.text]]
@@ -508,7 +512,7 @@ $result[^executeBlock[$hParam.id;$hParam.param;$hParam.body;$hParam.field]]
 		]
 					
 #		добавление информации в хеш о main dataProcess
-		$PROCESSES_HASH.[$dataProcessID].main[$$dataProcessMain]
+		$crdDataProcess.hash.[$dataProcessID].main[$$dataProcessMain]
 	}{
 #		что-то случилось при чтении и компиляции
 #		для использования в debug целях закомментировать
@@ -516,7 +520,7 @@ $result[^executeBlock[$hParam.id;$hParam.param;$hParam.body;$hParam.field]]
 	}
 #	в любом случае сохранить, что была предзагрузка
 #	никогда не приведет к повторной компиляции обработчика
-	$PROCESSES_HASH.[$dataProcessID].processBodyLoaded(1)
+	$crdDataProcess.hash.[$dataProcessID].processBodyLoaded(1)
 }
 
 
@@ -634,168 +638,101 @@ $result($hRights.read + $hRights.edit + $hRights.delete + $hRights.comment + $hR
 #end @getEntitySet[]
 
 
-
-####################################################################################################
-# метод формирующий и выполняющий sql запрос
-@getSql[hParams]
+#################################################################################################
+# Загрузчик курдов
+@mLoader[hParams]
 $result[
-	^MAIN:objSQL.sql[table][
-		SELECT
-			^hParams.names.foreach[key;value]{$key ^if(def $value){ AS $value }}[,]
-		FROM
-			$hParams.table
-		^if(def $hParams.leftjoin){ LEFT JOIN $hParams.leftjoin USING ($hParams.using) }
-		^if(def $hParams.where){ WHERE $hParams.where }
-		^if(def $hParams.group){GROUP BY $hParams.group }
-		^if(def $hParams.order){ORDER BY $hParams.order }
-		^if(def $hParams.having){HAVING $hParams.having }
-	][
-		^if(def $hParams.limit){$.limit($hParams.limit)}
-		^if(def $hParams.offset){$.offset($hParams.offset)}
-	][
-		^if(!$MAIN:NoCache && def $hParams.cache){$.file[${hParams.cache}.cache]}
+	^curd::init[
+		$.name[$hParams.name]
+		$.where[$hParams.where]
+		^switch[$hParams.name]{
+#			сайты
+			^case[site]{
+				$.names[
+					$.[site.site_id][id]
+					$.[site.name][]
+					$.[site.lang_id][]
+					$.[site.domain][]
+					$.[site.e404_object_id][]
+					$.[site.cache_time][]
+					$.[site.sort_order][]
+				]
+			}
+#			объекты
+			^case[object]{
+				$.names[
+					$.[object.object_id][id]
+					$.[object.sort_order][]
+					$.[object.parent_id][]
+					$.[object.thread_id][]
+					$.[object.object_type_id][]
+					$.[object.template_id][]
+					$.[object.data_process_id][]
+					$.[object.link_to_object_type_id][]
+					$.[object.link_to_object_id][]
+					$.[object.auser_id][]
+					$.[object.rights][]
+					$.[object.cache_time][]
+					$.[object.url][]
+					$.[object.is_show_on_sitemap][]
+					$.[object.is_show_in_menu][]
+					$.[object.full_path][]
+					$.[object.name][]
+					$.[object.document_name][]
+					$.[object.window_name][]
+					$.[object.description][]
+				]
+			}
+#			обработчики
+			^case[data_process]{
+				$.names[
+					$.[data_process.data_process_id][id]
+					$.[data_process.data_process_type_id][]
+					$.[data_process.name][]
+					$.[data_process.description][]
+					$.[data_process.filename][]
+					$.[data_process.dt_update][]
+					$.[data_process.sort_order][]
+				]
+			}
+#			шаблоны
+			^case[template]{
+				$.names[
+					$.[template.template_id][id]
+					$.[template.template_type_id][]
+					$.[template.name][]
+					$.[template.description][]
+					$.[template.filename][]
+					$.[template.params][]
+					$.[template.dt_update][]
+					$.[template.sort_order][]
+				]
+			}
+#			блоки объекта
+			^case[block_to_object]{
+				$.leftjoin[block]
+				$.using[block_id]
+				$.names[
+					$.[block.block_id][id]
+					$.[block_to_object.sort_order][]
+					$.[block_to_object.mode][]
+					$.[block.data_process_id][]
+					$.[block.name][]
+					$.[block.attr][]
+					$.[block.data][]
+					$.[block.data_type_id][]
+					$.[block.is_not_empty][]
+					$.[block.is_parsed_manual][]
+				]
+			}
+		}
+		$.h($hParams.h)
+		$.t($hParams.t)
+		$.limit($hParams.limit)
+		$.offset($hParams.offset)
 	]
 ]
-#end @getSql[hParams]
-
-
-
-####################################################################################################
-# забирает из sql таблицу с зарегистрированнными сайтами
-@getSITES[lparams]
-$result[
-	^getSql[
-		$.table[m_site]
-		$.where[$lparams.where]
-		$.names[^hash::create[
-			$.[m_site.site_id][id]
-			$.[m_site.name][]
-			$.[m_site.lang_id][]
-			$.[m_site.domain][]
-			$.[m_site.e404_object_id][]
-			$.[m_site.cache_time][]
-			$.[m_site.sort_order][]
-		]]
-		$.order[sort_order]
-		$.cache[sites]
-	]
-]
-#end @getSITES[]
-
-
-
-####################################################################################################
-# забирает объекты 
-@getOBJECTS[lparams]
-$result[
-	^getSql[
-		$.names[^hash::create[
-			$.[m_object.object_id][id]
-			$.[m_object.sort_order][]
-			$.[m_object.parent_id][]
-			$.[m_object.thread_id][]
-			$.[m_object.object_type_id][]
-			$.[m_object.template_id][]
-			$.[m_object.data_process_id][]
-			$.[m_object.link_to_object_type_id][]
-			$.[m_object.link_to_object_id][]
-			$.[m_object.auser_id][]
-			$.[m_object.rights][]
-			$.[m_object.cache_time][]
-			$.[m_object.url][]
-			$.[m_object.is_show_on_sitemap][]
-			$.[m_object.is_show_in_menu][]
-			$.[m_object.full_path][]
-			$.[m_object.name][]
-			$.[m_object.document_name][]
-			$.[m_object.window_name][]
-			$.[m_object.description][]
-		]]
-		$.table[m_object]
-		$.where[$lparams.where]
-		$.order[sort_order]
-		$.cache[objects_${SYSTEM.siteID}]
-	]
-]
-#end @getOBJECTS[lparams]
-
-
-
-####################################################################################################
-# забирает из sql все зарегистрированные шаблоны
-@getTEMPLATES[lparams]
-$result[
-	^getSql[
-		$.table[m_template]
-		$.where[$lparams.where]
-		$.names[^hash::create[
-			$.[m_template.template_id][id]
-			$.[m_template.template_type_id][]
-			$.[m_template.name][]
-			$.[m_template.description][]
-			$.[m_template.filename][]
-			$.[m_template.params][]
-			$.[m_template.dt_update][]
-			$.[m_template.sort_order][]
-		]]
-		$.order[sort_order]
-		$.cache[templates]
-	]
-]
-#end @getTEMPLATES[]
-
-
-
-####################################################################################################
-# метод достает все блоки объекта 
-@getBLOCK_TO_OBJECT[lparams]
-$result[
-	^getSql[
-		$.table[m_block_to_object]
-		$.leftjoin[m_block]
-		$.using[block_id]
-		$.where[$lparams.where]
-		$.names[^hash::create[
-			$.[m_block.block_id][id]
-			$.[m_block_to_object.sort_order][]
-			$.[m_block_to_object.mode][]
-			$.[m_block.data_process_id][]
-			$.[m_block.name][]
-			$.[m_block.attr][]
-			$.[m_block.data][]
-			$.[m_block.data_type_id][]
-			$.[m_block.is_not_empty][]
-			$.[m_block.is_parsed_manual][]
-		]]
-		$.order[sort_order]
-		$.cache[blocks_${OBJECT.id}]
-	]
-]
-#end @getBlocks[]
-
-
-
-####################################################################################################
-# забирает из sql все зарегистрированные обработчики
-@getPROCESSES[lparams]
-$result[
-	^getSql[
-		$.table[m_data_process]
-		$.where[$lparams.where]
-		$.names[^hash::create[
-			$.[m_data_process.data_process_id][id]
-			$.[m_data_process.data_process_type_id][]
-			$.[m_data_process.name][]
-			$.[m_data_process.description][]
-			$.[m_data_process.filename][]
-			$.[m_data_process.dt_update][]
-			$.[m_data_process.sort_order][]
-		]]
-		$.order[sort_order]
-		$.cache[process]
-	]
-]
-#end @getPROCESSES[lparams]
+#end @mLoader[hParams]
 
 
 

@@ -23,6 +23,8 @@ $oForm[^vforms::init[
 }
 # раз уж сюда дошли то удалим весь кэш
 ^dir_delete[^MAIN:CacheDir.trim[end;/];$.is_recursive(1)]
+# это баг, откуда он взялся? =debug
+^oForm.hRequest.delete[uri]
 # попытка выполнения действия
 ^oForm.go[]
 #end @mRun[hParams][jMethod]
