@@ -105,8 +105,12 @@
 
 <!-- option -->
 <xsl:template match="option">
-	<xsl:if test="@select=@value"><option value="{@value}" mode="{@mode}" selected="selected"><xsl:value-of select="." /></option></xsl:if>
-	<xsl:if test="not (@select=@value)"><option value="{@value}" mode="{@mode}"><xsl:value-of select="." /></option></xsl:if>
+	<option value="{@id}">
+		<xsl:if test="@id=@select">
+			<xsl:attribute name="selected">selected</xsl:attribute> 
+		</xsl:if>
+		<xsl:value-of select="@name"/>
+	</option>
 </xsl:template>
 
 <!-- others -->

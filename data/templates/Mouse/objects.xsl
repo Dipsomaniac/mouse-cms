@@ -2,12 +2,14 @@
 <!DOCTYPE xsl:stylesheet SYSTEM "../dtd/entities.dtd">
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-<!-- block_content -->
+
+
 <xsl:template match="block_content">
 	<xsl:apply-templates />
 </xsl:template>
 
-<!-- buttons -->
+
+
 <xsl:template match="buttons">
 	<div class="buttons">&nbsp;
 		<xsl:apply-templates select="//button" mode="draw"/>
@@ -27,7 +29,8 @@
 <xsl:template match="button">
 </xsl:template>
 
-<!-- jq_object -->
+
+
 <xsl:template match="jq_object">
 	<h2>Mouse</h2>
 	<xsl:apply-templates/>
@@ -61,7 +64,8 @@
 	</div>
 </xsl:template>
 
-<!-- atable -->
+
+
 <xsl:template match="atable">
 	<form action="/forms/" method="post" name="form_content" enctype="multipart/form-data">
 	<div class="mlabel">
@@ -77,15 +81,15 @@
 					<span style="cursor: default;" onClick="if (this.parentNode.childNodes[0].tagName=='INPUT') {e=this.parentNode.childNodes[0]} else {e=this.parentNode.childNodes[1]} if (e.checked) {e.checked=false} else {e.checked=true}" />
 				</div>
 			</td>
-			<xsl:apply-templates select="./arow_th" /> 
+			<xsl:apply-templates select="arow_th" /> 
 		</tr>
 		</thead>
 		<tbody class="table-builder-spreadsheet">
-			<xsl:apply-templates select="./arow_tr" />
+			<xsl:apply-templates select="arow_tr" />
 		</tbody>
 		<tfoot class="table-builder-spreadsheet">
 			<tr id="space"><td colspan="100"></td></tr>
-			<xsl:apply-templates select="./arow_scroller" />
+			<xsl:apply-templates select="ascroller" />
 			<tr id="search">
 				<td colspan="100">
 					<div>
@@ -111,12 +115,14 @@
 	</form>
 </xsl:template>
 
-<!-- arow_th -->
+
+
 <xsl:template match="arow_th">
 <th	id="{@id}" onDblClick="Go('{../th_attr}order={@id}','#container')"><xsl:value-of select="."/></th>
 </xsl:template>
 
-<!-- arow_tr -->
+
+
 <xsl:template match="arow_tr">
 	<tr id="tr_{@id}" onDblClick="doEdit('{../tr_attr}id={@id}','#container')">
 		<td>
@@ -133,7 +139,8 @@
 	</tr>
 </xsl:template>
 
-<!-- arow_td -->
+
+
 <xsl:template match="arow_td">
 <td onClick="doMark({../@id})">
 	<span onClick="setFilter('{@id}', '{@value}')" class="arrow" onMouseover="ShowLocate('sysinfo_{../@id}', event)" onMouseout="Hide('sysinfo_{../@id}')">
@@ -143,11 +150,14 @@
 </td>
 </xsl:template>
 
-<!-- arow_scroller -->
-<xsl:template match="arow_scroller">
+
+
+<xsl:template match="ascroller">
 <tr id="pages">
 	<td colspan="100">
-		<xsl:apply-templates />
+		<xsl:apply-templates select="ascroller_left" />
+		<xsl:apply-templates select="ascroller_page" />
+		<xsl:apply-templates select="ascroller_right" />
 	</td>
 </tr>
 <tr id="perpage">
@@ -158,12 +168,202 @@
    			<input type="button" value="Показать" class="input-button" onClick="Go('{../scroller_attr}number=' + document.getElementsByName('sys_perpage')[0].value , '#container')" />
 		</div>
 			<div class="total">
-				<xsl:text>Общее количество: </xsl:text>
-				<xsl:value-of select="@offset" /><xsl:text>-</xsl:text>
-				<xsl:value-of select="@now" /><xsl:text>  </xsl:text>
-				(<xsl:value-of select="@count" />)
+				<xsl:text>Показаны: </xsl:text>
+				<xsl:value-of select="@offset" />
+				<xsl:text>-</xsl:text>
+				<xsl:value-of select="@now" />
+				<xsl:text>, Всего: </xsl:text>
+				<xsl:value-of select="@count" />
 			</div>
 	</td>
 </tr>
 </xsl:template>
+
+
+
+<xsl:template match="ascroller_page[@select]|article_scroller_page[@select]|forum_scroller_page[@select]">
+	<xsl:text> [</xsl:text>
+	<xsl:value-of select="@count"/>
+	<xsl:text>] </xsl:text>
+</xsl:template>
+
+
+
+<xsl:template match="article_scroller_page|forum_scroller_page">
+	<a href="{../@uri}page={@count}">
+		<xsl:text> </xsl:text>
+		<xsl:value-of select="@count"/>
+		<xsl:text> </xsl:text>
+	</a>
+</xsl:template>
+
+
+
+<xsl:template match="ascroller_page">
+	<a href="#" onClick="Go('{../@uri}page={@count}','#container')">
+		<xsl:text> </xsl:text>
+		<xsl:value-of select="@count"/>
+		<xsl:text> </xsl:text>
+	</a>
+</xsl:template>
+
+
+
+<xsl:template match="ascroller_left">
+	<a href="#" onClick="Go('{@uri}','#container')">
+		<xsl:text> prev </xsl:text>
+	</a>
+</xsl:template>
+
+
+
+<xsl:template match="forum_scroller_left|article_scroller_left">
+	<a href="{@uri}">
+		<xsl:text> prev </xsl:text>
+	</a>
+</xsl:template>
+
+
+
+<xsl:template match="forum_scroller_right|article_scroller_right">
+	<a href="{@uri}">
+		<xsl:text> prev </xsl:text>
+	</a>
+</xsl:template>
+
+
+
+<xsl:template match="ascroller_right">
+	<a href="#" onClick="Go('{@uri}','#container')">
+		<xsl:text> next </xsl:text>
+	</a>
+</xsl:template>
+
+
+
+<xsl:template match="article">
+	<div class="post">
+		<p class="post-date"><xsl:value-of select="@date"/></p>
+		<div class="post-info">
+			<h2 class="post-title">
+				<xsl:choose>
+					<xsl:when test="@in">
+						<xsl:value-of select="@name"/>
+					</xsl:when>
+					<xsl:otherwise>
+						<a href="?id={@id}">
+							<xsl:value-of select="@name"/>
+						</a>
+					</xsl:otherwise>
+				</xsl:choose>
+			</h2>
+			Автор: <xsl:value-of select="@author"/><br/>
+			Комментарии:
+		</div>
+		<div class="post-content">
+			<xsl:copy-of select="." />
+		</div>
+	</div>
+</xsl:template>
+
+
+
+<xsl:template match="article_scroller|forum_scroller">
+	<br/><br/><hr/> Страницы: 
+	<xsl:apply-templates />
+</xsl:template>
+
+
+
+<xsl:template match="forum">
+<xsl:apply-templates select="buttons" /><hr/>
+	<div id="forum_repeat" class="form-builder-tab">
+	<form action="" method="post" name="form_forum_repeat" enctype="multipart/form-data">
+		<div class="divider">
+			<label for="" class="title" id="title_name">Заголовок</label>
+			<small class="help">Заголовок сообщения</small>
+			<div class="container">
+				<input type="text" name="title" value="" class="input-text-long" />
+			</div>
+		</div>
+		<div class="divider">
+			<label for="" class="title" id="title_name">Содержание</label>
+			<small class="help">Текст сообщения</small>
+			<div class="container">
+				<textarea name="body" id="message_body" class="input-textarea-large"/>
+			</div>
+		</div>
+		<input type="hidden" name="dt_published" value="{@dt}" />
+		<input type="hidden" name="parent_id" value="{@parent_id}" />
+		<input type="hidden" name="thread_id" value="{./thread_id}" />
+		<xsl:apply-templates select="input" />
+		<input type="submit" class="input-button" name="submit" value="Отправить" />
+		<br/><br/><hr/>
+		</form>
+	</div>
+	<div id="forum_search" class="form-builder-tab">
+		<form action="" method="post" name="form_forum_repeat" enctype="multipart/form-data">
+			<div class="divider">
+				<label for="" class="title" id="title_name">Строка поиска</label>
+				<small class="help">Ключевые слова</small>
+				<div class="container">
+					<input type="text" name="search" value="" class="input-text-long" />
+				</div>
+			</div>
+			<div class="divider">
+				<label for="" class="title" id="title_name">Автор</label>
+				<small class="help">Фильтр по автору</small>
+				<div class="container">
+					<input type="text" name="author" value="" class="input-text-medium" />
+				</div>
+			</div>
+		<br/>
+		<input type="hidden" name="action" value="search" />
+		<input type="submit" class="input-button" name="submit" value="Найти" />
+		</form>
+	</div>
+	<script type="text/javascript">
+		$('#forum_repeat').hide()
+		$('#forum_search').hide()
+	</script>
+	<xsl:apply-templates select="article"/>
+	<ul>
+		<div class="forum-info">
+			<xsl:apply-templates select="forum_message"/>
+		</div>
+	</ul>
+	<xsl:apply-templates select="forum_scroller"/>
+</xsl:template>
+
+
+
+<xsl:template match="forum_message">
+<li>
+	<xsl:choose>
+		<xsl:when test="@in">
+			<h3>
+				<xsl:value-of select="@title"/><xsl:if test="(@is_empty = 1)"> (-)</xsl:if>
+			</h3>
+		</xsl:when>
+		<xsl:when test="@is_empty=1">
+			<xsl:value-of select="@title"/> (-) 
+		</xsl:when>
+		<xsl:otherwise>
+			<a href="?id={@id}">
+				<xsl:value-of select="@title"/>
+			</a>,
+		</xsl:otherwise>
+	</xsl:choose>
+	<xsl:value-of select="@author"/>, [<xsl:value-of select="@dt"/>]
+	<xsl:if test="./forum_message"><a href="#" onclick="$('#m{@id}').slideToggle('slow');">#</a></xsl:if>
+	<xsl:if test="./forum_message">
+		<ul id="m{@id}">
+			<xsl:apply-templates />
+		</ul>
+	</xsl:if>
+</li>
+</xsl:template>
+
+
+
 </xsl:stylesheet>

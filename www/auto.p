@@ -43,7 +43,7 @@ $sTemp[safari]$cTemp
 $sTemp[netscape]$cTemp
 # -----------------------------------------------------------------------------------------------
 # основные настройки
-$SQL.connect-string[mysql://root:@localhost/mouse2?charset=utf8]
+$SQL.connect-string[mysql://root:@localhost/mouse?charset=utf8]
 $CLASS_PATH[^table::create{path
 /../data
 /../data/processes
@@ -69,14 +69,13 @@ $LogDir[${CfgDir}log/]
 # -----------------------------------------------------------------------------------------------
 # подключение основных классов
 ^use[lib.p]
-# =debug
 ^use[curd.p]
+# =debug исправить календарь и убрать
 ^use[dtf.p]
-^use[scroller.p]
 ^use[mysql.p]
 ^use[auth.p]
 ^use[engine.p]
-# ^use[debug.p]			# = debug
+# ^use[debug.p]	= debug
 # -----------------------------------------------------------------------------------------------
 # прочее для совместимости =debug
 $dtNow[^date::now[]]
