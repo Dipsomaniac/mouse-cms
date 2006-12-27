@@ -147,8 +147,8 @@ $result[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
 <!DOCTYPE site_page [
 	^getEntitySet[]
 ]>
-# =debug пространство имен system переименовать в mouse
-<document xmlns:system="http://klen.zoxt.net/doc/" lang="$SYSTEM.siteLangID" server="$SYSTEM.siteUrl" template="^getStylesheet[]">
+# =debug пространство имен system переименовать в mouse добавить поддержку многоязычности
+<document xmlns:system="http://klen.zoxt.net/doc/" lang="ru" server="$SYSTEM.siteUrl" template="^getStylesheet[]">
   ^getDocumentBodyDefault[]
 </document>
 }]

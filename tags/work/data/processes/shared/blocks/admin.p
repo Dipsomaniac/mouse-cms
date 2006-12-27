@@ -77,7 +77,7 @@ $hAction[^mGetAction[$form:action]]
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод списка сайтов
-$crdSite[^mLoader[$.name[site]]]
+$crdSite[^mLoader[$.name[site]$.s(1)]]
 $crdObject[^mLoader[$.name[object]$.h(1)]]
 <atable label="Mouse CMS | Сайты">
 	^crdSite.draw[
@@ -95,6 +95,7 @@ ID	id
 	^$.action[delete]
 	^$.tables[^$.main[site]]
 ]
+^crdSite.scroller[$.uri[$SYSTEM.path]]
 </atable>
 }
 #end @sites[][hAction]
@@ -239,7 +240,7 @@ ID	id
 # -----------------------------------------------------------------------------------------------
 # вывод списка объектов
 # -----------------------------------------------------------------------------------------------
-$crdObject[^mLoader[$.name[object]]]
+$crdObject[^mLoader[$.name[object]$.s(1)]]
 $crdSite[^mLoader[$.name[site]$.h(1)]]
 $crdDataProcess[^mLoader[$.name[data_process]$.h(1)]]
 $crdTemplate[^mLoader[$.name[template]$.h(1)]]
@@ -280,6 +281,7 @@ ID	id
 	^$.tables[^$.main[object]^$.connect[block_to_object]]
 	^$.process[object]
 ]
+^crdObject.scroller[$.uri[$SYSTEM.path]]
 </atable>
 }
 #end @objects[][hAction;c]
@@ -342,7 +344,7 @@ ID	id
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод списка блоков
-$crdBlock[^mLoader[$.name[block]$.t(1)]]
+$crdBlock[^mLoader[$.name[block]$.t(1)$.s(1)]]
 $crdDataProcess[^mLoader[$.name[data_process]$.h(1)]]
 $crdDataType[^mLoader[$.name[data_type]$.h(1)]]
 <atable label="Mouse CMS | Блоки ">
@@ -366,6 +368,7 @@ ID	id
 	^$.action[delete]
 	^$.tables[^$.main[block]^$.connect[block_to_object]]
 ]
+^crdBlock.scroller[$.uri[$SYSTEM.path]]
 </atable>
 }
 #end @block[][hAction]
@@ -412,7 +415,7 @@ ID	id
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод списка обработчиков
-$crdDataProcess[^mLoader[$.name[data_process]$.t(1)]]
+$crdDataProcess[^mLoader[$.name[data_process]$.t(1)$.s(1)]]
 $crdDataProcessType[^mLoader[$.name[data_process_type]$.h(1)]]
 <atable label="Mouse CMS | Обработчики ">
 	^crdDataProcess.draw[
@@ -433,6 +436,7 @@ ID	id
 	^$.action[delete]
 	^$.tables[^$.main[data_process]]
 ]
+^crdDataProcess.scroller[$.uri[$SYSTEM.path]]
 </atable>
 }
 #end @data_process[][hAction]
@@ -476,7 +480,7 @@ ID	id
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод списка шаблонов
-$crdTemplate[^mLoader[$.name[template]$.t(1)]]
+$crdTemplate[^mLoader[$.name[template]$.t(1)$.s(1)]]
 <atable label="Mouse CMS | Шаблоны ">
 	^crdTemplate.draw[
 		$.code[
@@ -495,6 +499,7 @@ ID	id
 	^$.action[delete]
 	^$.tables[^$.main[template]]
 ]
+^crdTemplate.scroller[$.uri[$SYSTEM.path]]
 </atable>
 }
 #end @template[][hAction]
@@ -562,7 +567,7 @@ ID	id
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод списка пользователей
-$crdAuser[^mLoader[$.name[auser]$.t(1)]]
+$crdAuser[^mLoader[$.name[auser]$.t(1)$.s(1)]]
 $hAuser_type[
 	$.0[$.name[user]]
 	$.1[$.name[group]]
@@ -591,6 +596,7 @@ E-mail	email
 	^$.action[delete]
 	^$.tables[^$.main[auser]^$.connect[asession]^$.connect2[aevent_log]^$.connect3[acl]]
 ]
+^crdAuser.scroller[$.uri[$SYSTEM.path]]
 </atable>
 }
 #end @auser[][hAction]
@@ -640,7 +646,7 @@ E-mail	email
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод прав
-$crdAcl[^mLoader[$.name[acl]$.t(1)]]
+$crdAcl[^mLoader[$.name[acl]$.t(1)$.s(1)]]
 $crdAuser[^mLoader[$.name[auser]$.h(1)]]
 $crdObject[^mLoader[$.name[object]$.h(1)]]
 <atable label="Mouse CMS | Управление правами ">
@@ -661,6 +667,7 @@ $crdObject[^mLoader[$.name[object]$.h(1)]]
 	^$.action[delete]
 	^$.tables[^$.main[acl]]
 ]
+^crdAcl.scroller[$.uri[$SYSTEM.path]]
 </atable>
 }
 #end @acl[][hAction]
@@ -708,7 +715,7 @@ $crdObject[^mLoader[$.name[object]$.h(1)]]
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод статей
-	$crdArticle[^mLoader[$.name[article]$.t(1)]]
+	$crdArticle[^mLoader[$.name[article]$.t(1)$.s(1)]]
 	$crdArticleType[^mLoader[$.name[article_type]$.h(1)]]
 <atable label="Mouse CMS | Статьи ">
 	^crdArticle.draw[
@@ -730,6 +737,7 @@ ID	id
 	^$.action[delete]
 	^$.tables[^$.main[article]]
 ]
+^crdArticle.scroller[$.uri[$SYSTEM.path]]
 </atable>
 }
 #end @article[][hAction]
@@ -773,7 +781,7 @@ ID	id
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод категорий
-	$crdArticleType[^mLoader[$.name[article_type]$.t(1)]]
+	$crdArticleType[^mLoader[$.name[article_type]$.t(1)$.s(1)]]
 <atable label="Mouse CMS | Категории ">
 	^crdArticleType.draw[
 		$.names[^table::create{name	id	object
@@ -788,6 +796,7 @@ ID	id
 	^$.action[delete]
 	^$.tables[^$.main[article_type]]
 ]
+^crdArticleType.scroller[$.uri[$SYSTEM.path]]
 </atable>
 }
 #end @article_type[][hAction;hRights]
@@ -813,6 +822,9 @@ ID	id
 $result[
 	^curd::init[
 		$.name[$hParams.name]
+		$.h($hParams.h)
+		$.t($hParams.t)
+		$.s($hParams.s)
 		^switch[$hParams.name]{
 #			сайты
 			^case[site]{
@@ -1007,8 +1019,6 @@ $result[
 				]
 			}
 		}
-		$.h($hParams.h)
-		$.t($hParams.t)
 	]
 ]
 #end @mLoader[hParams]

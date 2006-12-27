@@ -9,6 +9,7 @@ $crdArticle[
 	^mLoader[
 		$.name[article]
 		$.t(1)
+		$.s(1)
 		$.where[
 			article.is_published = 1 AND
 			article.dt_published <= ^MAIN:objSQL.now[] AND
@@ -23,16 +24,14 @@ $crdArticle[
 $hParams.body
 <ul>
 ^untaint[as-is]{
-	^crdArticle.table.menu{
-		<article>
-			<date>^dtf:format[%d %B %Y;$crdArticle.table.dt]</date>
-			<name><a href="?id=$crdArticle.table.id">$crdArticle.table.title</a></name>
-			<author>$crdArticle.table.author</author>
-			^if(^form:id.int(0)){<body>$crdArticle.table.body</body>}{<anonce>$crdArticle.table.lead</anonce>}
-		</article>
-	}
+	^crdArticle.list[
+		$.attr[$.id[id]$.date[dt]$.name[title]$.author[author]]
+		^if(^form:id.int(0)){$.value[body]}{$.value[lead]}
+		$.tag[article]
+	]
 }
 </ul>
+^if(!^form:id.int(0)){^crdArticle.scroller[$.uri[$SYSTEM.path]$.tag[article_scroller]]}
 </block_content>
 #end @mArticleRun[hParams][tArticles]
 
@@ -44,12 +43,14 @@ $hParams.body
 $result[
 	^curd::init[
 		$.name[$hParams.name]
+		$.t[$hParams.t]
+		$.s[$hParams.s]
 		$.where[$hParams.where]
 		$.names[
 			$.[article.article_id][id]
          $.[article.title][]
 			$.[article.lead][]
-			$.[article.dt][]
+			$.[DATE_FORMAT(article.dt, '%e.%c.%y')][dt]
 			$.[article.author][]
 			^if(^form:id.int(0)){$.[article.body][]}
 		]

@@ -9,9 +9,9 @@ $lparams.body
 ^rem{ *** получаем информацию о календаре и выводим его *** }
 $calendar[^getCalendar[$.path[$SYSTEM.path]]]
 <block_content>
-	<div>
-	<![CDATA[^printCalendar[$calendar]]]>
-	</div>
+<div>
+	^printCalendar[$calendar]
+</div>
 </block_content>
 #end @CalendarRun[lparams][calendar]
 
@@ -37,7 +37,7 @@ $calendar[^getCalendar[$.path[$SYSTEM.path]]]
 			^rem{ *** если кликнем в год, по попадем на последний месяц года, 
 				за который у нас есть новости *** }
 			^if(^calendar.locate[year;$year.key]){}
-			<a href="?year=$year.key&month=$calendar.month">$year.key</a>
+			<a href="?year=$year.key&amp^;month=$calendar.month">$year.key</a>
 		}
 		</li>
 	}
@@ -51,7 +51,7 @@ $calendar[^getCalendar[$.path[$SYSTEM.path]]]
 		}{
 			^if(!($now.year == $curr_year && $m > $now.month)){
 				^if($ym_hash.[^curr_year.format[%04d]=^m.format[%02d]]){
-					<li><a href="?year=$curr_year&month=$m">$dtf:[ri-locale].month.$m</a></li>
+					<li><a href="?year=$curr_year&amp^;month=$m">$dtf:[ri-locale].month.$m</a></li>
 				}
 			}
 		}
