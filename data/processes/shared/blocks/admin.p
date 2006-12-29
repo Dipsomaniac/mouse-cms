@@ -55,7 +55,7 @@ $hAction[^mGetAction[$form:action]]
 	<tab id="section-1" name="Основное">
 		<field type="text"   name="name"           label="Название"   description="Имя сайта"              class="long">$crdSite.hash.[$form:id].name</field>
 		<field type="text"   name="domain"         label="Домен"      description="Доменное имя"           class="medium">$crdSite.hash.[$form:id].domain</field>
-		<field type="select" name="lang_id"        label="Язык"       description="Язык сайта"             class="short"><option value="1">Русский</option></field>
+		<field type="select" name="lang_id"        label="Язык"       description="Язык сайта"             class="short"><option id="1" name="Русский"/></field>
 	^if($hAction.i & 1){
 		<field type="select" name="e404_object_id" label="Ошибки"     description="Страница ошибок"        class="medium">
 			^crdObject.list[$.added[select="$crdSite.hash.[$form:id].e404_object_id"]]
@@ -77,7 +77,7 @@ $hAction[^mGetAction[$form:action]]
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод списка сайтов
-$crdSite[^mLoader[$.name[site]$.s(1)]]
+$crdSite[^mLoader[$.name[site]$.s(20)]]
 $crdObject[^mLoader[$.name[object]$.h(1)]]
 <atable label="Mouse CMS | Сайты">
 	^crdSite.draw[
@@ -128,9 +128,10 @@ ID	id
 					<input  name="mode_$iCount" value="$crdBlockToObject.table.mode" class="input-text-short"/>
 					<input  name="sort_order_$iCount" value="$crdBlockToObject.table.sort_order" class="input-text-short"/>
 					<select name="block_id_$iCount" class="long">
-						<option value="0">none</option>
+						<option id="0" name="none" />
 						^crdBlock.list[$.added[select="$crdBlockToObject.table.id"]]
 					</select>
+					<a href="#" onclick="Go('$SYSTEM.path?type=block&amp^;action=edit&amp^;id=$crdBlockToObject.table.id', '#container')">edit</a>
 					<br/>
 				}
 			</field>
@@ -181,11 +182,11 @@ ID	id
 			<field type="text" name="sort_order" label="Порядок" description="Порядок сортировки" class="short">$crdObject.hash.[$form:id].sort_order</field>
 			<field type="checkbox" name="is_published"  label="Опубликовать" description="">$hAction.is_published</field>
 			<field type="select" name="parent_id" label="Предок" description="Родительский объект" class="medium">
-				<option id="0" value="0" select="$parent_id">Корневое пространство</option>
+				<option id="0" select="$parent_id" name="Корневое пространство"/>
 				^crdObject.list[$.added[select="$hAction.parent_id"]]
 			</field>
 			<field type="select" name="template_id" label="Шаблон" description="Шаблон дизайна объекта" class="medium">
-				<option id="0" value="0" select="$crdObject.hash.[$form:id].template_id">Не задан</option>
+				<option id="0" select="$crdObject.hash.[$form:id].template_id" name="Не задан" />
 				^crdTemplate.list[$.added[select="$crdObject.hash.[$form:id].template_id"]]
 			</field>
 			<field type="textarea" name="description" label="Описание" description="Описание объекта">$hAction.description</field>
@@ -205,11 +206,11 @@ ID	id
 				^crdObjectType.list[$.added[select="$crdObject.hash.[$form:id].object_type_id"]]
 			</field>
 			<field type="select" name="data_process_id" description="Обработчик объекта" label="Обработчик" class="medium">
-				<option id="0" value="0" select="$crdObject.hash.[$form:id].data_process_id">отсутствует</option>
+				<option id="0" select="$crdObject.hash.[$form:id].data_process_id" name="отсутствует"/>
 				^crdDataProcess.list[$.added[select="$crdObject.hash.[$form:id].data_process_id"]]
 			</field>
 			<field type="select" name="link_to_object_id" description="Подменить содержимое, содержимым выбранного объекта" label="Ссылка"  class="medium">
-				<option id="0" value="0" select="$crdObject.hash.[$form:id].link_to_object_id">не подменять</option>
+				<option id="0" select="$crdObject.hash.[$form:id].link_to_object_id" name="не подменять"/>
 				^crdObject.list[$.added[select="$crdObject.hash.[$form:id].link_to_object_id"]]
 			</field>
 		</tab>
@@ -240,7 +241,7 @@ ID	id
 # -----------------------------------------------------------------------------------------------
 # вывод списка объектов
 # -----------------------------------------------------------------------------------------------
-$crdObject[^mLoader[$.name[object]$.s(1)]]
+$crdObject[^mLoader[$.name[object]$.s(20)]]
 $crdSite[^mLoader[$.name[site]$.h(1)]]
 $crdDataProcess[^mLoader[$.name[data_process]$.h(1)]]
 $crdTemplate[^mLoader[$.name[template]$.h(1)]]
@@ -311,7 +312,7 @@ ID	id
 		<field type="text" name="name" label="Имя" description="Название блока" class="medium">$crdBlock.hash.[$form:id].name</field>
 		<field type="checkbox" name="is_published"  label="Опубликовать">$crdBlock.hash.[$form:id].is_published</field>
 		<field type="select" name="data_process_id" label="Обработчик" description="Обработчик блока">
-			<option id="0" value="0" select="$crdBlock.hash.[$form:id].data_process_id">отсутствует</option>
+			<option id="0" select="$crdBlock.hash.[$form:id].data_process_id" name="отсутствует"/>
 			^crdDataProcess.list[$.added[select="$crdBlock.hash.[$form:id].data_process_id"]]
 		</field>
 		<field type="textarea" name="description"   label="Описание"  description="Описание блока" >$crdBlock.hash.[$form:id].description</field>
@@ -344,7 +345,7 @@ ID	id
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод списка блоков
-$crdBlock[^mLoader[$.name[block]$.t(1)$.s(1)]]
+$crdBlock[^mLoader[$.name[block]$.t(1)$.s(20)]]
 $crdDataProcess[^mLoader[$.name[data_process]$.h(1)]]
 $crdDataType[^mLoader[$.name[data_type]$.h(1)]]
 <atable label="Mouse CMS | Блоки ">
@@ -415,7 +416,7 @@ ID	id
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод списка обработчиков
-$crdDataProcess[^mLoader[$.name[data_process]$.t(1)$.s(1)]]
+$crdDataProcess[^mLoader[$.name[data_process]$.t(1)$.s(20)]]
 $crdDataProcessType[^mLoader[$.name[data_process_type]$.h(1)]]
 <atable label="Mouse CMS | Обработчики ">
 	^crdDataProcess.draw[
@@ -480,7 +481,7 @@ ID	id
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод списка шаблонов
-$crdTemplate[^mLoader[$.name[template]$.t(1)$.s(1)]]
+$crdTemplate[^mLoader[$.name[template]$.t(1)$.s(20)]]
 <atable label="Mouse CMS | Шаблоны ">
 	^crdTemplate.draw[
 		$.code[
@@ -528,9 +529,9 @@ ID	id
 		}
 		<field type="text" name="name" label="Имя" description="Имя пользователя" class="medium">$crdAuser.hash.[$form:id].name</field>
 		<field type="select" name="auser_type_id" label="Тип" description="Тип пользователя" class="medium">
-			<option value="0" select="$crdAuser.hash.[$form:id].auser_type_id">Пользователь</option>
-			<option value="1" select="$crdAuser.hash.[$form:id].auser_type_id">Группа</option>
-			<option value="2" select="$crdAuser.hash.[$form:id].auser_type_id">Владелец</option>
+			<option id="0" select="$crdAuser.hash.[$form:id].auser_type_id" name="Пользователь" />
+			<option id="1" select="$crdAuser.hash.[$form:id].auser_type_id" name="Группа" />
+			<option id="2" select="$crdAuser.hash.[$form:id].auser_type_id" name="Владелец" />
 		</field>
 		<field type="text" name="email" label="E-Mail" description="Электронная почта" class="medium">$crdAuser.hash.[$form:id].email</field>
 		<field type="checkbox" name="is_published" label="Опубликовать" description="" class="medium">$crdAuser.hash.[$form:id].is_published</field>
@@ -539,9 +540,9 @@ ID	id
 	</tab>
 	<tab id="section-3" name="Атрибуты">
 		<field type="select" name="auth_parent_id" label="Группа" description="Группа пользователя" class="medium">
-			<option value="0" select="$crdAuserToAuser.hash.[$form:id].parent_id">none</option>
+			<option id="0" select="$crdAuserToAuser.hash.[$form:id].parent_id" name="none"/>
 			^crdAuser.table.menu{^if($crdAuser.table.auser_type_id == 1){
-				<option value="$crdAuser.table.id" select="$crdAuserToAuser.hash.[$form:id].parent_id">$crdAuser.table.name</option>
+				<option id="$crdAuser.table.id" select="$crdAuserToAuser.hash.[$form:id].parent_id" name="$crdAuser.table.name" />
 			}}
 		</field>
 		$hRights[^getHashRights($crdAuser.hash.[$form:id].rights)]
@@ -567,7 +568,7 @@ ID	id
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод списка пользователей
-$crdAuser[^mLoader[$.name[auser]$.t(1)$.s(1)]]
+$crdAuser[^mLoader[$.name[auser]$.t(1)$.s(20)]]
 $hAuser_type[
 	$.0[$.name[user]]
 	$.1[$.name[group]]
@@ -646,7 +647,7 @@ E-mail	email
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод прав
-$crdAcl[^mLoader[$.name[acl]$.t(1)$.s(1)]]
+$crdAcl[^mLoader[$.name[acl]$.t(1)$.s(20)]]
 $crdAuser[^mLoader[$.name[auser]$.h(1)]]
 $crdObject[^mLoader[$.name[object]$.h(1)]]
 <atable label="Mouse CMS | Управление правами ">
@@ -698,9 +699,10 @@ $crdObject[^mLoader[$.name[object]$.h(1)]]
 		<field type="textarea" name="lead"   label="Анонс"     description="Краткое содержание">$crdArticle.hash.[$form:id].lead</field>
 		<field type="hidden" name="dt">$SYSTEM.date</field>
 		<field type="hidden" name="dt_published">$SYSTEM.date</field>
+		<field type="hidden" name="author">$MAIN:objAuth.user.name</field>
 		</tab>
 		<tab id="section-2" name="Содержание">
-			<field type="textarea" name="body" ws="true"  label="Анонс"   description="Краткое содержание">$crdArticle.hash.[$form:id].body</field>
+			<field type="textarea" name="body" ws="true"  label="Текст"   description="Содержание статьи">$crdArticle.hash.[$form:id].body</field>
 		</tab>
 	</tabs>
 ^form_engine[
@@ -715,7 +717,7 @@ $crdObject[^mLoader[$.name[object]$.h(1)]]
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод статей
-	$crdArticle[^mLoader[$.name[article]$.t(1)$.s(1)]]
+	$crdArticle[^mLoader[$.name[article]$.t(1)$.s(20)]]
 	$crdArticleType[^mLoader[$.name[article_type]$.h(1)]]
 <atable label="Mouse CMS | Статьи ">
 	^crdArticle.draw[
@@ -781,7 +783,7 @@ ID	id
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод категорий
-	$crdArticleType[^mLoader[$.name[article_type]$.t(1)$.s(1)]]
+	$crdArticleType[^mLoader[$.name[article_type]$.t(1)$.s(20)]]
 <atable label="Mouse CMS | Категории ">
 	^crdArticleType.draw[
 		$.names[^table::create{name	id	object

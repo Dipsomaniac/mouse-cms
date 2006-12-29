@@ -22,8 +22,10 @@
 		</xsl:if>
 		<!-- =debug   -->
 		<meta http-equiv="Content-Type" content="text/html; charset=WINDOWS-1251" />
+		<link rel="icon" href="/favicon.ico" type="image/x-icon"/>
+		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
 		<!-- RSS Feed =debug -->
-		<xsl:call-template name="RSS"/>
+		<xsl:apply-templates select="//channel" />
 		<!--  =debug -->
 		<!-- <link rel="Shortcut Icon" href="/favicon.ico"/> -->
 		<!--       -->
@@ -35,24 +37,23 @@
 </head>
 </xsl:template>
 
-<!-- RSS feed -->
-<xsl:template name="RSS">
-	<link rel="alternate" type="application/rss+xml" title="RSS 2.0 feed" href="/news/rss/"/>
+<xsl:template match="channel">
+	<link rel="alternate" type="application/rss+xml" title="{@title}" href="{@rsslink}"/>
 </xsl:template>
 
 <!-- java-css scripts [js|js_head|css|css_head]-->
-<xsl:template match="//js">
+<xsl:template match="js">
 <script type="text/javascript" src="{@source}" />
 </xsl:template>
-<xsl:template match="//js_head|//js_footer">
+<xsl:template match="js_head|js_footer">
 <script type="text/javascript">
 	<xsl:value-of select="."/>
 </script>
 </xsl:template>
-<xsl:template match="//css">
+<xsl:template match="css">
 <link rel="stylesheet" href="{@source}"/>
 </xsl:template>
-<xsl:template match="//css_head">
+<xsl:template match="css_head">
 <style type="text/css" media="all">
 	<xsl:value-of select="." />
 </style>

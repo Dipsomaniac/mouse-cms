@@ -283,18 +283,20 @@
 			<label for="" class="title" id="title_name">Заголовок</label>
 			<small class="help">Заголовок сообщения</small>
 			<div class="container">
-				<input type="text" name="title" value="" class="input-text-long" />
+				<input type="text" name="title" value="{param/@title}" class="input-text-long" />
 			</div>
 		</div>
 		<div class="divider">
 			<label for="" class="title" id="title_name">Содержание</label>
 			<small class="help">Текст сообщения</small>
 			<div class="container">
-				<textarea name="body" id="message_body" class="input-textarea-large"/>
+				<textarea name="body" id="message_body" class="input-textarea-large"><xsl:value-of select="param"/></textarea>
+				<a href="javascript://toggle/this" onClick="popXTextArea('body');return false;">Править в визуальном редакторе</a>
 			</div>
 		</div>
 		<input type="hidden" name="dt_published" value="{@dt}" />
 		<input type="hidden" name="parent_id" value="{@parent_id}" />
+		<xsl:if test="@id"><input type="hidden" name="id" value="{@id}" /></xsl:if>
 		<input type="hidden" name="thread_id" value="{./thread_id}" />
 		<xsl:apply-templates select="input" />
 		<input type="submit" class="input-button" name="submit" value="Отправить" />
@@ -302,7 +304,7 @@
 		</form>
 	</div>
 	<div id="forum_search" class="form-builder-tab">
-		<form action="" method="post" name="form_forum_repeat" enctype="multipart/form-data">
+		<form action="" method="post" name="form_forum_search" enctype="multipart/form-data">
 			<div class="divider">
 				<label for="" class="title" id="title_name">Строка поиска</label>
 				<small class="help">Ключевые слова</small>
@@ -323,7 +325,7 @@
 		</form>
 	</div>
 	<script type="text/javascript">
-		$('#forum_repeat').hide()
+		<xsl:if test="not(param)">$('#forum_repeat').hide()</xsl:if>
 		$('#forum_search').hide()
 	</script>
 	<xsl:apply-templates select="article"/>
@@ -345,12 +347,9 @@
 				<xsl:value-of select="@title"/><xsl:if test="(@is_empty = 1)"> (-)</xsl:if>
 			</h3>
 		</xsl:when>
-		<xsl:when test="@is_empty=1">
-			<xsl:value-of select="@title"/> (-) 
-		</xsl:when>
 		<xsl:otherwise>
 			<a href="?id={@id}">
-				<xsl:value-of select="@title"/>
+				<xsl:value-of select="@title"/><xsl:if test="(@is_empty = 1)"> (-)</xsl:if>
 			</a>,
 		</xsl:otherwise>
 	</xsl:choose>
@@ -362,6 +361,16 @@
 		</ul>
 	</xsl:if>
 </li>
+</xsl:template>
+
+
+
+<xsl:template match="forum_last">
+<li>
+<a href="{@uri}?id={@id}">
+<xsl:value-of select="@name"/>
+<xsl:if test="(@is_empty = 1)"> (-)</xsl:if>
+</a>,<xsl:value-of select="@author"/></li>
 </xsl:template>
 
 
