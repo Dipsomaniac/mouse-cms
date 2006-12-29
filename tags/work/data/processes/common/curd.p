@@ -27,7 +27,7 @@ $hObject[
 		^if(def $hObject.leftjoin){LEFT JOIN $hObject.leftjoin USING ($hObject.using) }
 		^if(def $hObject.where){WHERE $hObject.where }
 	})
-	$limit(^form:number.int(20))
+	^if(def $form:number){$limit(^form:number.int(20))}{$limit($hObject.s)}
 	$pagecount(^math:ceiling($count / $limit))
 	$page(^form:page.int(1))
 	^if($pagecount){$offset(($page - 1) * $limit)}
@@ -109,9 +109,7 @@ $hList[$.attr[$.id[id]$.name[name]]$.tag[field_option]]
 ^hList.add[$hParams]
 $hList.table[$table]
 ^hList.table.menu{
-	<$hList.tag ^hList.attr.foreach[sKey;sValue]{$sKey = "$hList.table.[$sValue]" }$hList.added>
-		^if(def $hList.value){$hList.table.[$hList.value]}
-	</$hList.tag>
+	<$hList.tag ^hList.attr.foreach[sKey;sValue]{$sKey = "$hList.table.[$sValue]" }$hList.added>^if(def $hList.value){$hList.table.[$hList.value]}</$hList.tag>
 }
 #end @list[hParams][hList]
 

@@ -4,22 +4,23 @@
 
 #################################################################################################
 # Вывод данных =debug воспользоваться методом курда list
-@mArticleRun[hParams][crdArticles]
+@mArticleRun[hParams][crdArticle]
 $crdArticle[
 	^mLoader[
 		$.name[article]
 		$.t(1)
-		$.s(1)
+		$.s(5)
 		$.where[
 			article.is_published = 1 AND
 			article.dt_published <= ^MAIN:objSQL.now[] AND
-			article_type.path = '$SYSTEM.path'
+			article_type.path = '^if(def $hParams.param.path){$hParams.param.path}{$SYSTEM.path}'
 			^if(^form:id.int(0)){ AND article.article_id = ^form:id.int(0) }
 			^if(^form:year.int(0)){ AND dt >= '^form:year.int(0)-^form:month.int(0)-00' AND dt <= '^form:year.int(0)-^form:month.int(0)-31'}
 		]
 		^if(!^form:year.int(0)){$.limit(20)}
 	]
 ]
+<channel title="Mouse CMS - News" description="Mouse CMS - Новости" link="http://$SYSTEM.siteUrl/" rsslink="http://$SYSTEM.siteUrl/rss/" generator="Mouse CMS" webmaster="horneds@gmail.com" date="$SYSTEM.date"/>
 <block_content>
 $hParams.body
 <ul>
@@ -56,7 +57,7 @@ $result[
 		]
 		$.leftjoin[article_type]
 		$.using[article_type_id]
-		$.order[dt DESC]
+		$.order[id DESC]
 	]
 ]
 #end @mLoader[hParams]

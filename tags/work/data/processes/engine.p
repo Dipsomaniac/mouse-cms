@@ -273,7 +273,7 @@ $result[^crdBlock.table.menu{^getBlock[$crdBlock.table.fields]}]
 # Собираем блок
 @getBlock[hBlockFields][hBlockParams;cBlock;sBlockData]
 $result[
-	$hBlockParams[^getSystemParams[$hBlockFields.attr]]
+	$hBlockParams[^getStrToHash[$hBlockFields.attr]]
 	$cBlock{
 #	 	если блок не пустой парсим его данные =debug эта штука поважнее должна быть
 		^if(^hBlockFields.is_not_empty.int(0)){$sBlockData[^taint[as-is][$hBlockFields.data]]}
@@ -287,14 +287,15 @@ $result[
 			id="$hBlockFields.id" 
 			name="$hBlockFields.name" 
 			mode="$hBlockFields.mode" 
-			style="^hBlockParams.Style.int(1)"
+			style="^hBlockParams.style.int(1)"
 			^if(def ^hBlockFields.data_process_id.int(0)){process="$hBlockFields.data_process_id"}
 		>$sBlockData</block>
 	}
-	^if(^hBlockParams.Cache.int(0)){
-		<!-- $SYSTEM.date Begin Block Cache key: blocks_code_${hBlockFields.id}, cache time: $hBlockParams.Cache secs -->
-		^cache[${MAIN:CacheDir}sql/blocks_code_${hBlockFields.id}.cache]($hBlockParams.Cache){$cBlock}
-		<!-- $SYSTEM.date Ended Block Cache key: blocks_code_${hBlockFields.id}, cache time: $hBlockParams.Cache secs -->
+	^if(^hBlockParams.cache.int(0)){
+		$hBlockParams.cache_file[${MAIN:CacheDir}block_code_^math:md5[${request:uri}${hBlockFields.id}].cache]
+		<!-- $SYSTEM.date Begin Block Cache file: $hBlockParams.cache_file, cache time: $hBlockParams.cache secs -->
+		^cache[$hBlockParams.cache_file]($hBlockParams.cache){$cBlock}
+		<!-- $SYSTEM.date Ended Block Cache file: $hBlockParams.cache_file, cache time: $hBlockParams.cache secs -->
 	}{
 		$cBlock
 	}
