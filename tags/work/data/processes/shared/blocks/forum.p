@@ -1,3 +1,4 @@
+^bbcode[]
 ^if(def $lparams.param.last){^mForumLast[$lparams]}{^mForumView[$lparams]}
 
 
@@ -61,11 +62,10 @@ BODY: $hParams.body
 	<button image="24_articles.gif"  name="forum_edit"  alt="Редактировать" onClick="window.location='${SYSTEM.path}?id=$form:id&amp^;action=edit'"/>
 }
 # выводим сообщение
-^untaint[as-is]{
 <article in="1" date="$crdMessageById.table.dt" id="$crdMessageById.table.id" name="$crdMessageById.table.title" author="$crdMessageById.table.author">
-	$crdMessageById.table.body
+^crdMessageById.table.body.replace[$bbreplace]
 </article>
-}
+
 # загружаем ветвь сообщения
 $crdMessagesByThread[^mLoader[
 	$.action[message_by_thread]
@@ -166,6 +166,7 @@ $iCount(^MAIN:objSQL.sql[int]{SELECT (COUNT(*)+1) FROM forum_message})
 	^if(!def $oForm.hRequest.title){$oForm.hRequest.title[Без темы]}
 	$oForm.hRequest.is_published(1)
 }
+^if(def $oForm.hRequest.body){$oForm.hRequest.body[^oForm.hRequest.body.match[\n][g]{<br />}]}
 ^oForm.hRequest.delete[id]
 # раз уж сюда дошли то удалим весь кэш
 ^dir_delete[^MAIN:CacheDir.trim[end;/];$.is_recursive(1)]
@@ -236,4 +237,22 @@ $result[
 $sStr[^sStr.match[\s+][g]{}]
 <input type="hidden" name="form_engine" value="$sStr"/>
 <input type="hidden" name="form_security" value="^MAIN:security[$sStr]"/>
+#end form_engine[sStr]
+
+
+
+#################################################################################################
+# Преоразования bb кода
+@bbcode[]
+$bbreplace[^table::create{from	to
+^taint[^#0A]	<br/>
+[b]	<b>
+[/b]	</b>
+[i]	<i>
+[/i]	</i>
+[quote]	<blockquote>
+[/quote]	</blockquote>
+[code]	<code>
+[/code]	</code>
+}]
 #end form_engine[sStr]

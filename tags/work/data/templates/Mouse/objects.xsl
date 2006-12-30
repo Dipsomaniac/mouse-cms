@@ -291,7 +291,7 @@
 			<small class="help">Текст сообщения</small>
 			<div class="container">
 				<textarea name="body" id="message_body" class="input-textarea-large"><xsl:value-of select="param"/></textarea>
-				<a href="javascript://toggle/this" onClick="popXTextArea('body');return false;">Править в визуальном редакторе</a>
+<!--				<a href="javascript://toggle/this" onClick="popXTextArea('body');return false;">Править в визуальном редакторе</a> -->
 			</div>
 		</div>
 		<input type="hidden" name="dt_published" value="{@dt}" />
