@@ -166,7 +166,6 @@ $iCount(^MAIN:objSQL.sql[int]{SELECT (COUNT(*)+1) FROM forum_message})
 	^if(!def $oForm.hRequest.title){$oForm.hRequest.title[Без темы]}
 	$oForm.hRequest.is_published(1)
 }
-^if(def $oForm.hRequest.body){$oForm.hRequest.body[^oForm.hRequest.body.match[\n][g]{<br />}]}
 ^oForm.hRequest.delete[id]
 # раз уж сюда дошли то удалим весь кэш
 ^dir_delete[^MAIN:CacheDir.trim[end;/];$.is_recursive(1)]
