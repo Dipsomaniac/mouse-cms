@@ -33,34 +33,9 @@
 
 <!-- CONTENT* -->
 <xsl:template match="document/body">
-	<!-- header -->
-	<div id="header">
-		<a href="http://{/document/system/site/.}" title="{/document/header/main_url/.}">
-			<h1><xsl:value-of select="/document/header/document_name"/></h1>
-		</a>
-		<xsl:apply-templates select="//menu"/>
-        <form method="get" action="/search/" id="quick-search">
-		    <input type="text" name="phrase" class="text" id="search" value="Поиск (выключен :) )" title="Поиск" />
-            <input type="image" src="/images/search.gif" name="search" id="search" alt="Найти" />
-        </form>
-	</div>
 	<!-- content -->
 	<div id="content">
-		<div id="container">
 			<xsl:apply-templates select="/document/body/block[(@mode=1)]"/>
-		</div>
-	</div>
-				
-	<!-- sidebar -->
-	<div id="sidebar">
-	   	<xsl:apply-templates select="/document/body/block[(@mode=2)]"/>
-	   	<xsl:apply-templates select="//badges"/>
-	</div>
-					
-	<!-- FOOTER -->
-	<div id="footer">
-		<div id="copyright"><p id="mouse"></p>© 2006 KLeN</div>
-		<p id="stat">Справка | Техническая поддержка | О программе</p>
 	</div>
 </xsl:template>
 <!-- CONTENT# -->
@@ -73,13 +48,13 @@
 			<xsl:apply-templates select="block_content"/>
 		</xsl:when>
 		<xsl:when test=" @mode = 1 ">
-			<h2><xsl:value-of select="./name" /></h2>
+			<h2><xsl:value-of select="@name" /></h2>
 			<div id="block">
 				<xsl:apply-templates select="block_content"/>
 			</div>
 		</xsl:when>
 		<xsl:when test=" @mode = 2 ">
-			<h2><xsl:value-of select="./name" /></h2>
+			<h2><xsl:value-of select="@name" /></h2>
 			<xsl:apply-templates select="block_content"/>
 		</xsl:when>
 		<xsl:otherwise>
@@ -91,20 +66,22 @@
 <!-- topmenu -->
 <xsl:template match="menu">
 	<ul id="topnav">
-		<xsl:apply-templates select="/document/navigation/branche[@is_show_in_menu=1]" mode="topmenu" />
+		<xsl:apply-templates select="/document/navigation/branche" mode="topmenu" />
 	</ul>
 </xsl:template>
-<xsl:template match="/document/navigation/branche[@is_show_in_menu=1]" mode="topmenu"> 
+<xsl:template match="/document/navigation/branche" mode="topmenu"> 
+	<xsl:if test="@is_show_on_menu = 1">
 		<li>
-			<xsl:if test="not(@in=1) or (@hit=0)">
-				<a href="{@full_path}" title="{@document_name}"><xsl:value-of select="@name"/>
+			<xsl:if test="not(@in=1)">
+				<a href="{@path}" title="{@document_name}"><xsl:value-of select="@name"/>
 				<xsl:call-template name="topmenu" /></a>
 			</xsl:if>
-			<xsl:if test="(@in=1) and not(@hit=0)">
+			<xsl:if test="(@in=1)">
 				<b><xsl:value-of select="@name"/></b>
 				<xsl:call-template name="topmenu" />
        		</xsl:if>
 		</li>
+	</xsl:if>
 </xsl:template>
 <xsl:template name="topmenu"> 
 	<xsl:if test = "not(position()=last())" >
@@ -115,15 +92,17 @@
 <!-- sidemenu -->
 <xsl:template match="sidemenu">
 	<ul>
-		<xsl:apply-templates select="/document/navigation/branche[@is_show_in_menu=1]" mode="sidemenu" />
+		<xsl:apply-templates select="/document/navigation/branche" mode="sidemenu" />
 	</ul>
 </xsl:template>
-<xsl:template match="/document/navigation/branche[@is_show_in_menu=1]|/document/navigation//branche/branche[@is_show_in_menu=1]" mode="sidemenu" >
+<xsl:template match="/document/navigation/branche|/document/navigation//branche/branche" mode="sidemenu" >
+	<xsl:if test="@is_show_on_menu = 1">
 			<li>
-				<xsl:if test="not (@in=1)"><a href="{@full_path}" title="{@description}"><xsl:value-of select="@name"/></a></xsl:if>
+				<xsl:if test="not (@in=1)"><a href="{@path}" title="{@description}"><xsl:value-of select="@name"/></a></xsl:if>
 				<xsl:if test="(@in=1)"><b><xsl:value-of select="@name"/></b></xsl:if>
-				<xsl:if test="(./branche[@is_show_in_menu=1])"><ul><xsl:apply-templates select="//branche/branche" mode="sidemenu" /></ul></xsl:if>
+				<xsl:if test="(./branche[@is_show_on_menu=1])"><ul><xsl:apply-templates select="//branche/branche" mode="sidemenu" /></ul></xsl:if>
 			</li>
+	</xsl:if>
 </xsl:template>
 
 <!-- sitemap -->
@@ -133,10 +112,10 @@
 </ul>
 </xsl:template>
 <xsl:template match="/document/navigation/branche|/document/navigation//branche/branche" mode="sitemap">
-<xsl:if test="@is_show_on_sitemap = 1">
+<xsl:if test="@is_show_on_site_map = 1">
 		<li>
-			<a href="{@full_path}" title="{@document_name}"><xsl:value-of select="@name"/></a> | <small><xsl:value-of select="@description"/></small>
-			<xsl:if test="(./branche[@is_show_on_sitemap=1])"><ul><xsl:apply-templates select="//branche/branche" mode="sitemap" /></ul></xsl:if>
+			<a href="{@path}" title="{@document_name}"><xsl:value-of select="@name"/></a> | <small><xsl:value-of select="@description"/></small>
+			<xsl:if test="(./branche[@is_show_on_site_map=1])"><ul><xsl:apply-templates select="//branche/branche" mode="sitemap" /></ul></xsl:if>
 		</li>
 </xsl:if>
 </xsl:template>
@@ -153,5 +132,19 @@
 </xsl:template>
 
 
+<!-- article -->
+<xsl:template match="article">
+	<div class="post">
+		<p class="post-date"><xsl:value-of select="./date"/></p>
+		<div class="post-info">
+			<h2 class="post-title"><xsl:copy-of select="./name/a"/></h2>
+			Автор: <xsl:value-of select="./author"/><br/>
+			Комментарии:
+		</div>
+		<div class="post-content"><xsl:apply-templates /></div>
+	</div>
+</xsl:template>
+<xsl:template match="date|name|author">
+</xsl:template>
 
 </xsl:stylesheet>

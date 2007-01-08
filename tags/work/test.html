@@ -1,0 +1,42 @@
+﻿@main[]
+^use[/parser/test.p]
+^use[/parser/images.p]
+$test[^test::init[]]
+<form method="post" name="test" action="" enctype="multipart/form-data">
+<input type="file" name="image" />
+<input type="submit" name="submit" value="Сохранить"/>
+</form>
+$script[/parser/nconvert]
+^save[
+	$.image[$form:image]
+	$.name[temp.jpg]
+	$.path[/parser/]
+	$.format[jpeg]
+]
+^resize[
+	$.source_name[/parser/temp.jpg]
+	$.name[/parser/small_temp.jpg]
+	$.width(30)
+	$.height(30)
+]
+
+	
+@save[hParams][f;result]
+^if($hParams.image && $hParams.image is "file"){
+	^if($hParams.path is string){$hParams.path[^hParams.path.trim[end;/]]}
+	^if(!def $hParams.name){$hParams.name[$hParams.image.name]}
+	^if(def $hParams.format){
+		^hParams.image.save[binary;$hParams.path/temp_$hParams.name]
+		$f[^file::exec[$script;;-o;${env:DOCUMENT_ROOT}$hParams.path/$hParams.name;-q;80;-rmeta;-rexifthumb;-out;$hParams.format;${env:DOCUMENT_ROOT}$hParams.path/temp_$hParams.name;]]
+		^file:delete[$hParams.path/temp_$hParams.name]
+	}{
+		^hParams.image.save[binary;$hParams.path/$hParams.name]
+	}
+	$result[$f.stderr]
+}{
+	$result[No file.]
+}
+
+@resize[hParams][f;result]
+$f[^file::exec[$script;;-o;${env:DOCUMENT_ROOT}$hParams.name;-q;^if(^hParams.quality.int(0)){$hParams.quality}{80};^if(^hParams.width.int(0) && ^hParams.height.int(0)){-normalize}{-ratio};-resize;^if(^params.width.int(0)){$hParams.width};^if(^hParams.height.int(0)){$hParams.height};${env:DOCUMENT_ROOT}$hParams.source_name]]
+$result[$f.stderr]

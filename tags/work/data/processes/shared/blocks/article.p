@@ -23,7 +23,6 @@ $crdArticle[
 <channel title="Mouse CMS - News" description="Mouse CMS - Новости" link="http://$SYSTEM.siteUrl/" rsslink="http://$SYSTEM.siteUrl/rss/" generator="Mouse CMS" webmaster="horneds@gmail.com" date="$SYSTEM.date"/>
 <block_content>
 $hParams.body
-<ul>
 ^untaint[as-is]{
 	^crdArticle.list[
 		$.attr[$.id[id]$.date[dt]$.name[title]$.author[author]]
@@ -31,7 +30,6 @@ $hParams.body
 		$.tag[article]
 	]
 }
-</ul>
 ^if(!^form:id.int(0)){^crdArticle.scroller[$.uri[$SYSTEM.path]$.tag[article_scroller]]}
 </block_content>
 #end @mArticleRun[hParams][tArticles]

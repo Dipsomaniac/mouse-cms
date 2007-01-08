@@ -21,7 +21,7 @@
 			<meta name="keywords" lang="{@lang}" content="{header/keywords}"/>
 		</xsl:if>
 		<!-- =debug   -->
-		<meta http-equiv="Content-Type" content="text/html; charset=WINDOWS-1251" />
+		<meta http-equiv="Content-Type" content="text/html; charset={/document/@charset}" />
 		<link rel="icon" href="/favicon.ico" type="image/x-icon"/>
 		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
 		<!-- RSS Feed =debug -->
