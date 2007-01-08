@@ -41,11 +41,11 @@ $hForm.param[^getStrToHash[$hRequest.form_engine]]
 
 
 ####################################################################################################
-@go[][sRequest;tWhere]
+@go[hParams][sRequest;tWhere;result]
 # составляем запрос
 $sRequest[
 ^taint[# -----------------------------------------------------------------------------------------------]
-^taint[# ^MAIN:dtNow.sql-string[]]
+^taint[# ^MAIN:dtNow.sql-string[] ]
 ]
 ^mSaveLog[$sRequest]
 ^if(^hRequest.[$hForm.param.where].pos[,] > 0){
@@ -65,22 +65,25 @@ $sRequest[
 		^hForm.oSql.void{$sRequest}
 	}
 }
-$result[Запрос выполнен.]
+$result[
+	^if($hParams.last_insert_id){$.last_insert_id(^hForm.oSql.last_insert_id[$hForm.param.tables.main])}
+	$.done[Запрос выполнен.]]
 #end go[]
 
 
 
 ####################################################################################################
 # логирование запросов
-@mSaveLog[sStr]
+@mSaveLog[sStr][result]
 ^if(def $hForm.log){^sStr.save[append;$hForm.log]}
+$result[]
 #end @mSaveLog[sStr]
 
 
 
 ####################################################################################################
 # добавление данных
-@insert[sTableName;hParam][sNames;sValues]
+@insert[sTableName;hParam][sNames;sValues;result]
 $sNames[^hRequest.foreach[field;value]{$field}[,]]
 $sValues[^hRequest.foreach[field;value]{^if(def $value){'$value'}{NULL}}[,]]
 $result[
@@ -96,7 +99,7 @@ $result[
 
 ####################################################################################################
 # редактирование данных
-@update[sTableName;hParam]
+@update[sTableName;hParam][result]
 $result[
 	UPDATE
 		$sTableName
@@ -111,7 +114,7 @@ $result[
 
 ####################################################################################################
 # удаление данных
-@delete[sTableName;hParam]
+@delete[sTableName;hParam][result]
 $result[
 	DELETE FROM
 		$sTableName
@@ -124,15 +127,15 @@ $result[
 
 #################################################################################################
 # декодирование UTF-8
-@_decode[sText]
-$result[^taint[^sText.replace[$tDecode]]]
+@_decode[sText][result]
+^if($sText is string){$result[^taint[^sText.replace[$tDecode]]]}{$result[$sText]}
 #end @_decode[sText]
 
 
 
 #################################################################################################
 # таблица преобразований UTF-8
-@_getDecodeTable[]
+@_getDecodeTable[][result]
 $result[^table::create{from	to
 %u2116	№
 %u0430	а

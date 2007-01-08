@@ -27,7 +27,7 @@ $crdLastMessages[^mLoader[
 
 ####################################################################################################
 # Вывод данных
-@mForumView[hParams][crdMessageById;crdMessageByThread;crdMessagesByThread;hMessageThread]
+@mForumView[hParams][crdMessageById;crdMessageByThread;crdMessagesByThread]
 BODY: $hParams.body
 <block_content>
 	<forum parent_id="^form:id.int(0)" dt="$SYSTEM.date">
@@ -115,8 +115,7 @@ $crdMessagesByThread[^mLoader[
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод дерева
-	$hMessagesThread[^crdMessagesByThread.table.hash[parent_id][$.distinct[tables]]]
-	^ObjectByParent[$hMessagesThread;0;
+	^crdMessagesByThread.tree[
 		$.tag[forum_message]
 		$.attributes[^table::create{name^#OAid^#OAtitle^#OAauthor^#OAdt^#OAis_empty}]
 		$.id($form:id)
@@ -168,7 +167,7 @@ $iCount(^MAIN:objSQL.sql[int]{SELECT (COUNT(*)+1) FROM forum_message})
 }
 ^oForm.hRequest.delete[id]
 # раз уж сюда дошли то удалим весь кэш
-^dir_delete[^MAIN:CacheDir.trim[end;/];$.is_recursive(1)]
+^dir_delete[$MAIN:CacheDir;$.is_recursive(1)]
 # попытка выполнения действия
 ^oForm.go[]
 ^location[$sLocation;$.is_external(1)]

@@ -8,6 +8,7 @@
 <block_content>
 $hParams.body
 <buttons>
+	<button image="24_lang.gif"       name="lang"         alt="Языки"							onClick="Go('$SYSTEM.path?type=lang','#container')" />
 	<button image="24_sites.gif"      name="site"         alt="Сайты"							onClick="Go('$SYSTEM.path?type=site','#container')" />
 	<button image="24_objects.gif"    name="object"       alt="Объекты"						onClick="Go('$SYSTEM.path?type=object','#container')" />
 	<button image="24_blocks.gif"     name="block"        alt="Блоки"							onClick="Go('$SYSTEM.path?type=block','#container')" />
@@ -15,10 +16,10 @@ $hParams.body
 	<button image="24_templates.gif"  name="template"     alt="Шаблоны"						onClick="Go('$SYSTEM.path?type=template','#container')" />
 	<button image="24_users.gif"      name="auser"        alt="Gользователи и группы"	onClick="Go('$SYSTEM.path?type=auser','#container')" />
 	<button image="24_rights.gif"     name="acl"          alt="Назначение прав"			onClick="Go('$SYSTEM.path?type=acl','#container')" />
-	<button image="24_configure.gif"  name="configure"    alt="Обслуживание системы (отключено)"		onClick="Go('$SYSTEM.path?type=config','#container')" />
-	<button image="24_files.gif"      name="files"        alt="Загрузка файлов (отключено)"			onClick="Go('$SYSTEM.path?type=files','#container')" />
+	<button image="24_configure.gif"  name="configure"    alt="Обслуживание системы"		onClick="Go('$SYSTEM.path?type=config','#container')" />
+	<button image="24_files.gif"      name="files"        alt="Загрузка файлов"			onClick="Go('$SYSTEM.path?type=files','#container')" />
 	<button image="24_articles.gif"   name="articles"     alt="Работа со статьями"		onClick="Go('$SYSTEM.path?type=article','#container')" />
-	<button image="24_category.gif"   name="categoey"     alt="Работа с категориями"		onClick="Go('$SYSTEM.path?type=article_type','#container')" />
+	<button image="24_category.gif"   name="category"     alt="Работа с категориями"		onClick="Go('$SYSTEM.path?type=article_type','#container')" />
 	<button image="24_divider.gif" />
 	^if(def $form:action && $form:action ne 'config'){
 		<button image="24_save.gif"    name="save"      alt="Сохранить" onClick="saveForms('form_content','$SYSTEM.path?type=$form:type','#container')" />
@@ -31,10 +32,65 @@ $hParams.body
 		<button image="24_delete.gif" name="delete" alt="Удалить"    onClick="DeleteChecked('${form:type}_id','$SYSTEM.path?type=$form:type','#container')" />
 	}
 </buttons>
+^if(def $form:type){
 	$jMethod[$[$form:type]]
 	^jMethod[]
+}
 </block_content>
 #end @mRun[hParams][jMethod]
+
+
+
+#################################################################################################
+# Управление языками системы
+@lang[][crdLang;hAction]
+# -----------------------------------------------------------------------------------------------
+# определение вывода в зависимости от запроса
+^if(def $form:action){
+# -----------------------------------------------------------------------------------------------
+# вывод формы редактирования
+$crdLang[^mLoader[$.name[lang]$.h(1)]]
+$hAction[^mGetAction[$form:action]]
+<form method="post" action="$SYSTEM.path" name="form_content" id="form_content" enctype="multipart/form-data" 
+	label="MOUSE CMS | Языки | $hAction.label | $crdLang.hash.[$form:id].name ">
+<tabs>
+	<tab id="section-1" name="Основное">
+		<field type="text" name="abbr"    label="Абревиатура" class="short">$crdLang.hash.[$form:id].abbr</field>
+		<field type="text" name="charset" label="Кодировка" class="medium">$crdLang.hash.[$form:id].charset</field>
+		<field type="text" name="sort_order" label="Сортировка" description="Порядок сортировки" class="short">$crdLang.hash.[$form:id].sort_order</field>
+		
+^form_engine[
+	^$.where[lang_id]
+	^$.lang_id[$form:id]
+	^$.tables[^$.main[lang]]
+	^if($hAction.i & 6){^$.action[insert]}
+	^if($hAction.i & 1){^$.action[update]}
+	]
+	</tab>
+</tabs>
+</form>
+}{
+# -----------------------------------------------------------------------------------------------
+# вывод списка языков
+$crdLang[^mLoader[$.name[lang]$.s(20)]]
+<atable label="Mouse CMS | Языки">
+	^crdLang.draw[
+		$.code[Сортировка: ^$hFields.sort_order]
+		$.names[^table::create{name	id	object
+ID	id
+Абревиатура	abbr
+Кодировка	charset
+}]]
+	^added[]
+^form_engine[
+	^$.where[lang_id]
+	^$.action[delete]
+	^$.tables[^$.main[lang]]
+]
+^crdLang.scroller[$.uri[$SYSTEM.path]]
+</atable>
+}
+#end @lang[][crdLang;hAction]
 
 
 
@@ -46,8 +102,9 @@ $hParams.body
 ^if(def $form:action){
 # -----------------------------------------------------------------------------------------------
 # вывод формы редактирования
+$crdLang[^mLoader[$.name[lang]$.t(1)]]
 $crdSite[^mLoader[$.name[site]$.h(1)]]
-$crdObject[^mLoader[$.name[object]]]
+$crdObject[^mLoader[$.name[object]$.where[site_id = $form:id]]]
 $hAction[^mGetAction[$form:action]]
 <form method="post" action="$SYSTEM.path" name="form_content" id="form_content" enctype="multipart/form-data" 
 	label="MOUSE CMS | Сайты | $hAction.label | $crdSite.hash.[$form:id].name ">
@@ -55,7 +112,9 @@ $hAction[^mGetAction[$form:action]]
 	<tab id="section-1" name="Основное">
 		<field type="text"   name="name"           label="Название"   description="Имя сайта"              class="long">$crdSite.hash.[$form:id].name</field>
 		<field type="text"   name="domain"         label="Домен"      description="Доменное имя"           class="medium">$crdSite.hash.[$form:id].domain</field>
-		<field type="select" name="lang_id"        label="Язык"       description="Язык сайта"             class="short"><option id="1" name="Русский"/></field>
+		<field type="select" name="lang_id"        label="Язык"       description="Язык сайта по умолчанию" class="short">
+			^crdLang.list[$.attr[$.id[id]$.name[abbr]]$.added[select="$crdSite.hash.[$form:id].lang_id"]]
+		</field>
 	^if($hAction.i & 1){
 		<field type="select" name="e404_object_id" label="Ошибки"     description="Страница ошибок"        class="medium">
 			^crdObject.list[$.added[select="$crdSite.hash.[$form:id].e404_object_id"]]
@@ -112,13 +171,17 @@ ID	id
 # 	Работа с блоками объекта
 	^if($form:action eq 'block_to_object'){
 		$crdObject[^mLoader[$.name[object]]]
-		$crdBlock[^mLoader[$.name[block]$.t(1)]]
 		$crdBlockToObject[^mLoader[$.name[block_to_object]$.t(1)]]
+		$crdBlock[^mLoader[
+			$.name[block]
+			$.t(1)
+			$.where[is_shared = 1 ^if($crdBlockToObject.table){OR block_id IN (^crdBlockToObject.table.menu{ $crdBlockToObject.table.id}[,])}]
+		]]
 		<form method="post" action="$SYSTEM.path" name="form_content" id="form_content" enctype="multipart/form-data"
 		label="MOUSE CMS | Объект | Управление блоками | $crdObject.hash.[$form:id].name ">
 		<tabs>
 		<tab id="section-1" name="Блоки объекта $crdObject.hash.[$form:id].name">
-			^crdBlockToObject.table.append{9	none	1	0} 
+			^crdBlockToObject.table.append{9	1	1	0} 
 			<field type="none" label="$crdObject.hash.[$form:id].name" description="Блоки объекта">
 				<br/><br/><br/>
 				Mode: &nbsp^; &nbsp^; &nbsp^; &nbsp^; Sort_order: &nbsp^; &nbsp^; &nbsp^; &nbsp^; Name:<br/>
@@ -177,7 +240,7 @@ ID	id
 			<field type="text" name="name" label="Имя" description=" Имя объекта " class="medium">$hAction.name</field>
 			<field type="text" name="document_name" label="Название" description=" Имя документа " class="long"  >$hAction.document_name</field>
 			<field type="text" name="window_name" label="Окно" description=" Оконное имя: " class="long">$hAction.window_name</field>
-			<field type="text" name="path" label="Путь" description="Имя файла/каталога (example, example.html)" class="medium">$hAction.path</field>
+			<field type="text" name="path" label="Путь" description="Имя каталога" class="medium">$hAction.path</field>
 			<field type="text" name="cache_time" label="Кэш" description="Время кэширования (сек)" class="short">$crdObject.hash.[$form:id].cache_time</field>
 			<field type="text" name="sort_order" label="Порядок" description="Порядок сортировки" class="short">$crdObject.hash.[$form:id].sort_order</field>
 			<field type="checkbox" name="is_published"  label="Опубликовать" description="">$hAction.is_published</field>
@@ -242,6 +305,7 @@ ID	id
 # вывод списка объектов
 # -----------------------------------------------------------------------------------------------
 $crdObject[^mLoader[$.name[object]$.s(20)]]
+$crdLang[^mLoader[$.name[lang]$.t(1)]]
 $crdSite[^mLoader[$.name[site]$.h(1)]]
 $crdDataProcess[^mLoader[$.name[data_process]$.h(1)]]
 $crdTemplate[^mLoader[$.name[template]$.h(1)]]
@@ -279,11 +343,16 @@ ID	id
 ^form_engine[
 	^$.where[object_id]
 	^$.action[delete]
-	^$.tables[^$.main[object]^$.connect[block_to_object]]
+	^$.tables[^$.main[object]^$.connect[block_to_object]^$.textconnect[object_text]]
 	^$.process[object]
 ]
 ^crdObject.scroller[$.uri[$SYSTEM.path]]
 </atable>
+<form action="$SYSTEM.path" name="lang" method="post">
+<field type="select" name="lang_id" label="Язык" class="short" onChange="Go('$SYSTEM.path?type=object&amp^;lang='+this.value,'#container')">
+	^crdLang.list[$.attr[$.id[abbr]$.name[abbr]]$.added[select="$MAIN:hUserInfo.lang"]]
+</field>
+</form>
 }
 #end @objects[][hAction;c]
 
@@ -806,6 +875,80 @@ ID	id
 
 
 #################################################################################################
+# Обслуживание системы
+@config[]
+<form method="post" action="$SYSTEM.path" name="form_content" id="form_content" enctype="multipart/form-data"
+	label="MOUSE CMS | Обслуживание системы" >
+	<tabs>
+		<tab id="section-1" name="Логи посещений">
+		^logs[$MAIN:LogDir/static]
+		^if(def $form:path){
+			$fFile[^file::load[text;$form:path]]
+			$sLog[$fFile.text]
+$tReplace[^table::create{from	to
+^taint[^#0A]	<br/>
+}]
+			<br/><br/><b>$form:path</b><br/>
+			<pre>^sLog.replace[$tReplace]]</pre>
+		}
+		</tab>
+	</tabs>
+</form>
+#end @config[]
+@logs[sPath][tList]
+<ul>
+$tList[^file:list[$sPath]]
+^tList.menu{
+	^if(-f "$sPath/$tList.name" && (^tList.name.pos[lock] < 0)){
+		<li><a href="#" onClick="Go('$SYSTEM.path?type=config&amp^;path=$sPath/$tList.name','#container')">$tList.name</a></li>
+	}
+	^if(-d "$sPath/$tList.name" && (($tList.name ne hosts) && ($tList.name ne hits))){
+		<li>$sPath/$tList.name</li>
+		^logs[$sPath/$tList.name]
+	}
+}
+</ul>
+#end logs[]
+
+
+
+#################################################################################################
+# Загрузка файлов
+@files[]
+$crdObject[^mLoader[$.name[object]]]
+<form method="post" action="$crdObject.hash.10.full_path?type=files" name="form_content" id="form_content" enctype="multipart/form-data"
+	label="MOUSE CMS | Обслуживание системы --- $form:width" >
+	<tabs>
+		<tab id="section-1" name="Загрузка изображений">
+		<field type="select" name="object_id" label="Объект" description=" Владелец изображения " class="medium">
+			^crdObject.list[]
+		</field>
+		<field type="text" name="name" label="Имя" description=" Имя изображения " class="medium"></field>
+		<field type="file" name="image" label="Картинка" description=" Выберите файл " class="long"></field>
+		<field type="text" name="width" label="Ширина" description=" Введите ширину в px " class="short">200</field>
+		<field type="text" name="height" label="Высота" description=" Введите высоту в px " class="short"></field>
+		<field type="select" name="format" label="Формат" description=" Изменение формата изображения " class="medium">
+			<option id="none" name="не менять" />
+			<option id="jpg" name="jpg" />
+			<option id="gif" name="gif" />
+			<option id="png" name="png" />
+		</field>
+		<field type="checkbox" name="meta" label="Удалить данные" description=" Удаление мета данных изображения "></field>
+^form_engine[
+	^$.process[images]
+	^$.sql(0)
+]
+		<br/><field type="submit" name="submit" value="Сохранить"></field>
+		</tab>
+		<tab id="section-2" name="Загрузка файлов">
+		</tab>
+	</tabs>
+</form>
+#end files[]
+
+
+
+#################################################################################################
 # Определение действия
 @mGetAction[sTemp]
 ^switch[$sTemp]{
@@ -827,7 +970,17 @@ $result[
 		$.h($hParams.h)
 		$.t($hParams.t)
 		$.s($hParams.s)
+		$.where[$hParams.where]
 		^switch[$hParams.name]{
+#			языки
+			^case[lang]{
+				$.names[
+					$.[lang.lang_id][id]
+					$.[lang.sort_order][]
+					$.[lang.abbr][]
+					$.[lang.charset][]
+				]
+			}
 #			сайты
 			^case[site]{
 				$.names[
@@ -842,6 +995,8 @@ $result[
 			}
 #			объекты
 			^case[object]{
+				$.leftjoin[object_text]
+				$.on[object.object_id = object_text.object_id AND object_text.lang_id = $SYSTEM.lang]
 				$.names[
 					$.[object.object_id][id]
 					$.[object.sort_order][]
@@ -863,10 +1018,10 @@ $result[
 					$.[object.path][]
 					$.[object.full_path][]
 					$.[object.url][]
-					$.[object.name][]
-					$.[object.document_name][]
-					$.[object.window_name][]
-					$.[object.description][]
+					$.[object_text.name][]
+					$.[object_text.document_name][]
+					$.[object_text.window_name][]
+					$.[object_text.description][]
 				]
 			}
 #			типы объектов

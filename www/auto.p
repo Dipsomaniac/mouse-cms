@@ -1,16 +1,6 @@
 ####################################################################################################
 # автоматически выполняемая часть 
-@auto[][cTemp;sTemp]
-# -----------------------------------------------------------------------------------------------
-# устанавливаем заголовки ответа
-$response:cache-control[no-store, no-cache]
-$response:pragma[no-cache]
-$request:charset[UTF-8]
-$response:charset[windows-1251] 
-$response:content-type[
-	$.value[text/html]
-   $.charset[$response:charset]
-]
+@auto[][cTemp;sTemp;result]
 # -----------------------------------------------------------------------------------------------
 # получаем информацию о пользователе, сразу потому что маус ведет статистику и по кэшированным страницам
 # присвоить это SYSTEM в поле engine и удалить
@@ -25,6 +15,13 @@ $hUserInfo[
 	$.Referer[$env:HTTP_REFERER]
 	$.Query[$env:QUERY_STRING]
 	$.Request[$request:uri]
+# обработка многоязычности
+	^if(def $form:lang){
+		$cookie:lang[$form:lang]
+		$.lang[$form:lang]
+	}{
+		$.lang[$cookie:lang]
+	}
 ]
 ^hUserInfo.UserAgent.match[mac][i]{$hUserInfo.Os[mac]}
 ^hUserInfo.UserAgent.match[win][i]{$hUserInfo.Os[win]}
@@ -51,15 +48,15 @@ $CLASS_PATH[^table::create{path
 /../data/processes/shared}]
 # пути к директориям
 # основной каталог
-$CfgDir[/../data/]
+$CfgDir[/../data]
 # каталог с кэшем сайта
-$CacheDir[${CfgDir}cache/]
+$CacheDir[$CfgDir/cache]
 # папка где живут шаблоны 
-$TemplateDir[${CfgDir}templates/]
+$TemplateDir[$CfgDir/templates]
 # папка где живут обработчики блоков и обьектов
-$ProcessDir[${CfgDir}processes/shared/blocks/]
+$ProcessDir[$CfgDir/processes/shared/blocks]
 # папка где живут логи
-$LogDir[${CfgDir}log/]
+$LogDir[$CfgDir/log]
 # -----------------------------------------------------------------------------------------------
 # отладка
 ^if(^hUserInfo.Query.pos[mode=nocache] >= 0){$NoCache(1)}
@@ -70,12 +67,9 @@ $LogDir[${CfgDir}log/]
 # подключение основных классов
 ^use[lib.p]
 ^use[curd.p]
-# =debug исправить календарь и убрать
-^use[dtf.p]
 ^use[mysql.p]
 ^use[auth.p]
 ^use[engine.p]
-# ^use[debug.p]	= debug
 # -----------------------------------------------------------------------------------------------
 # прочее для совместимости =debug
 $dtNow[^date::now[]]
@@ -86,7 +80,7 @@ $sPath[$sPath.0]
 # создание основных объектов и инициализация engine
 $objSQL[^mysql::init[$SQL.connect-string;
 	$.is_debug($Debug)
-	$.cache_dir[${CacheDir}sql]
+	$.cache_dir[$CacheDir/sql]
 	$.cache_interval(1/24)
 ]]
 ^objSQL.server{
@@ -107,15 +101,15 @@ $result[]
 
 ####################################################################################################
 # выполнение кода движка по дефолту
-@main[][_hCacheOptions;iIsExecuted]
+@main[][hCacheOptions;iIsExecuted]
 #	=debug
 #	обработка запроса + кэширование
-$_hCacheOptions[^mGetCacheOptions[]]
-^cache[${CacheDir}$_hCacheOptions.key]($_hCacheOptions.time){
+$hCacheOptions[^mGetCacheOptions[]]
+^cache[$CacheDir/$hCacheOptions.key]($hCacheOptions.time){
 	$iIsExecuted(1) 
-	^trim[^oEngine.execute[]]
+	^oEngine.execute[]
 }
-^if($_hCacheOptions.time){^_comments[$_hCacheOptions.key;$_hCacheOptions.time;$iIsExecuted]}
+^if($hCacheOptions.time){^_comments[$hCacheOptions.key;$hCacheOptions.time;$iIsExecuted]}
 ^if($Debug){$hUsageAfter[ $.rusage[$status:rusage] $.memory[$status:memory]]}
 #end @main[]
 
@@ -143,38 +137,38 @@ $sLine[$sPrefix   $sMessage
 
 ####################################################################################################
 # получение ключа кэширования
-@mGetCacheOptions[][_tCacheCfg;_tCacheTime;_sPath;_sId]
+@mGetCacheOptions[][tCacheCfg;tCacheTime;sCachePath;sId;result]
 $result[
 	$.time(0)
 	$.key[dummy]
 ]
-#	|| ^env:REMOTE_ADDR.match[^^127\.0\.0] || ^env:REMOTE_ADDR.match[^^192\.168][]
-^if( $env:REQUEST_METHOD eq "POST" || $NoCache ){
 # если идет отладка или POST формы ничего не делаем
-}{
-	$result[ 
+^if( $env:REQUEST_METHOD eq "POST" || $NoCache ){}{
+	$result[
 		^try{ 
 #			если есть кэш файл загружаем и работаем
-			$_tCacheCfg[^table::load[${CacheDir}_cache.cfg]]
-			$_sCacheTime(0)
-			^_tCacheCfg.menu{^if($_tCacheCfg.full_path eq $sPath){$_sId[$_tCacheCfg.id] $_sCacheTime($_tCacheCfg.cache_time) }}
-			$_sPath[^math:md5[$request:uri]]
-			$.time[$_sCacheTime]
-			$.key[${_sId}_${_sPath}_${hUserInfo.Os}_${hUserInfo.Browser}.cache]
+			$tCacheCfg[^table::load[$CacheDir/_cache.cfg]]
+			$sCacheTime(0)
+			^tCacheCfg.menu{^if($tCacheCfg.full_path eq $sPath){$sId[$tCacheCfg.id] $sCacheTime($tCacheCfg.cache_time) }}
+			$sCachePath[^math:md5[$request:uri]]
+			$.time[$sCacheTime]
+			$.key[${hUserInfo.lang}_${sId}_${sCachePath}_${hUserInfo.Os}_${hUserInfo.Browser}.cache]
 		}{
 #			если его нету говорим движку что его надо создать
 			$exception.handled(1)
 			$bCacheFile(1)
 			$.time(0)
 			$.key[dummy]
-		}]
+		}
+	]
 }
+# ^stop[$result.key]
 #end @mGetCacheOptions[]
 
 
 
 ####################################################################################################
-@_comments[sKey;iTime;iIsExecuted][sText]
+@_comments[sKey;iTime;iIsExecuted][sText;result]
 $cTemp{}
 ^if($iIsExecuted){
 	^if(-f "$sCacheDir/$sKey"){
@@ -192,7 +186,12 @@ $result[<!-- ^dtNow.sql-string[] | $sText | Key: $sKey, Time: $iTime secs -->]
 
 ####################################################################################################
 # метод собирает статистику по пользователям =debug решил сделать здесь
-@mStatistic[][tHits;tHosts;cCounter;sFile;fFile;sCount;sStr;tLog]
+@mStatistic[][hName;tHits;tHosts;cCounter;sFile;fFile;sCount;sStr;tLog]
+$hName[
+	$.main[$LogDir/static/$dtNow.year/$dtNow.month/^dtNow.day.format[%02d].cfg]
+	$.hits[$LogDir/static/$dtNow.year/$dtNow.month/hits/^dtNow.day.format[%02d].cfg]
+	$.hosts[$LogDir/static/$dtNow.year/$dtNow.month/hosts/^dtNow.day.format[%02d].cfg]
+]
 $cCounter{
 	^file:lock[${sFile}.lock]{
 	$fFile[^file::load[text;$sFile]]
@@ -201,25 +200,25 @@ $cCounter{
 	}
 }
 ^try{
-	$tHits[^file::load[text;${LogDir}statistic/hits/^dtNow.day.format[%02d].cfg]]
-	$tHosts[^file::load[text;${LogDir}statistic/hosts/^dtNow.day.format[%02d].cfg]]
-	$sFile[${LogDir}statistic/hits/^dtNow.day.format[%02d].cfg]
+	$tHits[^file::load[text;$hName.hits]]
+	$tHosts[^file::load[text;$hName.hosts]]
+	$sFile[$hName.hits]
 	$cCounter
-	$tLog[^table::load[nameless;${LogDir}statistic/^dtNow.day.format[%02d].cfg]]
+	$tLog[^table::load[nameless;$hName.main]]
 	^if(^tLog.locate($tLog.2 eq $hUserInfo.Ip && $tLog.3 eq $hUserInfo.Proxy)){}{
-		$sFile[${LogDir}statistic/hosts/^dtNow.day.format[%02d].cfg]
+		$sFile[$hName.hosts]
 		$cCounter
 	}
 }{
 	$sCount[1]
-	$sFile[${LogDir}statistic/hits/^dtNow.day.format[%02d].cfg]
+	$sFile[$hName.hits]
 	^sCount.save[$sFile]
-	$sFile[${LogDir}statistic/hosts/^dtNow.day.format[%02d].cfg]
+	$sFile[$hName.hosts]
 	^sCount.save[$sFile]
 	$exception.handled(1)
 }
 $sStr[^dtNow.sql-string[]	$sPath	$hUserInfo.Ip	$hUserInfo.Proxy	$hUserInfo.Os	$hUserInfo.Browser $hUserInfo.Browser_fullver	$hUserInfo.Referer^#0A]
-^file:lock[${LogDir}statistic/^dtNow.day.format[%02d].cfg.lock]{^sStr.save[append;${LogDir}statistic/^dtNow.day.format[%02d].cfg]}
+^file:lock[${hName.main}.lock]{^sStr.save[append;$hName.main]}
 #end @mStatistic[]
 
 
@@ -227,6 +226,8 @@ $sStr[^dtNow.sql-string[]	$sPath	$hUserInfo.Ip	$hUserInfo.Proxy	$hUserInfo.Os	$h
 ####################################################################################################
 # =debug отладка просто чтобы ^trow долго не писать - ^stop[bla bla bla]
 @stop[str]
+^use[debug.p]
+^debug:show[$str;/debug.html]
 ^throw[stop;stop: $str]
 #end @stop[str]
 
@@ -235,9 +236,10 @@ $sStr[^dtNow.sql-string[]	$sPath	$hUserInfo.Ip	$hUserInfo.Proxy	$hUserInfo.Os	$h
 ####################################################################################################
 # раз в два часа генерирует уникальный ключ системы и очищает кэш
 # с параметром возращает строку закодированную с ключом
-@security[sStr]
+@security[sStr][result]
 ^if(def $sStr){
 	$result[^math:md5[${sStr}$MOUSE_KEY]]
 }{
 	$MOUSE_KEY[^cache[${CfgDir}security.key](7200){^math:md5[^dtNow.sql-string[]^math:random(1000)^dir_delete[^CacheDir.trim[end;/];$.is_recursive(1)]]}]
+	$result[]
 }

@@ -51,9 +51,6 @@
 					<xsl:when test="@type='text'">
 						<input type="text" name="{@name}" value="{.}"  class="input-text-{@class}" />
 					</xsl:when>
-					<xsl:when test="@type='file'">
-						<input type="file" name="{@name}" class="input-text-{@class}" />
-					</xsl:when>
 					<xsl:when test="@type='checkbox'">
 						<xsl:if test=". &gt; '0'">
 							<input type="checkbox" name="{@name}" value="0" checked="{.}" />

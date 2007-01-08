@@ -9,31 +9,36 @@ engine
 ####################################################################################################
 # Конструктор инициализация и выполнение engine
 @init[][siteID;siteLangID]
-# загрузка сайтов
+# языки и сайты
+$crdLang[^mLoader[$.name[lang]]]
 $crdSite[^mLoader[$.name[site]]]
 # получение ID сайта и ID языка сайта =debug а если такого сайта нету?
 ^if(^crdSite.table.locate[domain;$env:SERVER_NAME]){$siteID($crdSite.table.id) $siteLangID($crdSite.table.lang_id)}
 $SYSTEM[
 	$.siteUrl[$env:SERVER_NAME]
-#	полный путь запрошенного объекта (/admin/index.html)
 	$.fullPath[$request:uri]
-#	$.path[$env:PATH_INFO]
-#	путь до объекта без параметров
 	$.path[$MAIN:sPath]
 	$.siteID(^siteID.int(0))
-#	=debug
-	$.siteLangID(^siteLangID.int(0))
-#	= debug поправить во всех остальных местах (на это значение)
+	$.lang(^if(^crdLang.table.locate[abbr;$MAIN:hUserInfo.lang]){$crdLang.table.id}{$crdSite.hash.[^siteID.int(0)].lang_id})
 	$.date[^MAIN:dtNow.sql-string[]]
 ]
-# ВСЕ ОПУБЛИКОВАННЫЕ объекты текущего сайта
+# ВСЕ ОПУБЛИКОВАННЫЕ объекты текущего сайта с ПОЛЯМИ ТЕКУЩЕГО языка
 $crdObject[^mLoader[
 	$.name[object]
-	$.where[object.site_id ='$SYSTEM.siteID' AND object.is_published ='1']
+	$.where[site_id = $SYSTEM.siteID AND is_published = 1 ]
 ]]
 # обработчики и шаблоны получаем в любом случае
 $crdDataProcess[^mLoader[$.name[data_process]$.h(1)]]
 $crdTemplate[^mLoader[$.name[template]$.h(1)]]
+# устанавливаем заголовки ответа =debug разобраться с кешированием
+$response:cache-control[no-store, no-cache]
+$response:pragma[no-cache]
+$request:charset[UTF-8]
+$response:charset[$crdLang.hash.[$SYSTEM.lang].charset] 
+$response:content-type[
+	$.value[text/html]
+   $.charset[$response:charset]
+]
 #end @init[]
 
 
@@ -50,7 +55,7 @@ $crdTemplate[^mLoader[$.name[template]$.h(1)]]
 		$exception.handled(1)
 		$result[
 			^if(^crdObject.table.locate[id;$crdSite.hash.[$SYSTEM.siteID].e404_object_id]){
-    				^location[$crdObject.table.full_path?error=$exception.type&url=$SYSTEM.path;$.is_external(1)]
+    			^location[$crdObject.table.full_path?error=$exception.type&url=$SYSTEM.path;$.is_external(1)]
 			}{
 				^throw[$exception.type;$env:SERVER_NAME;Страница ошибок не найдена ($exception.comment)]
 			}
@@ -74,16 +79,17 @@ $crdTemplate[^mLoader[$.name[template]$.h(1)]]
 # если зажжен флажок отсутствия кэш файла - создаем его
 ^if(^MAIN:bCacheFile.int(0)){^createCacheFile[]}
 # проверка существования запрошенного объекта, существует - создаем, иначе отправка на страницу ошибок
-^crdObject.table.menu{^if($crdObject.table.full_path eq $SYSTEM.path){$hObjectNow[$crdObject.table.fields]}}
-^if(!def $hObjectNow){^throw[cms.404;$request:uri;Страница не найдена]}
+^if(^crdObject.table.locate[full_path;$SYSTEM.path]){
+	$hObjectNow[$crdObject.table.fields]
+}{
+	^throw[cms.404;$request:uri;Страница не найдена]
+}
 ^if(def $hObjectNow.url){
 #	если определено поле $hObjectNow.url - location по адресу 
 	$result[^location[^taint[as-is][$hObjectNow.url]]]
 }{
 # 	ветвь текущего объекта
 	$tObjectThread[^crdObject.table.select($crdObject.table.thread_id == $hObjectNow.thread_id)]
-#	хэш объектов по parent_id (для наследования навигации)
-	$hObjectTree[^crdObject.table.hash[parent_id][$.distinct[tables]]]
 # права объекта по умолчанию
 	$iRights($hObjectNow.rights)
 	^if($MAIN:objAuth.is_logon){
@@ -110,7 +116,7 @@ $crdTemplate[^mLoader[$.name[template]$.h(1)]]
 @createCacheFile[][tCache]
 $tCache[^table::create{id	full_path	cache_time^#0A
 ^crdObject.table.menu{$crdObject.table.id	$crdObject.table.full_path	$crdObject.table.cache_time^#0A}}]
-^tCache.save[${MAIN:CacheDir}_cache.cfg]
+^tCache.save[$MAIN:CacheDir/_cache.cfg]
 #end @createCacheFile[]
 
 
@@ -129,7 +135,7 @@ $sStylesheet[^getStylesheet[]]
 # 	проверка строки запроса и наличия шаблона
 	^if(^MAIN:hUserInfo.Query.pos[mode=xml] == -1 && def $sStylesheet){
 #		получение XSLT шаблона =debug вывод на печать реализовать как то по другому чтоли
-		^if($form:mode eq print){$sStylesheet[${MAIN:TemplateDir}print.xsl]}
+		^if($form:mode eq print){$sStylesheet[$MAIN:TemplateDir/print.xsl]}
 #		Очистка памяти
 		^clearMemory[]
 #		XSLT трансформация
@@ -148,7 +154,7 @@ $result[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
 	^getEntitySet[]
 ]>
 # =debug пространство имен system переименовать в mouse добавить поддержку многоязычности
-<document xmlns:system="http://klen.zoxt.net/doc/" lang="ru" server="$SYSTEM.siteUrl" template="^getStylesheet[]">
+<document xmlns:mouse="http://klen.zoxt.net/doc/" lang="$crdLang.hash.[$SYSTEM.siteLangID].abbr" server="$SYSTEM.siteUrl" template="^getStylesheet[]" charset="$crdLang.hash.[$SYSTEM.siteLangID].charset">
   ^getDocumentBodyDefault[]
 </document>
 }]
@@ -159,13 +165,12 @@ $result[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
 ####################################################################################################
 # очистка памяти перед результирующей трансформацией =debug
 @clearMemory[]
-$SYSTEM[]          $crdSite[]         $hObjectNow[]
-$crdObject[]       $hObjectTree[]     $crdTemplate[]
-$crdProcess[]      $crdBlock[]        $crdBlockToObject[]
-$crdTemplate[]     $crdObjectType[]   $crdDataProcess[] 
-$crdAuser[]        $crdDataType[]     $crdDataProcessType[]
-$crdAuserToAuser[] $crdAcl[]          $crdArticle[]
-$crdArticleType[]
+$SYSTEM[]          $crdSite[]            $hObjectNow[]
+$crdObject[]       $crdTemplate[]        $crdProcess[]
+$crdBlock[]        $crdBlockToObject[]   $crdTemplate[]
+$crdObjectType[]   $crdDataProcess[]     $crdAuser[]
+$crdDataType[]     $crdDataProcessType[] $crdAuserToAuser[]
+$crdAcl[]          $crdArticle[]         $crdArticleType[]
 # очистка памяти
 ^memory:compact[]
 #end @clearMemory[]
@@ -174,9 +179,9 @@ $crdArticleType[]
 
 ####################################################################################################
 #создание XSLT обработчика
-@getStylesheet[][sFileName]
+@getStylesheet[][sFileName;result]
 # имя файла шаблона
-$sFileName[${MAIN:TemplateDir}$crdTemplate.hash.[$hObjectNow.template_id].filename]
+$sFileName[$MAIN:TemplateDir/$crdTemplate.hash.[$hObjectNow.template_id].filename]
 ^if(-f $sFileName){$result[$sFileName]}{$result[]}
 #end @getStylesheet[][sFileName]
 
@@ -188,11 +193,7 @@ $sFileName[${MAIN:TemplateDir}$crdTemplate.hash.[$hObjectNow.template_id].filena
 $result[
 <navigation>
 #	создаем дерево навигации
-	^ObjectByParent[$hObjectTree;0;
-		$.tag[branche]
-		$.attributes[^table::create{name^#OAid^#OAname^#OAdescription^#OAis_show_in_menu^#OAis_show_on_sitemap^#OAfull_path}]
-		$.id($hObjectNow.id)
-		]
+^crdObject.tree[$.id($hObjectNow.id)$.attributes[^table::create{name^#OAid^#OAname^#OAdescription^#OAis_show_in_menu^#OAis_show_on_sitemap^#OAfull_path}]]
 </navigation>
 <body>
 #	сборка блоков
@@ -280,7 +281,7 @@ $result[
 #	 	передача управления обработчику блока (если есть)
 		^if(^hBlockFields.data_process_id.int(0)){$sBlockData[^executeBlock[$hBlockFields.data_process_id;$hBlockParams;$sBlockData;$hBlockFields]]}
 #	 	замена спец конструкций в теле блока
-		^if(def $SYSTEM.postProcess){$hBlockParams.PostProcess($SYSTEM.postProcess)}
+		^if(def $SYSTEM.postProcess){$hBlockParams.postProcess($SYSTEM.postProcess)}
 		$sBlockData[^parseBlockPostProcess[$hBlockParams;$sBlockData]]
 #	 	и собираем фрагмент блока
 	<block 
@@ -288,11 +289,12 @@ $result[
 			name="$hBlockFields.name" 
 			mode="$hBlockFields.mode" 
 			style="^hBlockParams.style.int(1)"
-			^if(def ^hBlockFields.data_process_id.int(0)){process="$hBlockFields.data_process_id"}
+			postProcess="^hBlockParams.postProcess.int(1)"
+			^if(^hBlockFields.data_process_id.int(0)){process="$hBlockFields.data_process_id"}
 		>$sBlockData</block>
 	}
 	^if(^hBlockParams.cache.int(0)){
-		$hBlockParams.cache_file[${MAIN:CacheDir}block_code_^math:md5[${request:uri}${hBlockFields.id}].cache]
+		$hBlockParams.cache_file[$MAIN:CacheDir/block_code_^math:md5[${request:uri}${hBlockFields.id}].cache]
 		<!-- $SYSTEM.date Begin Block Cache file: $hBlockParams.cache_file, cache time: $hBlockParams.cache secs -->
 		^cache[$hBlockParams.cache_file]($hBlockParams.cache){$cBlock}
 		<!-- $SYSTEM.date Ended Block Cache file: $hBlockParams.cache_file, cache time: $hBlockParams.cache secs -->
@@ -309,18 +311,18 @@ $result[
 @parseBlockPostProcess[hBlockParams;sBlockData]
 # =debug - не нравится мне это все 
 # в параметрах блока можно запретить постпроцесс блока 
-^if(^hBlockParams.PostProcess.int(1)){
-
+^if(^hBlockParams.postProcess.int(1)){
 #	здесь процесятся виртуальные объекты             		
-#	{$system/name/key/field}
-	$sBlockData[^sBlockData.match[\{\^$system/([^^/]+)/([^^/]+)/([^^\}]+)\}][gi]{^getSystemObject[$match.1;$match.2;$match.3]}]
-#	<system:value name="" key="" field=""/>
-	$sBlockData[^sBlockData.match[<system:value name="([^^"]+)" key="([^^"]+)" field="([^^"]+)"/>][gi]{^getSystemObject[$match.1;$match.2;$match.3]}]
+#	{$mouse/name/key/field}
+	$sBlockData[^sBlockData.match[\{\^$mouse/([^^/]+)/([^^/]+)/([^^\}]+)\}][gi]{^getSystemObject[$match.1;$match.2;$match.3]}]
+#	<mouse:value name="" key="" field=""/>
+	$sBlockData[^sBlockData.match[<mouse:value name="([^^"]+)" key="([^^"]+)" field="([^^"]+)"/>][gi]{^getSystemObject[$match.1;$match.2;$match.3]}]
 
-#	здесь процесятся виртуальные методы              <system:method name="">param</system:method>		
-	$sBlockData[^sBlockData.match[<system:method name="([^^"]+)">([^^<]*)</system:method>][gi]{^getSystemMethod[$match.1;$match.2]}]
+#	> 
+#	здесь процесятся виртуальные методы              <mouse:method name="">param</system:method>		
+	$sBlockData[^sBlockData.match[<mouse:method name="([^^"]+)">([^^<]*)</mouse:method>][gi]{^getSystemMethod[$match.1;$match.2]}]
 
-#	<mouse name="rules"></mouse>
+#	>
 }
 $result[$sBlockData]
 #end @parseBlockPostProcess[]
@@ -328,35 +330,11 @@ $result[$sBlockData]
 
 
 ####################################################################################################
-# обработка параметров =debug не проверено на курдах
-@getSystemParams[sParams][_hParams]
-$_tDub[^sParams.split[^]]]
-^_tDub.append{^taint[^#0A]}
-$result[^getParams[]]
-#end @getSystemParams[sParams]
-####################################################################################################
-# обработка параметров =debug не проверено на курдах
-@getParams[name;value]
-$result[
-	^hash::create[
-		^if(def $name && def $value){$.[$name][$value]}
-		^while(def ^_tDub.piece.trim[start; 	^taint[^#0A]]){
-			$_tTemp[^_tDub.piece.split[^[;h]]
-			^_tDub.offset(1)
-			$.[^_tTemp.0.trim[start; 	^taint[^#0A]]][^if(def $_tTemp.2){^getParams[^_tTemp.1.trim[start; 	^taint[^#0A]];$_tTemp.2]^_tDub.offset(1)}{$_tTemp.1}]
-		}
-	]
-]
-#end @getParams[name;value]
-
-
-
-####################################################################################################
 # виртуальная фабрика методов =debug не проверено на курдах
-@getSystemMethod[sName;sParams][_jMethod;_hParams]
+@getSystemMethod[sName;sParams][result;jMethod]
 $result[
-	$_jMethod[$$sName] 
-	^_jMethod[^getSystemParams[$sParams]]
+	$jMethod[$$sName] 
+	^jMethod[^getStrToHash[$sParams]]
 ]
 #end @getSystemParser[sName;sParams]
 
@@ -364,12 +342,12 @@ $result[
 
 ####################################################################################################
 # виртуальная фабрика объектов =debug не проверено на курдах
-@getSystemObject[sName;sKey;sField][_sField]
+@getSystemObject[sName;sKey;sField][result;_sField]
 $_sField[$sKey]
 	^switch[$sName]{
 		^case[parser]{$result[^getParser[$sKey;$sField]]}
 		^case[auth]{$result[$MAIN:objAuth.[$sKey].[$sField]]}
-		^case[DEFAULT]{$result[^if(^sKey.int(0)){$[$sName].[$sKey].[$sField]}{$[$sName].[$form:[$_sField]].[$sField]}]}
+		^case[DEFAULT]{$result[^if(^sKey.int(0)){$[$sName].hash.$sKey.$sField}{$[$sName].hash.$form:[$_sField].$sField}]}
 }
 #end @getSystemObject[sName;sKey;sField]
 
@@ -377,27 +355,25 @@ $_sField[$sKey]
 
 ####################################################################################################
 # получение системных значений =debug не проверено на курдах
-@getParser[sName;sField]
+@getParser[sName;sField][result]
 $result[^switch[$sName]{
 	^case[request]{$request:[$sField]}
 	^case[response]{$response:[$sField]}
-	^case[form]{^if($sField eq 'all'){^form:fields.foreach[key;value]{$key=$value&}}{$form:[$sField]}}
+	^case[form]{^if($sField eq 'all'){^form:fields.foreach[key;value]{$key=$value&amp^;}}{$form:[$sField]}}
 	^case[env]{$env:[$sField]}
-	^case[date]{^MAIN:dtNow.sql-string[]}
+	^case[date]{$SYSTEM.date}
 	^case[DEFAULT]{}}]
 #end @getParser[sName;sField]
 
 
 
 ####################################################################################################
-# вывод дерева объектов =debug не проверено на курдах
-@tree[hParam]
-$result[^ObjectByParent[$[$hParam.hash_name];$hParam.thread_id;
-		$.tag[branche]
-		$.attributes[^table::create{name^#OAid^#OAname^#OAdescription^#OAis_show_in_menu^#OAis_show_on_sitemap^#OAfull_path}]
-		$.id($hObjectNow.id)
+# вывод дерева объектов
+@tree[hParam][result;jMethod]
+$result[
+$jMethod[$[$hParam.name]]
+^jMethod.tree[$.attributes[^table::create{name^#OAid^#OAname^#OAdescription^#OAis_show_in_menu^#OAis_show_on_sitemap^#OAfull_path}]]
 ]
-]]
 #end @Tree[hParam]
 
 
@@ -406,29 +382,10 @@ $result[^ObjectByParent[$[$hParam.hash_name];$hParam.thread_id;
 # вывод полей объектов =debug не проверено на курдах
 @list[hParam][_jMethod]
 $result[
-^try{
-  $_jMethod[$$hParam.name]
-  ^_jMethod.menu{<$hParam.tag id="$_jMethod.id" value="$_jMethod.id"
-	^if(def $hParam.mode){mode="$_jMethod.[$hParam.mode]"}
-  	$hParam.added
-	>$_jMethod.name</$hParam.tag> }
-}{ $exception.handled(1)}
+$jMethod[$[$hParam.name]]
+^jMethod.list[$hParam.params]
 ]
 #end @list[hParam]
-
-
-
-####################################################################################################
-# получение и создание объека =debug не проверено на курдах
-@sql[hParam][_jMethod]
-^try{
-# 	получаем метод для создания объекта
-	$_jMethod[$[${hParam.method}]]
-# 	создаем объект
-	$[${hParam.name}][^_jMethod[$.where[${hParam.where}]]]
-}{$exception.handled(1)}
-$result[]
-#end @sql[hParam]
 
 
 
@@ -494,7 +451,7 @@ $result[^executeBlock[$hParam.id;$hParam.param;$hParam.body;$hParam.field]]
 	$dataProcessMain[process_${dataProcessID}_main]
 	^try{
 #		полный путь до обработчика
-		$dataProcessFileName[${MAIN:ProcessDir}$crdDataProcess.hash.[$dataProcessID].filename]
+		$dataProcessFileName[$MAIN:ProcessDir/$crdDataProcess.hash.[$dataProcessID].filename]
 		$dataProcessFile[^file::load[text;$dataProcessFileName]]
 #		тело обработчика
 		$dataProcessBody[^taint[as-is][$dataProcessFile.text]]
@@ -518,62 +475,7 @@ $result[^executeBlock[$hParam.id;$hParam.param;$hParam.body;$hParam.field]]
 #	никогда не приведет к повторной компиляции обработчика
 	$crdDataProcess.hash.[$dataProcessID].processBodyLoaded(1)
 }
-
-
-
-####################################################################################################
-# А дальше будут деревья чтоб их разорвало
-@ObjectByParent[lparams;parent_id;params][tblLvlObj;_hParams]
-$_hParams[^hash::create[$params]]
-# =debug - уровень подсчитывается но нигде не используется
-^if($_hParams.level){^_hParams.level.inc(1)}{$_hParams.level(1)}
-# есть ли дети у родителя?
-^if($lparams.[$parent_id]){
-# получаем таблицу детей родителя
-  $tblLvlObj[$lparams.[$parent_id]]
-#   и смотрим что у нас у каждого ребенка
-    ^tblLvlObj.menu{
-		^printItem[$tblLvlObj.fields;^if($lparams.[$tblLvlObj.id]){^ObjectByParent[$lparams;$tblLvlObj.id;$_hParams]};$_hParams]
-    }
-    ^_hParams.level.dec(1)
-}
-
-
-
-####################################################################################################
-# вывод ветви дерева xml
-@printItem[itemHash;childItems;lparams]
-$result[
-<$lparams.tag 
-	^lparams.attributes.menu{
-		${lparams.attributes.name}="$itemHash.[$lparams.attributes.name]"
-	}
-	^if($itemHash.id == $lparams.id){ in="1" 
-			^if(def $form:id){
-				hit="0"
-			}{
-				hit="1"
-			}
-		}
-		level="$lparams.level"
-	^if(def $lparams.added){$lparams.added}
-	>$childItems</$lparams.tag>]
-#end @printItem[itemHash;childItems;lparams]
-
-
-
-####################################################################################################
-# Удаление файлов кэша начинающихся с заданного имени
-@DeleteFiles[sDir;sName]
-^try{
-#	получаем и пытаемся удалить файл
-	$_tList[^file:list[$sDir;${sName}_*[^^\.]*\.cache^$]] 
-	^_tList.menu{^file:delete[${sDir}$_tList.name]} 
-}{
-#	если что то не так.. а да и фиг с ним!
-	$exception.handled(1)
-}
-#end @DeleteFiles[sDir;sName]
+#end @prepareProcesess[dataProcessID][dataProcessMain;dataProcessFileName;dataProcessFile;dataProcessBody]
 
 
 
@@ -647,6 +549,15 @@ $result[
 		$.h($hParams.h)
 		$.t($hParams.t)
 		^switch[$hParams.name]{
+#			языки
+			^case[lang]{
+				$.names[
+					$.[lang.lang_id][id]
+					$.[lang.sort_order][]
+					$.[lang.abbr][]
+					$.[lang.charset][]
+				]
+			}
 #			сайты
 			^case[site]{
 				$.names[
@@ -661,6 +572,8 @@ $result[
 			}
 #			объекты
 			^case[object]{
+				$.leftjoin[object_text]
+				$.on[object.object_id = object_text.object_id AND object_text.lang_id = $SYSTEM.lang]
 				$.names[
 					$.[object.object_id][id]
 					$.[object.sort_order][]
@@ -678,10 +591,10 @@ $result[
 					$.[object.is_show_on_sitemap][]
 					$.[object.is_show_in_menu][]
 					$.[object.full_path][]
-					$.[object.name][]
-					$.[object.document_name][]
-					$.[object.window_name][]
-					$.[object.description][]
+					$.[object_text.name][]
+					$.[object_text.document_name][]
+					$.[object_text.window_name][]
+					$.[object_text.description][]
 				]
 			}
 #			обработчики

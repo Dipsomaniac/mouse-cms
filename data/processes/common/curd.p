@@ -24,7 +24,9 @@ $hObject[
 ^if(^hObject.s.int(0)){
 	$count(^hObject.oSql.int{
 		SELECT COUNT(*) FROM $hObject.name
-		^if(def $hObject.leftjoin){LEFT JOIN $hObject.leftjoin USING ($hObject.using) }
+		^if(def $hObject.leftjoin){ LEFT JOIN $hParams.leftjoin }
+		^if(def $hObject.using   ){ USING     ($hParams.using)  }
+		^if(def $hObject.on      ){ ON        $hParams.on       }
 		^if(def $hObject.where){WHERE $hObject.where }
 	})
 	^if(def $form:number){$limit(^form:number.int(20))}{$limit($hObject.s)}
@@ -43,6 +45,7 @@ $hObject.tab[^mGetSql[$hObject;$hObject.oSql]]
 # получение структуры =debug
 # $hObject.structure[^hObject.oSql.sql[table][SHOW COLUMNS FROM $hObject.table][][$.file[${hObject.table}_struct.cache]]]
 #end @init[hParams][hObject]
+
 
 
 ####################################################################################################
@@ -85,14 +88,18 @@ $jCode
 @mGetSql[hParams;oSql][sRequest]
 $sRequest[
 	SELECT
-		^untaint[as-is]{^hParams.names.foreach[key;value]{$key ^if(def $value){ AS $value }}[,]}
+		^if(def $hParams.names){
+			^untaint[as-is]{^hParams.names.foreach[key;value]{$key ^if(def $value){ AS $value }}[,]}
+		}{ * }
 	FROM
 		$hParams.name
-		^if(def $hParams.leftjoin){ LEFT JOIN $hParams.leftjoin USING ($hParams.using)      }
+		^if(def $hParams.leftjoin){ LEFT JOIN $hParams.leftjoin }
+		^if(def $hParams.using   ){ USING     ($hParams.using)  }
+		^if(def $hParams.on      ){ ON        $hParams.on       }
 		^if(def $hParams.where   ){ WHERE     $hParams.where    }
 		^if(def $hParams.group   ){ GROUP BY  $hParams.group    }
-		^if(def $hParams.order   ){ ORDER BY  $hParams.order    }
 		^if(def $hParams.having  ){ HAVING    $hParams.having   }
+		^if(def $hParams.order   ){ ORDER BY  $hParams.order    }
 ]
 $result[
 	^oSql.sql[table][$sRequest][$.limit($hParams.limit)$.offset($hParams.offset)][$.file[${hParams.name}_^math:md5[${sRequest}${hParams.limit}${hParams.offset}].cache]]
@@ -139,3 +146,58 @@ $hTable.table[$table]
 </${hTable.tag}_tr>
 }
 #end @draw[hParams][hTable]
+
+
+
+####################################################################################################
+# метод строящий дерево
+@tree[hParams][result;hTree;hTreeParam]
+$hTreeParam[$.parent_id(0)$.tag[branche]]
+^hTreeParam.add[$hParams]
+#	хэш объектов по parent_id (для наследования навигации)
+$hTree[^table.hash[parent_id][$.distinct[tables]]]
+$result[^objectByParent[$hTree;$hTreeParam]]
+#end @tree[hParams][hTree]
+
+
+
+####################################################################################################
+# А дальше будут деревья чтоб их разорвало
+@objectByParent[hTree;hParam;tBranche][result]
+$result[
+#	=debug - уровень подсчитывается но сейчас не используется
+	^if(^hParam.level.int(0)){^hParam.level.inc[]}{$hParam.level(1)}
+	^if($hTree.[$hParam.parent_id]){
+		$tBranche[$hTree.[$hParam.parent_id]]
+		^tBranche.menu{
+			^branche[$tBranche.fields;^if($hTree.[$tBranche.id]){
+				$hParam.parent_id($tBranche.id)
+				^objectByParent[$hTree;$hParam]
+			};$hParam]
+		}
+		^hParam.level.dec[]
+	}
+]
+#end @objectByParent[hTree;hParam]
+
+
+
+####################################################################################################
+# вывод ветви дерева xml
+@branche[itemHash;childItems;lparams]
+$result[
+<$lparams.tag 
+	^lparams.attributes.menu{
+		${lparams.attributes.name}="$itemHash.[$lparams.attributes.name]"
+	}
+	^if($itemHash.id == $lparams.id){ in="1" 
+			^if(def $form:id){
+				hit="0"
+			}{
+				hit="1"
+			}
+		}
+		level="$lparams.level"
+	^if(def $lparams.added){$lparams.added}
+	>$childItems</$lparams.tag>]
+#end @branche[itemHash;childItems;lparams]
