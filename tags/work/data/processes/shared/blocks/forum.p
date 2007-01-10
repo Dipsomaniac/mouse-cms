@@ -6,9 +6,9 @@
 ####################################################################################################
 # Вывод последних 15 сообщений форума
 @mForumLast[hParams]
+$hParams.body
 <channel title="Mouse CMS - Forum" description="Mouse CMS - Форум" link="http://$SYSTEM.siteUrl/forum/" rsslink="http://$SYSTEM.siteUrl/forum/rss/" generator="Mouse CMS" webmaster="horneds@gmail.com" date="$SYSTEM.date"/>
 <block_content>
-<h2>Последнее:</h2>
 $crdLastMessages[^mLoader[
 	$.action[last_messages]
 	$.t(1)
@@ -28,7 +28,7 @@ $crdLastMessages[^mLoader[
 ####################################################################################################
 # Вывод данных
 @mForumView[hParams][crdMessageById;crdMessageByThread;crdMessagesByThread]
-BODY: $hParams.body
+$hParams.body
 <block_content>
 	<forum parent_id="^form:id.int(0)" dt="$SYSTEM.date">
 		<buttons>

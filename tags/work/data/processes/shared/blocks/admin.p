@@ -26,7 +26,7 @@ $hParams.body
 		<button image="24_retype.gif"  name="retype"    alt="Сбросить"  onClick="resetForm()" />
 		<button image="24_cancel.gif"  name="cancel"    alt="Отменить"  onClick="Cancel('$SYSTEM.path?type=$form:type')" />
 	}
-	^if(def $form:type && !def $form:action){
+	^if(def $form:type && !def $form:action && $form:type ne files){
 		<button image="24_add.gif"    name="add"    alt="Добавить"   onClick="Go('$SYSTEM.path?type=$form:type&amp^;action=add','#container')" />
 		<button image="24_copy.gif"   name="copy"   alt="Копировать" onClick="CopyChecked('$SYSTEM.path?type=$form:type&amp^;action=copy')" />
 		<button image="24_delete.gif" name="delete" alt="Удалить"    onClick="DeleteChecked('${form:type}_id','$SYSTEM.path?type=$form:type','#container')" />
@@ -764,6 +764,7 @@ $crdObject[^mLoader[$.name[object]$.h(1)]]
 		<field type="select" name="article_type_id" label="Категория" description="Категория статьи" class="medium">
 			^crdArticleType.list[$.added[select="$crdArticle.hash.[$form:id].article_type_id"]]
 		</field>
+		<field type="text" name="image" label="Картинка" description=" Имя файла изображения (без пути) " class="medium">$crdArticle.hash.[$form:id].image</field>
 		<field type="checkbox" name="is_published"  label="Опубликовать">$crdArticle.hash.[$form:id].is_published</field>
 		<field type="textarea" name="lead"   label="Анонс"     description="Краткое содержание">$crdArticle.hash.[$form:id].lead</field>
 		<field type="hidden" name="dt">$SYSTEM.date</field>
@@ -825,13 +826,16 @@ ID	id
 #	вывод формы редактирования
 	$hAction[^mGetAction[$form:action]]
 #	загрузка данных
+	$crdObject[^mLoader[$.name[object]$.t(1)]]
 	$crdArticleType[^mLoader[$.name[article_type]$.h(1)]]
 	<form method="post" action="$SYSTEM.path" name="form_content" id="form_content" enctype="multipart/form-data"
 	label="MOUSE CMS | Категории | $hAction.label" >
 	<tabs>
 	<tab id="section-1" name="Основное">
 		<field type="text" name="name" label="Название" description=" Название категории " class="medium">$crdArticleType.hash.[$form:id].name</field>
-		<field type="text" name="path" label="Путь" description=" Виртуальный путь " class="medium">$crdArticleType.hash.[$form:id].path</field>
+		<field type="select" name="object_id" label="Объект" description=" Выбор объекта " class="medium">
+			^crdObject.list[$.added[select="$crdArticleType.hash.[$form:id].object_id"]]
+		</field>
 		$hRights[^getHashRights($crdArticleType.hash.[$form:id].rights)]
 		<field type="checkbox" name="rights_read" label="Просмотр" description="Права по умолчанию">$hRights.read</field>
 		<field type="checkbox" name="rights_edit" label="Правка" description="Права по умолчанию">$hRights.edit</field>
@@ -852,13 +856,14 @@ ID	id
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод категорий
+	$crdObject[^mLoader[$.name[object]$.h(1)]]
 	$crdArticleType[^mLoader[$.name[article_type]$.t(1)$.s(20)]]
 <atable label="Mouse CMS | Категории ">
 	^crdArticleType.draw[
 		$.names[^table::create{name	id	object
 ID	id
 Название	name
-Путь	path
+Объект	object_id	crdObject.hash
 Права	rights
 }]]
 	^added[]
@@ -914,33 +919,60 @@ $tList[^file:list[$sPath]]
 
 #################################################################################################
 # Загрузка файлов
-@files[]
+@files[][tList;sPath;hStat]
 $crdObject[^mLoader[$.name[object]]]
-<form method="post" action="$crdObject.hash.10.full_path?type=files" name="form_content" id="form_content" enctype="multipart/form-data"
-	label="MOUSE CMS | Обслуживание системы --- $form:width" >
+<button image="24_save.gif"    name="save"      alt="Сохранить" onClick="submitForm()" />
+<button image="24_retype.gif"  name="retype"    alt="Сбросить"  onClick="resetForm()" />
+<form method="post" action="$crdObject.hash.10.full_path" name="form_content" id="form_content" enctype="multipart/form-data"
+	label="MOUSE CMS | Загрузка файлов " >
 	<tabs>
-		<tab id="section-1" name="Загрузка изображений">
+		<tab id="section-1" name="Загрузка файлов">
 		<field type="select" name="object_id" label="Объект" description=" Владелец изображения " class="medium">
 			^crdObject.list[]
 		</field>
-		<field type="text" name="name" label="Имя" description=" Имя изображения " class="medium"></field>
-		<field type="file" name="image" label="Картинка" description=" Выберите файл " class="long"></field>
-		<field type="text" name="width" label="Ширина" description=" Введите ширину в px " class="short">200</field>
-		<field type="text" name="height" label="Высота" description=" Введите высоту в px " class="short"></field>
+		<field type="select" name="type" label="Тип файла" description=" файл/изображение " class="medium">
+			<option id="file" name="Файл"/>
+			<option id="image" name="Изображение"/>
+		</field>
+		<field type="text" name="name" label="Имя" description=" Имя сохранения файла " class="medium"></field>
+		<field type="file" name="image" label="Файл" description=" Выберите файл" class="long"></field>
+		</tab>
+		<tab id="section-2" name="Параметры изображения">
+		<field type="text" name="width" label="Изменение размера" description=" Введите ширину в px " class="short"></field>
+		<field type="text" name="height" label="Изменение размера" description=" Введите высоту в px " class="short"></field>
 		<field type="select" name="format" label="Формат" description=" Изменение формата изображения " class="medium">
 			<option id="none" name="не менять" />
 			<option id="jpg" name="jpg" />
 			<option id="gif" name="gif" />
 			<option id="png" name="png" />
 		</field>
+		<field type="text" name="preview" label="Превью" description=" Сгенерировать превью (ширина) " class="medium"></field>
 		<field type="checkbox" name="meta" label="Удалить данные" description=" Удаление мета данных изображения "></field>
 ^form_engine[
-	^$.process[images]
-	^$.sql(0)
+	^$.process[files]
+	^$.location[$crdObject.hash.9.full_path?type=files]
 ]
-		<br/><field type="submit" name="submit" value="Сохранить"></field>
 		</tab>
-		<tab id="section-2" name="Загрузка файлов">
+		<tab id="section-3" name="Диспетчер файлов">
+		<field type="select" name="meneger_object_id" label="Объект" description=" Владелец файлов " class="medium" onChange="Go('$SYSTEM.path?type=files&amp^;object='+this.value,'#container')">
+			^crdObject.list[$.added[select="$form:object"]]
+		</field>
+		<br/><br/>
+		<ul>
+^if(def $crdObject.hash.[$form:object].full_path){$sPath[$crdObject.hash.[$form:object].full_path]}{$sPath[/]}
+$tList[^file:list[$sPath]]
+^tList.menu{
+	^if(-f "${sPath}$tList.name" && $tList.name ne index.html){
+		<li>
+			<a href="${sPath}$tList.name" target="New">$tList.name</a><br/>
+			$hStat[^file::stat[${sPath}$tList.name]]
+			Path: ${sPath}$tList.name, Mouse link: &lt^;mouse:method name="file"&gt^;^$.object_id[$crdObject.hash.[$form:object].id]^$.file[$tList.name]&lt^;/mouse:method&gt^;<br/>
+			Size: $hStat.size b, Create: ^hStat.cdate.sql-string[]
+		</li>
+	}
+}
+
+</ul>
 		</tab>
 	</tabs>
 </form>
@@ -1158,6 +1190,7 @@ $result[
 					$.[article.article_type_id][]
 					$.[article.title][]
 					$.[article.lead][]
+					$.[article.image][]
 					$.[article.is_not_empty][]
 					$.[article.is_published][]
 					$.[article.body][]
@@ -1170,7 +1203,7 @@ $result[
 				$.order[article_type_id]
 				$.names[
 					$.[article_type.article_type_id][id]
-					$.[article_type.path][]
+					$.[article_type.object_id][]
 					$.[article_type.name][]
 					$.[article_type.rights][]
 				]

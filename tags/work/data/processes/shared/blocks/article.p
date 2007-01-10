@@ -13,19 +13,20 @@ $crdArticle[
 		$.where[
 			article.is_published = 1 AND
 			article.dt_published <= ^MAIN:objSQL.now[] AND
-			article_type.path = '^if(def $hParams.param.path){$hParams.param.path}{$SYSTEM.path}'
+			article_type.article_type_id = ^if(def $hParams.param.article_type_id){$hParams.param.article_type_id}{1}
 			^if(^form:id.int(0)){ AND article.article_id = ^form:id.int(0) }
 			^if(^form:year.int(0)){ AND dt >= '^form:year.int(0)-^form:month.int(0)-00' AND dt <= '^form:year.int(0)-^form:month.int(0)-31'}
 		]
 		^if(!^form:year.int(0)){$.limit(20)}
 	]
 ]
+<block_name>$crdArticle.table.name</block_name>
+<block_path>$crdObject.hash.[$crdArticle.table.object_id].full_path</block_path>
 <channel title="Mouse CMS - News" description="Mouse CMS - Новости" link="http://$SYSTEM.siteUrl/" rsslink="http://$SYSTEM.siteUrl/rss/" generator="Mouse CMS" webmaster="horneds@gmail.com" date="$SYSTEM.date"/>
 <block_content>
-$hParams.body
 ^untaint[as-is]{
 	^crdArticle.list[
-		$.attr[$.id[id]$.date[dt]$.name[title]$.author[author]]
+		$.attr[$.id[id]$.date[dt]$.name[title]$.author[author]$.image[image]]
 		^if(^form:id.int(0)){$.value[body]}{$.value[lead]}
 		$.tag[article]
 	]
@@ -49,8 +50,11 @@ $result[
 			$.[article.article_id][id]
          $.[article.title][]
 			$.[article.lead][]
+			$.[article.image][]
 			$.[DATE_FORMAT(article.dt, '%e.%c.%y')][dt]
 			$.[article.author][]
+			$.[article_type.name][]
+			$.[article_type.object_id][]
 			^if(^form:id.int(0)){$.[article.body][]}
 		]
 		$.leftjoin[article_type]

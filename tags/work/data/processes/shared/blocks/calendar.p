@@ -77,7 +77,7 @@ $result[^MAIN:objSQL.table{
 	WHERE
 		article.is_published = 1 AND
 		article.dt_published <= ^MAIN:objSQL.now[] AND
-		article_type.path = '$params.path'
+		article_type.object_id = $hObjectNow.id
 	GROUP BY
 		year,
 		month
