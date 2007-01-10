@@ -72,12 +72,12 @@
 	<xsl:choose>
 		<xsl:when test=" @mode = 1 and not (@id = 8) ">
 			<div id="block{@id}">
-				<h3><span><xsl:value-of select="./name" /></span></h3>
+				<h3><span><xsl:value-of select="block_name" /></span></h3>
 				<xsl:apply-templates select="block_content"/>
 			</div>
 		</xsl:when>
 		<xsl:when test=" @mode = 2 ">
-			<h3 class="sidebar"><span><xsl:value-of select="./@name" /></span></h3>
+			<h3 class="sidebar"><span><xsl:value-of select="block_name" /></span></h3>
 			<ul>
 				<xsl:apply-templates select="block_content"/>
 			</ul>

@@ -245,20 +245,20 @@
 	<div class="post">
 		<p class="post-date"><xsl:value-of select="@date"/></p>
 		<div class="post-info">
-			<h2 class="post-title">
+			<h4 class="post-title">
 				<xsl:choose>
 					<xsl:when test="@in">
 						<xsl:value-of select="@name"/>
 					</xsl:when>
 					<xsl:otherwise>
+						<xsl:if test="@image"><image src="{/../block_path}{@image}"/></xsl:if><br/>
 						<a href="?id={@id}">
 							<xsl:value-of select="@name"/>
 						</a>
 					</xsl:otherwise>
 				</xsl:choose>
-			</h2>
+			</h4>
 			Автор: <xsl:value-of select="@author"/><br/>
-			Комментарии:
 		</div>
 		<div class="post-content">
 			<xsl:copy-of select="." />

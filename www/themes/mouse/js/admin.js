@@ -13,6 +13,10 @@ function resetForm()
 {
     if(window.confirm('—бросить?')) document.form_content.reset();
 }
+function submitForm()
+{
+    if(window.confirm('—охранить?')) document.form_content.submit();
+}
 // отмена формы
 function Cancel(s)
 {

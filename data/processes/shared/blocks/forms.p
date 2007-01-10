@@ -22,6 +22,7 @@ $oForm[^vforms::init[
 }{
 	$result[^common[$oForm]]
 }
+^if(def $oForm.hForm.param.location){^location[$oForm.hForm.param.location;$.is_external(1)]}
 # раз уж сюда дошли то удалим весь кэш
 ^dir_delete[$MAIN:CacheDir;$.is_recursive(1)]
 #end @mRun[hParams][jMethod]
@@ -31,8 +32,6 @@ $oForm[^vforms::init[
 ####################################################################################################
 # стандартное действие
 @common[oForm][result]
-#	это баг, откуда он взялся? =debug
-	^oForm.hRequest.delete[uri]
 # 	попытка выполнения действия
 	$result[^oForm.go[]]
 	$result[$result.done]
@@ -41,9 +40,34 @@ $oForm[^vforms::init[
 
 
 ####################################################################################################
-# загрузка изображений
-@images[oForm][result]
-^stop[$oForm.hRequest]
+# загрузка изображений и файлов
+@files[oForm][crdObject;i;result]
+# загрузка неполного курда объектов
+$crdObject[^curd::init[$.name[object]$.h(1)
+	$.names[
+		$.[object.object_id][id]
+		$.[object.full_path][]
+		$.[object.parent_id][]
+		$.[object.thread_id][]
+]]]
+^if($oForm.hRequest.type eq image){
+	^use[images.p]
+# 	сохранение изображения
+	$i[^images:save[
+		$.image[$oForm.hRequest.image]
+		$.name[$oForm.hRequest.name]
+		$.path[$crdObject.hash.[$oForm.hRequest.object_id].full_path]
+		$.format[^if($oForm.hRequest.format ne none){$oForm.hRequest.format}]
+		$.meta($oForm.hRequest.meta)
+	]]
+# 	изменение размеров изображения
+	^if(def $oForm.hRequest.width || def $oForm.hRequest.height){^images:resize[$.source_name[$i.path/$i.name]$.name[$i.path/$i.name]$.width($oForm.hRequest.width)$.height($oForm.hRequest.height)]}
+# 	генерация превью
+	^if(def $oForm.hRequest.preview){^images:resize[$.source_name[$i.path/$i.name]$.name[$i.path/${oForm.hRequest.preview}_$i.name]$.width($oForm.hRequest.preview)]}
+}{
+	^oForm.hRequest.image.save[binary;$crdObject.hash.[$oForm.hRequest.object_id].full_path/$oForm.hRequest.image.name]
+}
+$result[]
 #end @images[]
 
 
