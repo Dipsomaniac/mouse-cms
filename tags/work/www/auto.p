@@ -215,7 +215,7 @@ $cCounter{
 	^sCount.save[$sFile]
 	$exception.handled(1)
 }
-$sStr[^dtNow.sql-string[]	$sPath	$hUserInfo.Ip	$hUserInfo.Proxy	$hUserInfo.Os	$hUserInfo.Browser $hUserInfo.Browser_fullver	$hUserInfo.Referer^#0A]
+$sStr[^dtNow.sql-string[]	$hUserInfo.Request	$hUserInfo.Ip	$hUserInfo.Proxy	$hUserInfo.Os	$hUserInfo.Browser $hUserInfo.Browser_fullver	$hUserInfo.Referer^#0A]
 ^file:lock[${hName.main}.lock]{^sStr.save[append;$hName.main]}
 $result[]
 #end @mStatistic[]
