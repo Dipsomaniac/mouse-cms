@@ -32,7 +32,7 @@ $hObject[
 	^if(def $form:number){$limit(^form:number.int(20))}{$limit($hObject.s)}
 	$pagecount(^math:ceiling($count / $limit))
 	$page(^form:page.int(1))
-	^if($pagecount){$offset(($page - 1) * $limit)}
+	^if($pagecount){$offset(($page - 1) * $limit)}{$offset(0)}
 #	если находимся на странице скроллера упрощаем запрос
 	$hObject.offset[$offset]
 	$hObject.limit[$limit]
@@ -85,7 +85,7 @@ $jCode
 
 ####################################################################################################
 # метод формирующий и выполняющий sql запрос
-@mGetSql[hParams;oSql][sRequest]
+@mGetSql[hParams;oSql][sRequest;result]
 $sRequest[
 	SELECT
 		^if(def $hParams.names){
@@ -110,27 +110,26 @@ $result[
 
 ####################################################################################################
 # метод выводящий простенький список данных
-@list[hParams][hList]
+@list[hParams][hList;result]
 # параметры по умолчанию
 $hList[$.attr[$.id[id]$.name[name]]$.tag[field_option]]
 ^hList.add[$hParams]
 $hList.table[$table]
-^hList.table.menu{
-	<$hList.tag ^hList.attr.foreach[sKey;sValue]{$sKey = "$hList.table.[$sValue]" }$hList.added>^if(def $hList.value){$hList.table.[$hList.value]}</$hList.tag>
-}
+$result[^hList.table.menu{<$hList.tag ^hList.attr.foreach[sKey;sValue]{$sKey = "$hList.table.[$sValue]" }$hList.added>^if(def $hList.value){$hList.table.[$hList.value]}</$hList.tag>}]
 #end @list[hParams][hList]
 
 
 
 ####################################################################################################
 # метод выводящий таблицу данных
-@draw[hParams][hTable]
+@draw[hParams][hTable;result]
 $hTable[$.tag[arow]$.scroller(1)]
 ^hTable.add[$hParams]
-# построение шапки таблицы
-^hTable.names.menu{<${hTable.tag}_th id="$hTable.names.id">$hTable.names.name</${hTable.tag}_th>}
 # построение строк
 $hTable.table[$table]
+$result[
+# построение шапки таблицы
+^hTable.names.menu{<${hTable.tag}_th id="$hTable.names.id">$hTable.names.name</${hTable.tag}_th>}
 ^hTable.table.menu{
 <${hTable.tag}_tr id="$hTable.table.id">
 ^process{@code[hFields]^#OA$hTable.code}
@@ -145,6 +144,7 @@ $hTable.table[$table]
 	}
 </${hTable.tag}_tr>
 }
+]
 #end @draw[hParams][hTable]
 
 

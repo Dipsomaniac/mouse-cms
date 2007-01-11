@@ -40,7 +40,7 @@
 		</a>
 		<xsl:apply-templates select="//menu"/>
         <form method="get" action="/search/" id="quick-search">
-		    <input type="text" name="phrase" class="text" id="search" value="Поиск (выключен :) )" title="Поиск" />
+		    <input type="text" name="phrase" class="text" id="search" value="Поиск выключен :)" title="Поиск" />
             <input type="image" src="/images/search.gif" name="search" id="search" alt="Найти" />
         </form>
 	</div>
@@ -69,17 +69,15 @@
 <!-- BLOCK* -->
 <xsl:template match="/document/body/block">
 	<xsl:choose>
-		<xsl:when test=" @style=0 ">
-			<xsl:apply-templates select="block_content"/>
-		</xsl:when>
+
 		<xsl:when test=" @mode = 1 ">
-			<h2><xsl:value-of select="./name" /></h2>
+			<h2><xsl:value-of select="block_name" /></h2>
 			<div id="block">
 				<xsl:apply-templates select="block_content"/>
 			</div>
 		</xsl:when>
 		<xsl:when test=" @mode = 2 ">
-			<h2><xsl:value-of select="./name" /></h2>
+			<h2><xsl:value-of select="block_name" /></h2>
 			<xsl:apply-templates select="block_content"/>
 		</xsl:when>
 		<xsl:otherwise>

@@ -228,6 +228,7 @@ $result[^common[$oForm]]
 # =debug работа со статьями
 @article[oForm][result]
 $oForm.hRequest.is_not_empty(0)
+$oForm.hRequest.lang_id($SYSTEM.lang)
 # для совместимости с spaw
 ^if(def $oForm.hRequest.body){
 	$oForm.hRequest.body[^oForm.hRequest.body.match[<br>][gi]{<br/>}]

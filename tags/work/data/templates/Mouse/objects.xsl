@@ -258,9 +258,9 @@
 				</xsl:choose>
 			</h2>
 			Автор: <xsl:value-of select="@author"/><br/>
-			Комментарии:
 		</div>
 		<div class="post-content">
+		<xsl:if test="@image"><image src="{/../block_path}{@image}"/></xsl:if><br/>		
 			<xsl:copy-of select="." />
 		</div>
 	</div>
