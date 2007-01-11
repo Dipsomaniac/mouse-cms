@@ -36,6 +36,11 @@ $hParams.body
 	$jMethod[$[$form:type]]
 	^jMethod[]
 }
+<form action="$SYSTEM.path" name="lang" method="post">
+<field type="select" name="lang_id" label="Язык" description="Выбор администрирования локализованных ресурсов" class="short" onChange="Go('$SYSTEM.path?type=$form:type&amp^;lang='+this.value,'#container')">
+	^crdLang.list[$.attr[$.id[abbr]$.name[abbr]]$.added[select="$MAIN:hUserInfo.lang"]]
+</field>
+</form>
 </block_content>
 #end @mRun[hParams][jMethod]
 
@@ -73,6 +78,7 @@ $hAction[^mGetAction[$form:action]]
 # -----------------------------------------------------------------------------------------------
 # вывод списка языков
 $crdLang[^mLoader[$.name[lang]$.s(20)]]
+$crdLang.table[^mFilter[$crdLang.table]]
 <atable label="Mouse CMS | Языки">
 	^crdLang.draw[
 		$.code[Сортировка: ^$hFields.sort_order]
@@ -138,6 +144,7 @@ $hAction[^mGetAction[$form:action]]
 # вывод списка сайтов
 $crdSite[^mLoader[$.name[site]$.s(20)]]
 $crdObject[^mLoader[$.name[object]$.h(1)]]
+$crdSite.table[^mFilter[$crdSite.table]]
 <atable label="Mouse CMS | Сайты">
 	^crdSite.draw[
 		$.code[Язык: ^$hFields.lang_id <br />Сортировка: ^$hFields.sort_order]
@@ -305,6 +312,7 @@ ID	id
 # вывод списка объектов
 # -----------------------------------------------------------------------------------------------
 $crdObject[^mLoader[$.name[object]$.s(20)]]
+$crdObject.table[^mFilter[$crdObject.table]]
 $crdLang[^mLoader[$.name[lang]$.t(1)]]
 $crdSite[^mLoader[$.name[site]$.h(1)]]
 $crdDataProcess[^mLoader[$.name[data_process]$.h(1)]]
@@ -348,11 +356,6 @@ ID	id
 ]
 ^crdObject.scroller[$.uri[$SYSTEM.path]]
 </atable>
-<form action="$SYSTEM.path" name="lang" method="post">
-<field type="select" name="lang_id" label="Язык" class="short" onChange="Go('$SYSTEM.path?type=object&amp^;lang='+this.value,'#container')">
-	^crdLang.list[$.attr[$.id[abbr]$.name[abbr]]$.added[select="$MAIN:hUserInfo.lang"]]
-</field>
-</form>
 }
 #end @objects[][hAction;c]
 
@@ -388,7 +391,7 @@ ID	id
 	</tab>
 	<tab id="section-2" name="Дополнительное">
 		<field type="checkbox" name="is_parsed_manual" label="Ручной вызов">$crdBlock.hash.[$form:id].is_parsed_manual</field>
-		<field type="checkbox" name="is_shared" label="Общий блок">$crdBlock.hash.[$form:id].is_parsed_manual</field>
+		<field type="checkbox" name="is_shared" label="Общий блок">$crdBlock.hash.[$form:id].is_shared</field>
 		<field type="textarea" name="attr" label="Атрибуты" description="Атрибуты блока">$crdBlock.hash.[$form:id].attr</field>
 		<field type="select" name="data_type_id" label="Данные" description="Тип данных блока">
 			^crdDataType.list[$.added[select="$crdBlock.hash.[$form:id].data_type_id"]]
@@ -415,6 +418,7 @@ ID	id
 # -----------------------------------------------------------------------------------------------
 # вывод списка блоков
 $crdBlock[^mLoader[$.name[block]$.t(1)$.s(20)]]
+$crdBlock.table[^mFilter[$crdBlock.table]]
 $crdDataProcess[^mLoader[$.name[data_process]$.h(1)]]
 $crdDataType[^mLoader[$.name[data_type]$.h(1)]]
 <atable label="Mouse CMS | Блоки ">
@@ -431,6 +435,7 @@ ID	id
 Название	name
 Обработчик	data_process_id	crdDataProcess.hash
 Тип данных	data_type_id	crdDataType.hash
+Общий	is_shared
 }]]
 	^added[]
 ^form_engine[
@@ -486,6 +491,7 @@ ID	id
 # -----------------------------------------------------------------------------------------------
 # вывод списка обработчиков
 $crdDataProcess[^mLoader[$.name[data_process]$.t(1)$.s(20)]]
+$crdDataProcess.table[^mFilter[$crdDataProcess.table]]
 $crdDataProcessType[^mLoader[$.name[data_process_type]$.h(1)]]
 <atable label="Mouse CMS | Обработчики ">
 	^crdDataProcess.draw[
@@ -551,6 +557,7 @@ ID	id
 # -----------------------------------------------------------------------------------------------
 # вывод списка шаблонов
 $crdTemplate[^mLoader[$.name[template]$.t(1)$.s(20)]]
+$crdTemplate.table[^mFilter[$crdTemplate.table]]
 <atable label="Mouse CMS | Шаблоны ">
 	^crdTemplate.draw[
 		$.code[
@@ -638,6 +645,7 @@ ID	id
 # -----------------------------------------------------------------------------------------------
 # вывод списка пользователей
 $crdAuser[^mLoader[$.name[auser]$.t(1)$.s(20)]]
+$crdAuser.table[^mFilter[$crdAuser.table]]
 $hAuser_type[
 	$.0[$.name[user]]
 	$.1[$.name[group]]
@@ -717,6 +725,7 @@ E-mail	email
 # -----------------------------------------------------------------------------------------------
 # вывод прав
 $crdAcl[^mLoader[$.name[acl]$.t(1)$.s(20)]]
+$crdAcl.table[^mFilter[$crdAcl.table]]
 $crdAuser[^mLoader[$.name[auser]$.h(1)]]
 $crdObject[^mLoader[$.name[object]$.h(1)]]
 <atable label="Mouse CMS | Управление правами ">
@@ -787,8 +796,9 @@ $crdObject[^mLoader[$.name[object]$.h(1)]]
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод статей
-	$crdArticle[^mLoader[$.name[article]$.t(1)$.s(20)]]
-	$crdArticleType[^mLoader[$.name[article_type]$.h(1)]]
+$crdArticle[^mLoader[$.name[article]$.t(1)$.s(20)]]
+$crdArticle.table[^mFilter[$crdArticle.table]]
+$crdArticleType[^mLoader[$.name[article_type]$.h(1)]]
 <atable label="Mouse CMS | Статьи ">
 	^crdArticle.draw[
 		$.code[
@@ -856,8 +866,9 @@ ID	id
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод категорий
-	$crdObject[^mLoader[$.name[object]$.h(1)]]
-	$crdArticleType[^mLoader[$.name[article_type]$.t(1)$.s(20)]]
+$crdObject[^mLoader[$.name[object]$.h(1)]]
+$crdArticleType[^mLoader[$.name[article_type]$.t(1)$.s(20)]]
+$crdArticleType.table[^mFilter[$crdArticleType.table]]
 <atable label="Mouse CMS | Категории ">
 	^crdArticleType.draw[
 		$.names[^table::create{name	id	object
@@ -982,7 +993,7 @@ $tList[^file:list[$sPath]]
 
 #################################################################################################
 # Определение действия
-@mGetAction[sTemp]
+@mGetAction[sTemp][result]
 ^switch[$sTemp]{
 	^case[edit]{$result[$.i(1)$.label[Редактирование]]}
 	^case[copy]{$result[$.i(2)$.label[Копирование]]}
@@ -994,8 +1005,31 @@ $tList[^file:list[$sPath]]
 
 
 #################################################################################################
+# Фильтры таблиц
+@mFilter[tData][tParam;sParam;result]
+^if(def $form:find){$tData[^tData.select(^tData.name.match[$form:find][i])]}
+^if(def $form:order){
+	^if(^tData.[$form:order].int(0)){
+		^tData.sort($tData.[$form:order])
+	}{
+		^tData.sort{$tData.[$form:order]}
+	}
+}
+^if(def $form:filter){
+	$tParam[$form:filter]
+	$tParam[^tParam.split[=]]
+	$sParam[^tParam.piece.trim[]]
+	^tParam.offset(1)
+	$tData[^tData.select($tData.[$sParam] eq ^tParam.piece.trim[])]
+}
+$result[$tData]
+#end @mFilter[tData][tParam;sParam;result]
+
+
+
+#################################################################################################
 # Загрузчик курдов
-@mLoader[hParams]
+@mLoader[hParams][result]
 $result[
 	^curd::init[
 		$.name[$hParams.name]
@@ -1185,6 +1219,7 @@ $result[
 #			статьи
 			^case[article]{
 				$.order[article_id]
+				$.where[article.lang_id = '$SYSTEM.lang']
 				$.names[
 					$.[article.article_id][id]
 					$.[article.article_type_id][]
@@ -1225,13 +1260,3 @@ $result[
 <form_find>$form:find</form_find>
 <form_filter>$form:filter</form_filter>
 #end @added[]
-
-
-
-#################################################################################################
-# генерация полей параметров формы и поля секретности
-@form_engine[sStr]
-$sStr[^sStr.match[\s+][g]{}]
-<input type="hidden" name="form_engine" value="$sStr"/>
-<input type="hidden" name="form_security" value="^MAIN:security[$sStr]"/>
-#end form_engine[sStr]

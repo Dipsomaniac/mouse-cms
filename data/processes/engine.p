@@ -8,20 +8,19 @@ engine
 
 ####################################################################################################
 # Конструктор инициализация и выполнение engine
-@init[][siteID;siteLangID]
+@init[hParams][siteID;siteLangID]
 # языки и сайты
 $crdLang[^mLoader[$.name[lang]]]
 $crdSite[^mLoader[$.name[site]]]
 # получение ID сайта и ID языка сайта =debug а если такого сайта нету?
-^if(^crdSite.table.locate[domain;$env:SERVER_NAME]){$siteID($crdSite.table.id) $siteLangID($crdSite.table.lang_id)}
+^if(^crdSite.table.locate[domain;$hParams.siteUrl]){$siteID($crdSite.table.id) $siteLangID($crdSite.table.lang_id)}
 $SYSTEM[
-	$.siteUrl[$env:SERVER_NAME]
 	$.fullPath[$request:uri]
-	$.path[$MAIN:sPath]
 	$.siteID(^siteID.int(0))
-	$.lang(^if(^crdLang.table.locate[abbr;$MAIN:hUserInfo.lang]){$crdLang.table.id}{$crdSite.hash.[^siteID.int(0)].lang_id})
+	$.lang(^if(^crdLang.table.locate[abbr;$hParams.langId]){$crdLang.table.id}{$crdSite.hash.[^siteID.int(0)].lang_id})
 	$.date[^MAIN:dtNow.sql-string[]]
 ]
+^SYSTEM.add[$hParams]
 # ВСЕ ОПУБЛИКОВАННЫЕ объекты текущего сайта с ПОЛЯМИ ТЕКУЩЕГО языка
 $crdObject[^mLoader[
 	$.name[object]
@@ -148,16 +147,23 @@ $sStylesheet[^getStylesheet[]]
 
 ####################################################################################################
 # создание документа на основе собранного xml
-@getDocumentXML[]
-$result[^xdoc::create{<?xml version="1.0" encoding="$request:charset"?>
+@getDocumentXML[][sXDoc;result]
+$sXDoc[<?xml version="1.0" encoding="$request:charset"?>
 <!DOCTYPE site_page [
 	^getEntitySet[]
 ]>
-# =debug пространство имен system переименовать в mouse добавить поддержку многоязычности
 <document xmlns:mouse="http://klen.zoxt.net/doc/" lang="$crdLang.hash.[$SYSTEM.siteLangID].abbr" server="$SYSTEM.siteUrl" template="^getStylesheet[]" charset="$crdLang.hash.[$SYSTEM.siteLangID].charset">
   ^getDocumentBodyDefault[]
 </document>
-}]
+]
+^try{
+	$result[^xdoc::create{$sXDoc}]
+}{
+	^if($exception.type eq xml){
+		$exception.comment[Error create xml. Source saved to /../data/log/error.xml]
+		^sXDoc.save[/../data/log/error.xml]
+	}
+}
 # end @documentXML[]
 
 
@@ -171,6 +177,7 @@ $crdBlock[]        $crdBlockToObject[]   $crdTemplate[]
 $crdObjectType[]   $crdDataProcess[]     $crdAuser[]
 $crdDataType[]     $crdDataProcessType[] $crdAuserToAuser[]
 $crdAcl[]          $crdArticle[]         $crdArticleType[]
+$crdLang[]
 # очистка памяти
 ^memory:compact[]
 #end @clearMemory[]
@@ -294,7 +301,7 @@ $result[
 		>$sBlockData</block>
 	}
 	^if(^hBlockParams.cache.int(0)){
-		$hBlockParams.cache_file[$MAIN:CacheDir/block_code_^math:md5[${request:uri}${hBlockFields.id}].cache]
+		$hBlockParams.cache_file[$MAIN:CacheDir/${SYSTEM.lang}_block_code_${hBlockFields.id}_^math:md5[$request:uri].cache]
 		<!-- $SYSTEM.date Begin Block Cache file: $hBlockParams.cache_file, cache time: $hBlockParams.cache secs -->
 		^cache[$hBlockParams.cache_file]($hBlockParams.cache){$cBlock}
 		<!-- $SYSTEM.date Ended Block Cache file: $hBlockParams.cache_file, cache time: $hBlockParams.cache secs -->
@@ -332,10 +339,8 @@ $result[$sBlockData]
 ####################################################################################################
 # виртуальная фабрика методов =debug не проверено на курдах
 @getSystemMethod[sName;sParams][result;jMethod]
-$result[
-	$jMethod[$$sName] 
-	^jMethod[^getStrToHash[$sParams]]
-]
+$jMethod[$[v$sName]]
+$result[^if($sName ne parser){^jMethod[^getStrToHash[$sParams]]}{^jMethod[$sParams]}]
 #end @getSystemParser[sName;sParams]
 
 
@@ -346,7 +351,8 @@ $result[
 $_sField[$sKey]
 	^switch[$sName]{
 		^case[parser]{$result[^getParser[$sKey;$sField]]}
-		^case[auth]{$result[$MAIN:objAuth.[$sKey].[$sField]]}
+		^case[auth]{$result[$MAIN:objAuth.$sKey.$sField]}
+		^case[system]{$result[$SYSTEM.$sField]}
 		^case[DEFAULT]{$result[^if(^sKey.int(0)){$[$sName].hash.$sKey.$sField}{$[$sName].hash.$form:[$_sField].$sField}]}
 }
 #end @getSystemObject[sName;sKey;sField]
@@ -369,7 +375,7 @@ $result[^switch[$sName]{
 
 ####################################################################################################
 # вывод дерева объектов
-@tree[hParam][result;jMethod]
+@vtree[hParam][result;jMethod]
 $result[
 $jMethod[$[$hParam.name]]
 ^jMethod.tree[$.attributes[^table::create{name^#OAid^#OAname^#OAdescription^#OAis_show_in_menu^#OAis_show_on_sitemap^#OAfull_path}]]
@@ -380,7 +386,7 @@ $jMethod[$[$hParam.name]]
 
 ####################################################################################################
 # вывод полей объектов =debug не проверено на курдах
-@list[hParam][_jMethod]
+@vlist[hParam][jMethod;result]
 $result[
 $jMethod[$[$hParam.name]]
 ^jMethod.list[$hParam.params]
@@ -391,9 +397,17 @@ $jMethod[$[$hParam.name]]
 
 ####################################################################################################
 # обработка условий
-@select[hParam]
+@vselect[hParam][result]
 $result[^if(${hParam.name} eq ${hParam.value}){${hParam.true}}{${hParam.false}}]
 #end @select[hParam]
+
+
+
+####################################################################################################
+# выполнение парсерного кода
+@vparser[sParam][result]
+$result[^process{$sParam}]
+#end @parser[sParam][result]
 
 
 
@@ -498,6 +512,16 @@ $result[^hash::create[
 @getIntRights[hRights]
 $result($hRights.read + $hRights.edit + $hRights.delete + $hRights.comment + $hRights.supervisory)
 #end @getIntRights[hRights]
+
+
+
+#################################################################################################
+# генерация полей параметров формы и поля секретности
+@form_engine[sStr]
+$sStr[^sStr.match[\s+][g]{}]
+<input type="hidden" name="form_engine" value="$sStr"/>
+<input type="hidden" name="form_security" value="^math:md5[${sStr}$SYSTEM.key]"/>
+#end form_engine[sStr]
 
 
 

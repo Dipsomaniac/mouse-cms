@@ -11,6 +11,7 @@
 		}
 		</ul>
 	</li>
+	<li><a href="/reg/">Параметры</a></li>
 </ul>
 	^MAIN:objAuth.xmlFormLogout[$.target_url[./]]
 }{

@@ -13,7 +13,7 @@ $hHandlers[
 $tDecode[^self._getDecodeTable[]]
 $hRequest[^form:fields.foreach[field;value]{$.[^self._decode[$field]][^self._decode[$value]]}]
 # проверка ключа секретности
-^if(^MAIN:security[$hRequest.form_engine] ne $hRequest.form_security){^throw[vforms;Security failure.]}
+^if(^math:md5[${hRequest.form_engine}$MAIN:oEngine.SYSTEM.key] ne $hRequest.form_security){^throw[vforms;Security failure.]}
 #end @auto[]
 
 

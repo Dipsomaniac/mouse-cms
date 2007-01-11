@@ -230,16 +230,6 @@ $result[
 
 
 #################################################################################################
-# генерация полей параметров формы и поля секретности
-@form_engine[sStr]
-$sStr[^sStr.match[\s+][g]{}]
-<input type="hidden" name="form_engine" value="$sStr"/>
-<input type="hidden" name="form_security" value="^MAIN:security[$sStr]"/>
-#end form_engine[sStr]
-
-
-
-#################################################################################################
 # Преоразования bb кода
 @bbcode[]
 $bbreplace[^table::create{from	to

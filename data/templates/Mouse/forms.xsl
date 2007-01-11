@@ -4,6 +4,7 @@
 
 <!-- form -->
 <xsl:template match="form">
+<xsl:if test="not(@submit='Отправить')">
 	<form action="{@action}" method="{@method}" id="{@id}" name="{@name}" enctype="{@enctype}">
 	<div class="mlabel">
 		<xsl:value-of select="./@label"/>
@@ -12,6 +13,7 @@
 		<xsl:apply-templates />
 	</div>
 	</form>
+</xsl:if>
 </xsl:template>
 
 <!-- tabs -->

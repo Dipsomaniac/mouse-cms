@@ -1,6 +1,7 @@
 ####################################################################################################
 # автоматически выполняемая часть 
-@auto[][cTemp;sTemp;result]
+@auto[][cTemp;sTemp;hUserInfo;hfMouse;result]
+$dtNow[^date::now[]]
 # -----------------------------------------------------------------------------------------------
 # получаем информацию о пользователе, сразу потому что маус ведет статистику и по кэшированным страницам
 # присвоить это SYSTEM в поле engine и удалить
@@ -15,12 +16,13 @@ $hUserInfo[
 	$.Referer[$env:HTTP_REFERER]
 	$.Query[$env:QUERY_STRING]
 	$.Request[$request:uri]
+	$.siteUrl[$env:SERVER_NAME]
 # обработка многоязычности
 	^if(def $form:lang){
 		$cookie:lang[$form:lang]
-		$.lang[$form:lang]
+		$.langId[$form:lang]
 	}{
-		$.lang[$cookie:lang]
+		$.langId[$cookie:lang]
 	}
 ]
 ^hUserInfo.UserAgent.match[mac][i]{$hUserInfo.Os[mac]}
@@ -71,30 +73,26 @@ $LogDir[$CfgDir/log]
 ^use[auth.p]
 ^use[engine.p]
 # -----------------------------------------------------------------------------------------------
-# прочее для совместимости =debug
-$dtNow[^date::now[]]
 # получаем путь к запрашиваемой странице
-$sPath[^hUserInfo.Request.split[?;lh]]
-$sPath[$sPath.0]
-# -----------------------------------------------------------------------------------------------
-# создание основных объектов и инициализация engine
-$objSQL[^mysql::init[$SQL.connect-string;
-	$.is_debug($Debug)
-	$.cache_dir[$CacheDir/sql]
-	$.cache_interval(1/24)
-]]
-^objSQL.server{
-	$objAuth[^auth::init[$cookie:CLASS;$form:fields;$.csql[$MAIN:objSQL]]]
-	$oEngine[^engine::init[]]
-}
-^mStatistic[]
+$hUserInfo.path[^hUserInfo.Request.split[?;lh]]
+$hUserInfo.path[$hUserInfo.path.0]
 # -----------------------------------------------------------------------------------------------
 # создание уникального ключа системы
-^security[]
+$hfMouse[^hashfile::open[$CfgDir/config.hf]]
+^if(!def $hfMouse.key){^dir_delete[$CacheDir;$.is_recursive(1)] $hfMouse.key[$.value[^math:uuid[]]$.expires(1/12)]}
+$hUserInfo.key[$hfMouse.key]
+# -----------------------------------------------------------------------------------------------
+# создание основных объектов и инициализация engine
+$objSQL[^mysql::init[$SQL.connect-string;$.is_debug($Debug)$.cache_dir[$CacheDir/sql]$.cache_interval(1/24)]]
+^objSQL.server{
+	$objAuth[^auth::init[$cookie:CLASS;$form:fields;$.csql[$MAIN:objSQL]]]
+	$oEngine[^engine::init[$hUserInfo]]
+}
+# собираем статистику
+^mStatistic[$hUserInfo]
 # -----------------------------------------------------------------------------------------------
 # убираем грязь
 $result[]
-# -----------------------------------------------------------------------------------------------
 #end @auto[]
 
 
@@ -117,7 +115,7 @@ $hCacheOptions[^mGetCacheOptions[]]
 
 ####################################################################################################
 # получение статистики да и вообще постпроцесс
-@postprocess[sBody]
+@postprocess[sBody][result]
 $result[$sBody]
 # Debug режим
 ^if(def $objSQL && $objSQL.iIsDebug){^objSQL.getStatistics[/../data/log/sql.txt]}
@@ -169,7 +167,6 @@ $result[
 
 ####################################################################################################
 @_comments[sKey;iTime;iIsExecuted][sText;result]
-$cTemp{}
 ^if($iIsExecuted){
 	^if(-f "$sCacheDir/$sKey"){
 		$sText[Point generated. Storing to cache done.]
@@ -186,7 +183,8 @@ $result[<!-- ^dtNow.sql-string[] | $sText | Key: $sKey, Time: $iTime secs -->]
 
 ####################################################################################################
 # метод собирает статистику по пользователям =debug решил сделать здесь
-@mStatistic[][hName;tHits;tHosts;cCounter;sFile;fFile;sCount;sStr;tLog]
+# debug - переделать на hashfile
+@mStatistic[hUserInfo][hName;tHits;tHosts;cCounter;sFile;fFile;sCount;sStr;tLog;result]
 $hName[
 	$.main[$LogDir/static/$dtNow.year/$dtNow.month/^dtNow.day.format[%02d].cfg]
 	$.hits[$LogDir/static/$dtNow.year/$dtNow.month/hits/^dtNow.day.format[%02d].cfg]
@@ -219,27 +217,15 @@ $cCounter{
 }
 $sStr[^dtNow.sql-string[]	$sPath	$hUserInfo.Ip	$hUserInfo.Proxy	$hUserInfo.Os	$hUserInfo.Browser $hUserInfo.Browser_fullver	$hUserInfo.Referer^#0A]
 ^file:lock[${hName.main}.lock]{^sStr.save[append;$hName.main]}
+$result[]
 #end @mStatistic[]
 
 
 
 ####################################################################################################
 # =debug отладка просто чтобы ^trow долго не писать - ^stop[bla bla bla]
-@stop[str]
+@stop[str][result]
 ^use[debug.p]
 ^debug:show[$str;/debug.html]
 ^throw[stop;stop: $str]
 #end @stop[str]
-
-
-
-####################################################################################################
-# раз в два часа генерирует уникальный ключ системы и очищает кэш
-# с параметром возращает строку закодированную с ключом
-@security[sStr][result]
-^if(def $sStr){
-	$result[^math:md5[${sStr}$MOUSE_KEY]]
-}{
-	$MOUSE_KEY[^cache[${CfgDir}security.key](7200){^math:md5[^dtNow.sql-string[]^math:random(1000)^dir_delete[^CacheDir.trim[end;/];$.is_recursive(1)]]}]
-	$result[]
-}
