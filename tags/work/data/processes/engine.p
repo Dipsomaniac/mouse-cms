@@ -61,7 +61,7 @@ $response:content-type[
 		]
 	}{
 #		если запрос не с локалхоста - прячем ошибку
-		^if($MAIN:hUserInfo.Ip ne '127.0.0.1'){
+		^if($env:REMOTE_ADDR ne '127.0.0.1'){
 			$exception.handled(1)
 			Mouse error... (comment me) please <a href="mailto:horneds@gmail.com">mail to admin</a>
 			^cache(0)
@@ -132,7 +132,7 @@ $sStylesheet[^getStylesheet[]]
 # 	Xdoc сборка страницы
 	$xDoc[^getDocumentXML[]]
 # 	проверка строки запроса и наличия шаблона
-	^if(^MAIN:hUserInfo.Query.pos[mode=xml] == -1 && def $sStylesheet){
+	^if($form:mode ne xml && def $sStylesheet){
 #		получение XSLT шаблона =debug вывод на печать реализовать как то по другому чтоли
 		^if($form:mode eq print){$sStylesheet[$MAIN:TemplateDir/print.xsl]}
 #		Очистка памяти
@@ -152,7 +152,7 @@ $sXDoc[<?xml version="1.0" encoding="$request:charset"?>
 <!DOCTYPE site_page [
 	^getEntitySet[]
 ]>
-<document xmlns:mouse="http://klen.zoxt.net/doc/" lang="$crdLang.hash.[$SYSTEM.siteLangID].abbr" server="$SYSTEM.siteUrl" template="^getStylesheet[]" charset="$crdLang.hash.[$SYSTEM.siteLangID].charset">
+<document xmlns:mouse="http://klen.zoxt.net/doc/" lang="$crdLang.hash.[$SYSTEM.lang].abbr" server="$SYSTEM.siteUrl" template="^getStylesheet[]" charset="$crdLang.hash.[$SYSTEM.siteLangID].charset">
   ^getDocumentBodyDefault[]
 </document>
 ]
@@ -200,7 +200,7 @@ $sFileName[$MAIN:TemplateDir/$crdTemplate.hash.[$hObjectNow.template_id].filenam
 $result[
 <navigation>
 #	создаем дерево навигации
-^crdObject.tree[$.id($hObjectNow.id)$.attributes[^table::create{name^#OAid^#OAname^#OAdescription^#OAis_show_in_menu^#OAis_show_on_sitemap^#OAfull_path}]]
+^crdObject.tree[$.id($hObjectNow.id)$.attributes[^table::create{name^#OAid^#OAname^#OAdescription^#OAis_show_in_menu^#OAis_show_on_sitemap^#OAfull_path^#OAdocument_name}]]
 </navigation>
 <body>
 #	сборка блоков

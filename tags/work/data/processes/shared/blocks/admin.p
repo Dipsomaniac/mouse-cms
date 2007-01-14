@@ -22,6 +22,7 @@ $hParams.body
 	<button image="24_category.gif"   name="category"     alt="Работа с категориями"		onClick="Go('$SYSTEM.path?type=article_type','#container')" />
 	<button image="24_divider.gif" />
 	^if(def $form:action && $form:action ne 'config'){
+		<button image="24_back.gif"    name="back"      alt="Вернуться" onClick="Go('$SYSTEM.path?type=$form:type','#container')" />
 		<button image="24_save.gif"    name="save"      alt="Сохранить" onClick="saveForms('form_content','$SYSTEM.path?type=$form:type','#container')" />
 		<button image="24_retype.gif"  name="retype"    alt="Сбросить"  onClick="resetForm()" />
 		<button image="24_cancel.gif"  name="cancel"    alt="Отменить"  onClick="Cancel('$SYSTEM.path?type=$form:type')" />
@@ -38,7 +39,7 @@ $hParams.body
 }
 <form action="$SYSTEM.path" name="lang" method="post">
 <field type="select" name="lang_id" label="Язык" description="Выбор администрирования локализованных ресурсов" class="short" onChange="Go('$SYSTEM.path?type=$form:type&amp^;lang='+this.value,'#container')">
-	^crdLang.list[$.attr[$.id[abbr]$.name[abbr]]$.added[select="$MAIN:hUserInfo.lang"]]
+	^crdLang.list[$.attr[$.id[abbr]$.name[abbr]]$.added[select="$crdLang.hash.[$SYSTEM.lang].abbr"]]
 </field>
 </form>
 </block_content>
@@ -60,12 +61,13 @@ $hAction[^mGetAction[$form:action]]
 	label="MOUSE CMS | Языки | $hAction.label | $crdLang.hash.[$form:id].name ">
 <tabs>
 	<tab id="section-1" name="Основное">
-		<field type="text" name="abbr"    label="Абревиатура" class="short">$crdLang.hash.[$form:id].abbr</field>
-		<field type="text" name="charset" label="Кодировка" class="medium">$crdLang.hash.[$form:id].charset</field>
-		<field type="text" name="sort_order" label="Сортировка" description="Порядок сортировки" class="short">$crdLang.hash.[$form:id].sort_order</field>
+		<field type="text" name="abbr"    label="Abbr" description="Двубуквенное сокращение языка" class="short">$crdLang.hash.[$form:id].abbr</field>
+		<field type="text" name="charset" label="Charset" description="Кодировка" class="medium">$crdLang.hash.[$form:id].charset</field>
+		<field type="text" name="sort_order" label="Sort_order" description="Порядок сортировки" class="short">$crdLang.hash.[$form:id].sort_order</field>
 		
 ^form_engine[
 	^$.where[lang_id]
+	^$.rules[^$.abbr[text]^$.charset[text]^$.sort_order[number]]
 	^$.lang_id[$form:id]
 	^$.tables[^$.main[lang]]
 	^if($hAction.i & 6){^$.action[insert]}
@@ -108,7 +110,7 @@ ID	id
 ^if(def $form:action){
 # -----------------------------------------------------------------------------------------------
 # вывод формы редактирования
-$crdLang[^mLoader[$.name[lang]$.t(1)]]
+$crdLang[^mLoader[$.name[lang]]]
 $crdSite[^mLoader[$.name[site]$.h(1)]]
 $crdObject[^mLoader[$.name[object]$.where[site_id = $form:id]]]
 $hAction[^mGetAction[$form:action]]
@@ -313,7 +315,7 @@ ID	id
 # -----------------------------------------------------------------------------------------------
 $crdObject[^mLoader[$.name[object]$.s(20)]]
 $crdObject.table[^mFilter[$crdObject.table]]
-$crdLang[^mLoader[$.name[lang]$.t(1)]]
+$crdLang[^mLoader[$.name[lang]]]
 $crdSite[^mLoader[$.name[site]$.h(1)]]
 $crdDataProcess[^mLoader[$.name[data_process]$.h(1)]]
 $crdTemplate[^mLoader[$.name[template]$.h(1)]]
@@ -777,8 +779,10 @@ $crdObject[^mLoader[$.name[object]$.h(1)]]
 		<field type="checkbox" name="is_published"  label="Опубликовать">$crdArticle.hash.[$form:id].is_published</field>
 		<field type="textarea" name="lead"   label="Анонс"     description="Краткое содержание">$crdArticle.hash.[$form:id].lead</field>
 		<field type="hidden" name="dt">$SYSTEM.date</field>
-		<field type="hidden" name="dt_published">$SYSTEM.date</field>
-		<field type="hidden" name="author">$MAIN:objAuth.user.name</field>
+		^if($hAction.i & 6){
+			<field type="hidden" name="dt_published">$SYSTEM.date</field>
+			<field type="hidden" name="author">$MAIN:objAuth.user.name</field>
+		}
 		</tab>
 		<tab id="section-2" name="Содержание">
 			<field type="textarea" name="body" ws="true"  label="Текст"   description="Содержание статьи">$crdArticle.hash.[$form:id].body</field>

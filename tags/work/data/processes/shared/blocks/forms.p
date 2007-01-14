@@ -7,13 +7,14 @@
 # Обработка админки
 @mRun[hParams][oForm;jMethod;result]
 # инициализируем объект forms
+^try{
 $oForm[^vforms::init[
 	$.oAuth[$MAIN:objAuth]
 	$.oSql[$MAIN:objSQL]
 	$.rights[
 		$.logon(1)
 		$.group[Admins]]
-	$.log[/../data/log/admin.log]
+	$.log[$MAIN:LogDir/admin.log]
 ]]
 # проверка и обработка формы
 ^if(def $oForm.hForm.param.process){
@@ -26,7 +27,12 @@ $oForm[^vforms::init[
 # раз уж сюда дошли то удалим весь кэш
 ^dir_delete[$MAIN:CacheDir;$.is_recursive(1)]
 #end @mRun[hParams][jMethod]
-
+}{
+	^if($exception.type eq ajax ){
+		$exception.handled(1)
+		$result[$exception.source]
+	}
+}
 
 
 ####################################################################################################

@@ -42,8 +42,9 @@
 			</div>
 			
 			<div id="quickSummary">
-				<p class="p1"><span><xsl:value-of select="//block[@id=8]/block_content/blockquote/."/></span></p>
-<!--			<p class="p2"><span>Download the sample <a href="http://www.csszengarden.com/zengarden-sample.html" title="This page's source HTML code, not to be modified.">html file</a> and <a href="http://www.csszengarden.com/zengarden-sample.css" title="This page's sample CSS, the file you may modify.">css file</a></span></p> -->
+			<p class="p1"><span><xsl:copy-of select="//block[@id=8]/block_content/quote"/></span></p>
+			<p class="p2"><span><xsl:copy-of select="//block[@id=8]/block_content/author"/></span></p>
+				
 			</div>
 		</div>
 	
@@ -56,9 +57,7 @@
 		
 		<div id="linkList">
 			<div id="linkList2">
-				<div id="lresources">
-					<xsl:apply-templates select="/document/body/block[@mode=2]"/>
-				</div>
+				<xsl:apply-templates select="/document/body/block[@mode=2]"/>
 			</div>
 		</div>
 	</div>
@@ -70,17 +69,20 @@
 <!-- BLOCK* -->
 <xsl:template match="/document/body/block">
 	<xsl:choose>
+		<xsl:when test=" @style = 0 and not (@id = 8)">
+			<xsl:apply-templates select="block_content"/>
+		</xsl:when>
 		<xsl:when test=" @mode = 1 and not (@id = 8) ">
-			<div id="block{@id}">
+			<div id="{@name}">
 				<h3><span><xsl:value-of select="block_name" /></span></h3>
 				<xsl:apply-templates select="block_content"/>
 			</div>
 		</xsl:when>
 		<xsl:when test=" @mode = 2 ">
-			<h3 class="sidebar"><span><xsl:value-of select="block_name" /></span></h3>
-			<ul>
-				<xsl:apply-templates select="block_content"/>
-			</ul>
+			<div id="{@name}">
+			<h3 class="{@name}"><span><xsl:value-of select="block_name" /></span></h3>
+			<ul><xsl:apply-templates select="block_content"/></ul>
+			</div>
 		</xsl:when>
 	</xsl:choose>
 </xsl:template>
@@ -90,11 +92,12 @@
 		<xsl:apply-templates select="/document/navigation/branche[@is_show_in_menu=1]" mode="sidemenu" />
 </xsl:template>
 <xsl:template match="/document/navigation/branche[@is_show_in_menu=1]|/document/navigation//branche/branche[@is_show_in_menu=1]" mode="sidemenu" >
-	<li>
-		<xsl:if test="not (@in=1)"><a href="{@full_path}" title="{@description}"><xsl:value-of select="@name"/></a></xsl:if>
-		<xsl:if test="(@in=1)"><b><xsl:value-of select="@name"/></b></xsl:if>
-		<xsl:if test="(./branche[@is_show_in_menu=1])"><ul><xsl:apply-templates select="//branche/branche" mode="sidemenu" /></ul></xsl:if>
-	</li>
+	<xsl:if test="not (@in=1)">
+		<li><a href="{@full_path}" title="{@description}"><xsl:value-of select="@name"/></a>
+		<xsl:value-of select="@document_name"/></li>
+	</xsl:if>
+	<xsl:if test="(@in=1)"><li class="select"><xsl:value-of select="@name"/></li></xsl:if>
+	<xsl:if test="branche[@is_show_in_menu=1]"><ul><xsl:apply-templates select="branche" mode="sidemenu" /></ul></xsl:if>
 </xsl:template>
 
 <!-- sitemap -->

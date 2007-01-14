@@ -52,13 +52,13 @@ $CLASS_PATH[^table::create{path
 # основной каталог
 $CfgDir[/../data]
 # каталог с кэшем сайта
-$CacheDir[$CfgDir/cache]
+$CacheDir[$CfgDir/cache/$env:SERVER_NAME]
 # папка где живут шаблоны 
 $TemplateDir[$CfgDir/templates]
 # папка где живут обработчики блоков и обьектов
 $ProcessDir[$CfgDir/processes/shared/blocks]
 # папка где живут логи
-$LogDir[$CfgDir/log]
+$LogDir[$CfgDir/log/$env:SERVER_NAME]
 # -----------------------------------------------------------------------------------------------
 # отладка
 ^if(^hUserInfo.Query.pos[mode=nocache] >= 0){$NoCache(1)}
@@ -76,9 +76,10 @@ $LogDir[$CfgDir/log]
 # получаем путь к запрашиваемой странице
 $hUserInfo.path[^hUserInfo.Request.split[?;lh]]
 $hUserInfo.path[$hUserInfo.path.0]
+$sPath[$hUserInfo.path]
 # -----------------------------------------------------------------------------------------------
 # создание уникального ключа системы
-$hfMouse[^hashfile::open[$CfgDir/config.hf]]
+$hfMouse[^hashfile::open[$CfgDir/${env:SERVER_NAME}.cfg]]
 ^if(!def $hfMouse.key){^dir_delete[$CacheDir;$.is_recursive(1)] $hfMouse.key[$.value[^math:uuid[]]$.expires(1/12)]}
 $hUserInfo.key[$hfMouse.key]
 # -----------------------------------------------------------------------------------------------
