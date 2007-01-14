@@ -8,7 +8,11 @@ images
 
 #################################################################################################
 @auto[]
-$nconvert_path[/nconvert/nconvert.exe]
+^if(^env:PARSER_VERSION.pos[win32]){
+	$nconvert_path[/nconvert/nconvert.exe]
+	}{
+	$nconvert_path[/nconvert/nconvert]
+	}
 #end @auto[]
 
 #################################################################################################
