@@ -30,7 +30,6 @@ $calendar[^getCalendar[$.path[$SYSTEM.path]]]
 	$ym_hash[^calendar.hash{^calendar.year.format[%04d]=^calendar.month.format[%02d]}[month][$.distinct(1)]]
 	$year[^y_hash._keys[]]
 	^year.sort($year.key)[desc]
-	<div id="year">
 	^year.menu{
 		<li>^if($year.key == $curr_year){
 			$year.key 
@@ -42,8 +41,7 @@ $calendar[^getCalendar[$.path[$SYSTEM.path]]]
 		}
 		</li>
 	}
-	</div>
-	<div id="month">
+	<ul>
 	^if(^year.locate[key;$curr_year]){}
 	^for[i](0;11){
 		$m(12-$i)
@@ -57,7 +55,7 @@ $calendar[^getCalendar[$.path[$SYSTEM.path]]]
 			}
 		}
 	}
-	</div>
+	</ul>
 }
 #end @printCalendar[]
 

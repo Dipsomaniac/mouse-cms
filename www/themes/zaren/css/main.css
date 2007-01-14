@@ -1,195 +1,102 @@
-/* css Zen Garden submission 186 - 'Floral Simplicity', by Mani Sheriar, http://www.manisheriar.com/ */
-/* css released under Creative Commons License - http://creativecommons.org/licenses/by-nc-sa/1.0/  */
-/* All associated graphics copyright 2005, Mani Sheriar */
-/* Added: November 10th, 2005 */
+html {
+min-width:750px;
+}
 
-
-/* IMPORTANT */
-/* This design is not a template. You may not reproduce it elsewhere without the 
-   designer's written permission. However, feel free to study the CSS and use 
-   techniques you learn from it elsewhere. */
-
-
-
-
-* {
-	margin:0;
-	padding:0;
-	}
 body {
-	background:#333399 url(zenGarde.gif) no-repeat top left;
-	background-attachment:fixed;
-	padding:14px 20px 0 73px;
-	margin:0;
-	}
-p {
-	margin:12px 0;
-	}
-#container {
-	position:absolute;
-	width:815px;
-	margin:0;
-	padding:0;
-	background:transparent url(lines000.gif) repeat-y top left;
-	}
-#intro {
-	position:relative;
-	text-align:left;
-	background:transparent url(pink0000.jpg) no-repeat top left;
-	width:450px;
-	font:normal 13px/18px arial;
-	color:#66c;
-	padding:200px 75px 0 75px;
-	}
-#pageHeader h1 {
-	font:bold 30px/36px times new roman;
-	}
-#pageHeader h2 {
-	font:normal 16px/18px arial;
-	margin: 10px 0;
-	}
-#quickSummary {
-	}
-#quickSummary p.p1 {
-	color:#7CAF6B;
-	font-style:italic;
-	font-size:14px;
-	padding-top:0 !important;
-	padding-top:12px;
-	}
-#quickSummary p.p2 {
-	padding-left:20px;
-	color:#C99AAD;
-	}
-#quickSummary p.p2 a {
-	color:#C99AAD;
-	}
-#quickSummary p.p2 a:hover {
-	color:#fff;
-	text-decoration:none;
-	background-color:#6666FF;
-	}
-#preamble {
-	margin-top:24px;
-	color:#66C;
-	}
-#preamble h3 {
-	width:375px;
-	font:bold 18px/23px courier;
-	height:16px;
-	}
-#supportingText {
-	position:relative;
-	font:normal 13px/18px arial;
-	color:#999;
-	width:335px;
-	margin-left:75px;
-	z-index:200;
-	}
-#supportingText h3 {
-	margin-top:24px;
-	}
-#supportingText a {
-	color:#98A892;
-	}
-#supportingText a:hover {
-	text-decoration:none;
-	color:#fff;
-	background-color:#6666FF;
-	}	
-#explanation h3 {
-	width:317px;
-	height:16px;
-	background:url(about000.gif) no-repeat;
-	}
-#participation h3 {
-	width:317px;
-	height:16px;
-	background:url(particip.gif) no-repeat;
-	}
-#benefits h3 {
-	width:317px;
-	height:16px;
-	background:url(benefits.gif) no-repeat;
-	}
-#requirements h3 {
-	width:345px;
-	height:16px;
-	background:url(requirem.gif) no-repeat;
-	}
-#requirements {
-	padding-bottom:1px;
-	}
+font:11px/32px Georgia, 'Times New Roman', Times, serif;
+color:#28780A; text-align:center;
+background:#fff url(bg.gif) repeat-x;
+margin:0; padding:0; }
+
+a,a:link,a:visited,a:active { color:#5EA936; text-transform:uppercase; font-weight:700; }
+
+a:hover { color:#ABD550; }
+
+acronym {
+cursor:help; border-bottom:1px dotted #5EA936;
+color:#ABD550; font-weight:600;
+letter-spacing:1px; text-transform:uppercase; }
+
+h1,h2,h3,ul ,li {
+margin:0; padding:0; }
+
+li { list-style:none; }
+
+p { line-height:1.5em; margin:0; padding:5px 0 0 12px; }
+
+h3 { background:url(h3.jpg) no-repeat; }
+
+h3 span { padding: 0 0 0 30px; text-transform: uppercase; }
+
+#container { width:750px; height:1500px;
+background:url(shmuck.jpg) top right no-repeat;
+text-align:left; position:relative;
+margin:0 auto; padding:0; }
+
 #footer {
-	position:absolute;
-	background:url(footerBg.gif) no-repeat top center;
-	width:600px;
-	height:48px;
-	margin-left:-150px;
-	padding-left:150px;
-	padding-top:27px;
-	padding-bottom:0;
-	margin-bottom:0;
-	z-index:300;
-	text-indent:-150px;
-	text-align:center;
-	font-size:11px;
-	}
+text-align:center; height:50px;
+background:url(footer_b.png) top right no-repeat;
+margin:0; padding:0 0 0 15px;
+font-family: 'Times New Roman', Times, serif;
+letter-spacing: 1.5px; font-size: 12px; }
+
+#footer a {
+text-transform:uppercase; color:#96CB18 }
+
+#footer a:hover { color: #99CC00 }
+
+#intro { text-align:center; }
+
+#quickSummary {
+position:absolute; width:400px; height:250px;
+font-style:italic; font-size:12px; left:50px;
+top:215px; text-align:center; }
+
+#quickSummary .p1 { margin:0; padding:0; font-size:10px;}
+
+#quickSummary .p2 {
+background:transparent; font-style:normal;
+text-transform:uppercase; font-family:Arial, Helvetica, sans-serif;
+font-size:10px; }
+
+#pageHeader {
+position:absolute; height:300px; width:500px;
+background:transparent url(title000.gif) top right no-repeat;
+left:0; top:16px; z-index:10; margin:0; padding:0; }
+
+#pageHeader h1, #pageHeader h2 { text-transform:uppercase; font-weight: normal; letter-spacing: 1.5px;}
+
+#supportingText {
+position:absolute; width:390px;
+left:13px; top:351px;
+margin:0 70px 0 0; padding:0; }
+
 #linkList {
-	position:absolute;
-	top:0;
-	width:200px;
-	left:615px;
-	font:normal 11px/15px arial;
-	color:#999;
-	background:#fff url(lines200.gif) repeat-y top center;
-	color:#666;
-	float:left;
-	}
-#linkList2 {
-	background:transparent url(orange00.jpg) no-repeat top left;
-	padding:80px 25px 0 25px;
-	width:150px;
-	}
-h3.sidebar {
-	width:115px;
-	height:18px;
-	color: #993;
-	font:normal 18px/23px times new roman;
-	margin: 10px;
-	}
-#linkList a {
-	color:#6666FF;
-	}
-#linkList a:hover {
-	color:#fff;
-	background-color:#6666FF;
-	text-decoration:none;
-	}
-#lselect a {
-	display:block;
-	}
-#lselect a.c {
-	display:inline;
-	color:#999;
-	}
-#lselect a.c:hover {
-	color:#C99AAD;
-	background:none;
-	}
-ul {
-	margin:4px 0 16px 18px;
-	}
-li {
-	margin:4px 0;
-	list-style-image:url(bullet00.gif);
-	}
-#lresources {
-	margin:0 -25px;
-	padding:0 25px 15px 25px;
-	background:url(linkList.gif) no-repeat bottom center;
-	}
-#lresources ul {
-	margin-bottom:0;
-	padding-bottom:14px;
-	}
+position:absolute; width:280px;
+left:444px; top:360px;
+margin:0; padding: 0 0 270px 0;
+background:transparent url(leaves00.jpg) left bottom no-repeat; }
+#linkList h3 { background:url(resource.gif) no-repeat; margin: 20px 0 10px 0; padding: 0 0px;
+text-transform:uppercase; letter-spacing: 1.5px; }
+
+#LeftMenu .select { text-transform:uppercase; font-weight:bold; font-size:12.5px; }
+
+#LeftMenu a { display:block; }
+
+#LeftMenu li a {
+text-transform:uppercase; font-size:11.5px; line-height:13px;
+font-weight:bold; margin:0; font-family:Georgia, 'Times New Roman', Times, serif; color: #96CB18 }
+
+#LeftMenu li a:hover { color:#CEC81A; }
+
+#LeftMenu li,#Calendar li,#ForumLast li {
+background:url(bg_li000.gif); margin:0 0 1px; padding:8px 0 0 10px; }
+
+#News h3     { background:url(news.gif) no-repeat; padding: 25px;}
+#LeftMenu h3 { background:url(leftmenu.gif) no-repeat; padding: 25px;}
+
+#LeftMenu h3 span, #News h3 span {display: none;}
+
+#Auth li a {
+text-transform: lowercase; font-size: 11px;
+font-family:Georgia, 'Times New Roman', Times, serif; color: #96CB18 }

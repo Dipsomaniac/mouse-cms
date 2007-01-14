@@ -18,7 +18,7 @@
 <xsl:template match="button" mode="draw">
 	<xsl:choose>
 		<xsl:when test="@href">
-			<a href="{@href}" alt="{@alt}" title="{@alt}"><img src="/themes/mouse/icons/{@image}" class="input-image" /></a>
+			<a href="{@href}" alt="{@alt}" title="{@alt}" class="modules"><img src="/themes/mouse/icons/{@image}" class="input-image" /></a>
 		</xsl:when>
 		<xsl:otherwise>
 			<img src="/themes/mouse/icons/{@image}" name="{@name}" alt="{@alt}" title="{@alt}" class="input-image" onClick="{@onClick}" />
@@ -243,9 +243,9 @@
 
 <xsl:template match="article">
 	<div class="post">
-		<p class="post-date"><xsl:value-of select="@date"/></p>
+		<xsl:if test="@image"><img src="{/../block_path}{@image}"/></xsl:if>		
 		<div class="post-info">
-			<h2 class="post-title">
+			<h3><span>
 				<xsl:choose>
 					<xsl:when test="@in">
 						<xsl:value-of select="@name"/>
@@ -256,11 +256,11 @@
 						</a>
 					</xsl:otherwise>
 				</xsl:choose>
-			</h2>
-			Автор: <xsl:value-of select="@author"/><br/>
+			</span></h3>
+			<span>Автор: <xsl:value-of select="@author"/></span>, 
+			<span>Дата:  <xsl:value-of select="@date"/></span>
 		</div>
 		<div class="post-content">
-		<xsl:if test="@image"><image src="{/../block_path}{@image}"/></xsl:if><br/>		
 			<xsl:copy-of select="." />
 		</div>
 	</div>

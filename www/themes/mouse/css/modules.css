@@ -2,6 +2,10 @@ div.divider {
     clear: both;
 }
 
+a.modules:hover {
+	background: none;
+}
+
 span.title, span.title-highlight {
     float: left;
     width: 100%;
@@ -515,44 +519,3 @@ div.mlabel {
 	text-align: right;
 	font-size: 12px;
 }
-
-#blocksort
-{
-
-	float:left;
-}
-
-#blocksort li, #objectsort li
-{
-	width: 170px;
-	float:left;
-	display: block;
-	line-height: 18px;
-	font-size: 12px;
-	margin: 2px;
-	background-color: #f6f6f6;
-	padding: 2px 3px;
-}
-
-#blocksort li:hover
-{
-	background-color: #d9e6f5;
-	color: #000;
-	background-image: url(/site/add.png);
-	background-position: 180px center;
-	background-repeat: no-repeat; 
-}
-.transfer
-{
-	border: 1px solid #000;
-}
-#objectsort
-{
-	float: left;
-}
-#objectsort li:hover { background-color: #F3FFDF; }
-#objectsort .mode1 { background-color: #dceebd; }
-#objectsort .mode2 { background-color: #eebddc; }
-#objectsort .mode3 { background-color: #bddcee; }
-#objectsort .mode4 { background-color: #ccc; }
-#objectsort .mode5 { background-color: #aaa; }

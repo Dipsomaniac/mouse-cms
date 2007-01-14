@@ -41,7 +41,24 @@ $hForm.param[^getStrToHash[$hRequest.form_engine]]
 
 
 ####################################################################################################
+# проверка заполнения полей формы
+@rules[hParams][result]
+$result[ok]
+^try{
+^hParams.foreach[key;value]{
+	^switch[$value]{
+		^case[text]{^if(!def $hRequest.$key){$result[Error: $key is be text]}}
+		^case[number]{^try{^hRequest.$key.int[]}{$exception.handled(1)$result[Error: $key is be number]}}
+		^case[DEFAULT]{^if(!def $hRequest.$key){$result[Error: $key is be defined]}}
+	}
+}}{$exception.handled(1)}
+#end @rules[hParams]
+
+
+
+####################################################################################################
 @go[hParams][sRequest;tWhere;result]
+^if(^rules[$hForm.param.rules] ne ok){$result[$.done[^rules[$hForm.param.rules]]]}{
 # составляем запрос
 $sRequest[
 ^taint[# -----------------------------------------------------------------------------------------------]
@@ -68,6 +85,7 @@ $sRequest[
 $result[
 	^if($hParams.last_insert_id){$.last_insert_id(^hForm.oSql.last_insert_id[$hForm.param.tables.main])}
 	$.done[Запрос выполнен.]]
+}
 #end go[]
 
 

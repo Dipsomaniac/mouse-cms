@@ -47,13 +47,13 @@
 	<!-- content -->
 	<div id="content">
 		<div id="container">
-			<xsl:apply-templates select="/document/body/block[(@mode=1)]"/>
+			<xsl:apply-templates select="/document/body/block[@mode=1]"/>
 		</div>
 	</div>
 				
 	<!-- sidebar -->
 	<div id="sidebar">
-	   	<xsl:apply-templates select="/document/body/block[(@mode=2)]"/>
+	   	<xsl:apply-templates select="/document/body/block[@mode=2]"/>
 	   	<xsl:apply-templates select="//badges"/>
 	</div>
 					
@@ -69,16 +69,20 @@
 <!-- BLOCK* -->
 <xsl:template match="/document/body/block">
 	<xsl:choose>
-
+		<xsl:when test=" @style = 0 ">
+			<xsl:apply-templates select="block_content"/>
+		</xsl:when>
 		<xsl:when test=" @mode = 1 ">
-			<h2><xsl:value-of select="block_name" /></h2>
-			<div id="block">
+			<div id="{@name}">
+				<h3><span><xsl:value-of select="block_name" /></span></h3>
 				<xsl:apply-templates select="block_content"/>
 			</div>
 		</xsl:when>
 		<xsl:when test=" @mode = 2 ">
-			<h2><xsl:value-of select="block_name" /></h2>
-			<xsl:apply-templates select="block_content"/>
+			<div id="{@name}">
+			<h3><span><xsl:value-of select="block_name" /></span></h3>
+			<ul><xsl:apply-templates select="block_content"/></ul>
+			</div>
 		</xsl:when>
 		<xsl:otherwise>
 		</xsl:otherwise>
@@ -112,9 +116,7 @@
 
 <!-- sidemenu -->
 <xsl:template match="sidemenu">
-	<ul>
 		<xsl:apply-templates select="/document/navigation/branche[@is_show_in_menu=1]" mode="sidemenu" />
-	</ul>
 </xsl:template>
 <xsl:template match="/document/navigation/branche[@is_show_in_menu=1]|/document/navigation//branche/branche[@is_show_in_menu=1]" mode="sidemenu" >
 			<li>
@@ -150,6 +152,12 @@
 	<div id="Ajax"></div>
 </xsl:template>
 
+<xsl:template match="quote">
+	<p class="p1"><span><xsl:value-of select="."/></span></p>
+</xsl:template>
 
+<xsl:template match="author">
+		<p class="p2"><span><xsl:value-of select="."/></span></p>
+</xsl:template>
 
 </xsl:stylesheet>

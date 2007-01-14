@@ -4,7 +4,7 @@
 
 #################################################################################################
 # загрузка данных
-@mFhylosophyRun[][tP]
+@mFhylosophyRun[][tP;result]
 $tP[^table::create{str	author
 Сохранять веселое расположение духа в невеселом, крайне ответственном деле — это очень нелегко, а между тем веселость необходима без нее ни в чем не может быть успеха.	Ф. Ницше. Сумерки кумиров или как философствовать молотом
 Кумиров на свете больше, чем реальных ценностей.	Ф. Ницше. Сумерки кумиров или как философствовать молотом
@@ -75,7 +75,8 @@ $tP[^table::create{str	author
 ^tP.offset(^math:random(20)+1)
 $result[
 <block_content>
-<blockquote>$tP.str<br/><b>$tP.author</b></blockquote>
+	<quote>$tP.str</quote>
+	<author>$tP.author</author>
 </block_content>
 ]
 #end @mFhylosophyRun[][tP]
