@@ -279,7 +279,7 @@ $result[^crdBlock.table.menu{^getBlock[$crdBlock.table.fields]}]
 
 ####################################################################################################
 # Собираем блок
-@getBlock[hBlockFields][hBlockParams;cBlock;sBlockData]
+@getBlock[hBlockFields][hBlockParams;cBlock;sBlockData;result]
 $result[
 	$hBlockParams[^getStrToHash[$hBlockFields.attr]]
 	$cBlock{
@@ -315,7 +315,7 @@ $result[
 
 ####################################################################################################
 # "Пост" обработка блока
-@parseBlockPostProcess[hBlockParams;sBlockData]
+@parseBlockPostProcess[hBlockParams;sBlockData;result]
 # =debug - не нравится мне это все 
 # в параметрах блока можно запретить постпроцесс блока 
 ^if(^hBlockParams.postProcess.int(1) && def $sBlockData){
