@@ -30,7 +30,7 @@
 </xsl:template>
 <xsl:template match="result">
 	<xsl:variable name="id" select="@id"/>
-	<li><xsl:value-of select="../answer[@id=$id]"/> - <xsl:value-of select="@div"/>% (<xsl:value-of select="@value"/>)</li>
+	<li><span><xsl:value-of select="@div"/>% (<xsl:value-of select="@value"/>)</span> - <xsl:value-of select="../answer[@id=$id]"/></li>
 </xsl:template>
 
 
