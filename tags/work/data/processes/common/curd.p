@@ -101,8 +101,9 @@ $sRequest[
 		^if(def $hParams.having  ){ HAVING    $hParams.having   }
 		^if(def $hParams.order   ){ ORDER BY  $hParams.order    }
 ]
+$cachename[${hParams.name}_^math:md5[${sRequest}${hParams.limit}${hParams.offset}].cache]
 $result[
-	^oSql.sql[table][$sRequest][$.limit($hParams.limit)$.offset($hParams.offset)][$.file[${hParams.name}_^math:md5[${sRequest}${hParams.limit}${hParams.offset}].cache]]
+	^oSql.sql[table][$sRequest][$.limit($hParams.limit)$.offset($hParams.offset)][$.file[$cachename]]
 ]
 #end @getSql[hParams]
 

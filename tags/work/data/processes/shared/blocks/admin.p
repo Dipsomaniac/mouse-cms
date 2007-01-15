@@ -20,14 +20,15 @@ $hParams.body
 	<button image="24_files.gif"      name="files"        alt="Загрузка файлов"			onClick="Go('$SYSTEM.path?type=files','#container')" />
 	<button image="24_articles.gif"   name="articles"     alt="Работа со статьями"		onClick="Go('$SYSTEM.path?type=article','#container')" />
 	<button image="24_category.gif"   name="category"     alt="Работа с категориями"		onClick="Go('$SYSTEM.path?type=article_type','#container')" />
+	<button image="24_star.gif"       name="admin"        alt="Подключаемые модули"		onClick="Go('$SYSTEM.path?type=admin','#container')" />
 	<button image="24_divider.gif" />
 	^if(def $form:action && $form:action ne 'config'){
-		<button image="24_back.gif"    name="back"      alt="Вернуться" onClick="Go('$SYSTEM.path?type=$form:type','#container')" />
+		<button image="24_back.gif"    name="back"      alt="Вернуться" onClick="Go('$SYSTEM.path?type=$form:type&amp^;process=$form:process','#container')" />
 		<button image="24_save.gif"    name="save"      alt="Сохранить" onClick="saveForms('form_content','$SYSTEM.path?type=$form:type','#container')" />
 		<button image="24_retype.gif"  name="retype"    alt="Сбросить"  onClick="resetForm()" />
 		<button image="24_cancel.gif"  name="cancel"    alt="Отменить"  onClick="Cancel('$SYSTEM.path?type=$form:type')" />
 	}
-	^if(def $form:type && !def $form:action && $form:type ne files){
+	^if(def $form:type && !def $form:action && $form:type ne files && $form:type ne 'admin'){
 		<button image="24_add.gif"    name="add"    alt="Добавить"   onClick="Go('$SYSTEM.path?type=$form:type&amp^;action=add','#container')" />
 		<button image="24_copy.gif"   name="copy"   alt="Копировать" onClick="CopyChecked('$SYSTEM.path?type=$form:type&amp^;action=copy')" />
 		<button image="24_delete.gif" name="delete" alt="Удалить"    onClick="DeleteChecked('${form:type}_id','$SYSTEM.path?type=$form:type','#container')" />
@@ -996,6 +997,26 @@ $tList[^file:list[$sPath]]
 
 
 #################################################################################################
+# Администрирование дополнительных модулей
+@admin[][tList;tResult;tTempTable]
+^if(def $form:process){
+^executeSystemProcess[$.id[$form:process]$.param[$.admin(1)]]
+}{
+$tList[^file:list[$MAIN:CfgDir/processes/shared/admin;\.cfg^$]]
+$tResult[^table::create{name	process_id	comment	image}]
+^tList.menu{
+	$tTempTable[^table::load[$MAIN:CfgDir/processes/shared/admin/$tList.name]]
+	^tResult.join[$tTempTable]
+}
+^tResult.menu{
+	<button image="$tResult.image" name="$tResult.name" alt="$tResult.comment" onClick="Go('$SYSTEM.path?type=admin&amp^;process=$tResult.process_id','#container')" />
+}
+}
+#end @admin[][tList;tResult;tTempTable]
+
+
+
+#################################################################################################
 # Определение действия
 @mGetAction[sTemp][result]
 ^switch[$sTemp]{
@@ -1258,7 +1279,7 @@ $result[
 # добавление стандартных элементов списков админки
 @added[]
 <th_attr>$SYSTEM.path?^form:fields.foreach[key;value]{^if($key eq 'order'){}{$key=$value&amp^;}}</th_attr>
-<tr_attr>$SYSTEM.path?action=edit&amp^;type=$form:type&amp^;</tr_attr>
+<tr_attr>$SYSTEM.path?action=edit&amp^;type=$form:type&amp^;^if(def $form:process){process=$form:process&amp^;}</tr_attr>
 <scroller_attr>$SYSTEM.path?^form:fields.foreach[key;value]{^if($key ne 'number'){$key=$value&amp^;}}</scroller_attr>
 <footer_attr>$SYSTEM.path?^form:fields.foreach[key;value]{^if($key eq 'find' || $key eq 'filter'){}{$key=$value&amp^;}}</footer_attr>
 <form_find>$form:find</form_find>

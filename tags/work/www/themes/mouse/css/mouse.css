@@ -95,6 +95,11 @@ div.forum-info > li { margin: 20px 0 0 0; list-style: square; color: #265ca6; fo
 #sidebar li { font-size: 12px; color: #265ca6; }
 #sidebar ul {margin: 5px 0px 0px 15px;}
 #sidebar a { font-family: Arial; font-weight: bold; }
+/* --- Голосование --- */
+#Poll {border: 1px solid #999; margin: 20px 5px;}
+#Poll h3,#Poll span {margin: 0;padding: 0; font-size: 0.9em; text-transform: none; letter-spacing: 0px;}
+#Poll li { margin: 5px 5px; list-style: disc;}
+
 #LeftMenu { text-transform: uppercase; }
 #LeftMenu > h3 { background:url(menu.gif) no-repeat; width: 150px; height: 30px}
 #LeftMenu > h3 span { display: none;}
