@@ -9,6 +9,30 @@
 </xsl:template>
 
 
+<!-- Голосование -->
+<xsl:template match="poll[@mode=0]">
+	<h3><span><xsl:value-of select="@title"/></span></h3>
+	<form method="post" name="poll" action="{@action}">
+	<ul><xsl:apply-templates select="answer" /></ul>
+	<input type="submit" name="submit" value="Ответить" class="input-button"/>
+	</form>
+	<h3>Дата начала: <xsl:value-of select="@dt"/><br/>
+	Дата окончания: <xsl:value-of select="@dt_finish"/></h3>
+</xsl:template>
+<xsl:template match="poll[@mode=1]">
+	<h3><span><xsl:value-of select="@title"/></span></h3>
+	<xsl:apply-templates select="result" />
+	<h3>Дата начала: <xsl:value-of select="@dt"/><br/>
+	Дата окончания: <xsl:value-of select="@dt_finish"/></h3>
+</xsl:template>
+<xsl:template match="answer">
+	<li><input type="radio" name="answer" value="{@id}" id="{@id}" checked="checked"/> - <xsl:value-of select="."/></li>
+</xsl:template>
+<xsl:template match="result">
+	<xsl:variable name="id" select="@id"/>
+	<li><xsl:value-of select="../answer[@id=$id]"/> - <xsl:value-of select="@div"/>% (<xsl:value-of select="@value"/>)</li>
+</xsl:template>
+
 
 <xsl:template match="buttons">
 	<div class="buttons">&nbsp;

@@ -318,7 +318,7 @@ $result[
 @parseBlockPostProcess[hBlockParams;sBlockData]
 # =debug - не нравится мне это все 
 # в параметрах блока можно запретить постпроцесс блока 
-^if(^hBlockParams.postProcess.int(1)){
+^if(^hBlockParams.postProcess.int(1) && def $sBlockData){
 #	здесь процесятся виртуальные объекты             		
 #	{$mouse/name/key/field}
 	$sBlockData[^sBlockData.match[\{\^$mouse/([^^/]+)/([^^/]+)/([^^\}]+)\}][gi]{^getSystemObject[$match.1;$match.2;$match.3]}]
