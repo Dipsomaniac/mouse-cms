@@ -1,12 +1,14 @@
 // загрузка ajax
 function Go(s,object) 
 {
+	$('#loadingAjax').show()
 	$(object).load(s, load ); 
 }
 // инициализация скриптов при загрузке ajax
 function load() 
 {
 	$('#tabs').tabs(1,{fxFade: true, fxSpeed: 'fast'}); 
+	$('#loadingAjax').hide()
 }
 // сброс формы
 function resetForm()
@@ -72,4 +74,18 @@ function popXTextArea(name)
     elems=document.getElementsByName(name);
     elems[0].disabled=true;
     elems[0].onclick='new function{w.focus()}';
+}
+
+function plusminus(object,id,plus,minus)
+{
+	$(id).slideToggle('slow');
+	if(object.mode == minus) object.mode = plus; else object.mode = minus;
+	object.src = '/themes/mouse/icons/'+object.mode;
+}
+
+function forumhide ()
+{
+	$('.forum-info ul').slideToggle('slow') 
+	$('.forum-info img').attr('src','/themes/mouse/icons/maximize.gif')
+	$('.forum-info img').attr('mode','minimize.gif')
 }

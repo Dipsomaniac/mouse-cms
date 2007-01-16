@@ -14,7 +14,7 @@ $hParams.body
 	<button image="24_blocks.gif"     name="block"        alt="Блоки"							onClick="Go('$SYSTEM.path?type=block','#container')" />
 	<button image="24_process.gif"    name="data_process" alt="Обработчики"					onClick="Go('$SYSTEM.path?type=data_process','#container')" />
 	<button image="24_templates.gif"  name="template"     alt="Шаблоны"						onClick="Go('$SYSTEM.path?type=template','#container')" />
-	<button image="24_users.gif"      name="auser"        alt="Gользователи и группы"	onClick="Go('$SYSTEM.path?type=auser','#container')" />
+	<button image="24_users.gif"      name="auser"        alt="Пользователи и группы"	onClick="Go('$SYSTEM.path?type=auser','#container')" />
 	<button image="24_rights.gif"     name="acl"          alt="Назначение прав"			onClick="Go('$SYSTEM.path?type=acl','#container')" />
 	<button image="24_configure.gif"  name="configure"    alt="Обслуживание системы"		onClick="Go('$SYSTEM.path?type=config','#container')" />
 	<button image="24_files.gif"      name="files"        alt="Загрузка файлов"			onClick="Go('$SYSTEM.path?type=files','#container')" />
@@ -1003,7 +1003,6 @@ $tList[^file:list[$sPath]]
 	^if(!def $form:action){
 		<button image="24_add.gif"    name="add"    alt="Добавить"   onClick="Go('$SYSTEM.path?type=$form:type&amp^;process=$form:process&amp^;action=add','#container')" />
 		<button image="24_copy.gif"   name="copy"   alt="Копировать" onClick="CopyChecked('$SYSTEM.path?type=$form:type&amp^;process=$form:process&amp^;action=copy')" />
-		<button image="24_delete.gif" name="delete" alt="Удалить"    onClick="DeleteChecked('${form:type}_id','$SYSTEM.path?type=$form:type&amp^;process=$form:process','#container')" />
 	}
 	^executeSystemProcess[$.id[$form:process]$.param[$.admin(1)]]
 }{

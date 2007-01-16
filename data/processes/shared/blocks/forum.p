@@ -33,7 +33,7 @@ $hParams.body
 	<forum parent_id="^form:id.int(0)" dt="$SYSTEM.date">
 		<buttons>
 			<button image="24_home.gif" name="forum_home" alt="Перейти к корневым сообщениям" href="$hObjectNow.full_path"/>
-			<button image="24_configure.gif" name="forum_config" alt="Настройка форума" href="/forum/"/>
+			<button image="24_configure.gif" name="forum_config" alt="Настройка форума" onClick="forumhide()" />
 			<button image="24_search.gif" name="forum_search" alt="Поиск по форуму" onClick="^$('#forum_search').slideToggle('slow')" />
 		</buttons>
 ^if(def $form:id){
