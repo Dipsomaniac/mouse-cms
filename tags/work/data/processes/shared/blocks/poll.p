@@ -120,6 +120,7 @@ $crdPoll[^curd::init[
 }{
 # -----------------------------------------------------------------------------------------------
 # вывод голосований
+<button image="24_delete.gif" name="delete" alt="Удалить"    onClick="DeleteChecked('poll_id','$SYSTEM.path?type=$form:type&amp^;process=$form:process','#container')" />
 $crdPoll[^curd::init[
 	$.name[poll]
 	$.order[]

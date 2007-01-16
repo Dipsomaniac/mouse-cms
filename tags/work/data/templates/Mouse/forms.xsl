@@ -50,8 +50,8 @@
 					<xsl:when test="@type='none'">
 						<span id="{@name}"><xsl:apply-templates /></span>
 					</xsl:when>
-					<xsl:when test="@type='text'">
-						<input type="text" name="{@name}" value="{.}"  class="input-text-{@class}" />
+					<xsl:when test="@type='text' or @type='password'">
+						<input type="{@type}" name="{@name}" value="{.}"  class="input-text-{@class}" />
 					</xsl:when>
 					<xsl:when test="@type='file'">
 						<input type="file" name="{@name}" class="input-text-{@class}" />
@@ -67,7 +67,7 @@
 					<xsl:when test="@type='textarea'">
 							<br/><br/>
 							<div>
-								<img src="/themes/mouse/buttons/minimize.gif" name="img_{@name}" alt="..." title="..." class="input-image" style="float: right;" onClick="$('#div_{@name}').slideToggle('slow');" />
+								<img src="/themes/mouse/icons/minimize.gif" name="img_{@name}" alt="..." title="..." class="input-image" style="float: right;" onClick="plusminus(this,'#div_{@name}','minimize.gif','maximize.gif')" />
 								<br/>
 							</div>
 							<div id="div_{@name}">

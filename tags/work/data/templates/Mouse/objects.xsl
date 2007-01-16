@@ -16,17 +16,17 @@
 	<ul><xsl:apply-templates select="answer" /></ul>
 	<input type="submit" name="submit" value="Ответить" class="input-button"/>
 	</form>
-	<h3>Дата начала: <xsl:value-of select="@dt"/><br/>
-	Дата окончания: <xsl:value-of select="@dt_finish"/></h3>
+	<h3>Начало: <xsl:value-of select="@dt"/><br/>
+	Окончание: <xsl:value-of select="@dt_finish"/></h3>
 </xsl:template>
 <xsl:template match="poll[@mode=1]">
 	<h3><span><xsl:value-of select="@title"/></span></h3>
 	<xsl:apply-templates select="result" />
-	<h3>Дата начала: <xsl:value-of select="@dt"/><br/>
-	Дата окончания: <xsl:value-of select="@dt_finish"/></h3>
+	<h3>Начало: <xsl:value-of select="@dt"/><br/>
+	Окончание: <xsl:value-of select="@dt_finish"/></h3>
 </xsl:template>
 <xsl:template match="answer">
-	<li><input type="radio" name="answer" value="{@id}" id="{@id}" checked="checked"/> - <xsl:value-of select="."/></li>
+	<li><input type="radio" name="answer" value="{@id}" id="{@id}" /><label><xsl:value-of select="."/></label></li>
 </xsl:template>
 <xsl:template match="result">
 	<xsl:variable name="id" select="@id"/>
@@ -63,8 +63,8 @@
 	<div>
 		<img src="/themes/mouse/icons/nil{@level}.gif" />
 		<xsl:if test="./branche">
-			<span class="plusminus" id="plusminus_{@id}" onClick="$('#sections_{@id}').slideToggle('slow');">
-				<img src="/themes/mouse/icons/plus.gif" />
+			<span class="plusminus" id="plusminus_{@id}">
+				<img src="/themes/mouse/icons/minus.gif" mode="minus.gif" onClick="plusminus(this,'#sections_{@id}','minus.gif','plus.gif')"/>
 			</span>
 		</xsl:if>
 		<span class="pick" onClick="Go('{//jq_object/@url}?type=object&amp;action=edit&amp;id={@id}', '#container')"
@@ -285,7 +285,7 @@
 			<span>Дата:  <xsl:value-of select="@date"/></span>
 		</div>
 		<div class="post-content">
-			<xsl:copy-of select="." />
+			<xsl:copy-of select="./node()" />
 		</div>
 	</div>
 </xsl:template>
@@ -364,21 +364,22 @@
 
 
 <xsl:template match="forum_message">
+<xsl:if test="../button"><br/></xsl:if>
 <li>
+	<xsl:if test="forum_message"><img src="/themes/mouse/icons/minimize.gif" name="img_{@id}" alt="..." title="..." class="input-image" style="float: left;margin-right: 5px;" onClick="plusminus(this,'#m{@id}','minimize.gif','maximize.gif')" /></xsl:if>
 	<xsl:choose>
 		<xsl:when test="@in">
 			<h3>
-				<xsl:value-of select="@title"/><xsl:if test="(@is_empty = 1)"> (-)</xsl:if>
+				 <xsl:value-of select="@title"/><xsl:if test="(@is_empty = 1)"> (-)</xsl:if>
 			</h3>
 		</xsl:when>
 		<xsl:otherwise>
 			<a href="?id={@id}">
-				<xsl:value-of select="@title"/><xsl:if test="(@is_empty = 1)"> (-)</xsl:if>
+				 <xsl:value-of select="@title"/><xsl:if test="(@is_empty = 1)"> (-)</xsl:if>
 			</a>,
 		</xsl:otherwise>
 	</xsl:choose>
 	<xsl:value-of select="@author"/>, [<xsl:value-of select="@dt"/>]
-	<xsl:if test="./forum_message"><a href="#" onclick="$('#m{@id}').slideToggle('slow');">#</a></xsl:if>
 	<xsl:if test="./forum_message">
 		<ul id="m{@id}">
 			<xsl:apply-templates />
