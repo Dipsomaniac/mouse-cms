@@ -1000,7 +1000,12 @@ $tList[^file:list[$sPath]]
 # Администрирование дополнительных модулей
 @admin[][tList;tResult;tTempTable]
 ^if(def $form:process){
-^executeSystemProcess[$.id[$form:process]$.param[$.admin(1)]]
+	^if(!def $form:action){
+		<button image="24_add.gif"    name="add"    alt="Добавить"   onClick="Go('$SYSTEM.path?type=$form:type&amp^;process=$form:process&amp^;action=add','#container')" />
+		<button image="24_copy.gif"   name="copy"   alt="Копировать" onClick="CopyChecked('$SYSTEM.path?type=$form:type&amp^;process=$form:process&amp^;action=copy')" />
+		<button image="24_delete.gif" name="delete" alt="Удалить"    onClick="DeleteChecked('${form:type}_id','$SYSTEM.path?type=$form:type&amp^;process=$form:process','#container')" />
+	}
+	^executeSystemProcess[$.id[$form:process]$.param[$.admin(1)]]
 }{
 $tList[^file:list[$MAIN:CfgDir/processes/shared/admin;\.cfg^$]]
 $tResult[^table::create{name	process_id	comment	image}]
