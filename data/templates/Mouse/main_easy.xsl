@@ -43,23 +43,10 @@
 
 <!-- BLOCK* -->
 <xsl:template match="/document/body/block">
-	<xsl:choose>
-		<xsl:when test=" @style=0 ">
-			<xsl:apply-templates select="block_content"/>
-		</xsl:when>
-		<xsl:when test=" @mode = 1 ">
-			<h2><xsl:value-of select="@name" /></h2>
-			<div id="block">
-				<xsl:apply-templates select="block_content"/>
-			</div>
-		</xsl:when>
-		<xsl:when test=" @mode = 2 ">
-			<h2><xsl:value-of select="@name" /></h2>
-			<xsl:apply-templates select="block_content"/>
-		</xsl:when>
-		<xsl:otherwise>
-		</xsl:otherwise>
-	</xsl:choose>
+	<div id="{@name}">
+		<h3><span><xsl:value-of select="block_name" /></span></h3>
+		<xsl:apply-templates />
+	</div>
 </xsl:template>
 <!-- BLOCK# -->
 
@@ -147,4 +134,10 @@
 <xsl:template match="date|name|author">
 </xsl:template>
 
+<xsl:template match="tabs">
+	<xsl:apply-templates />
+</xsl:template>
+<xsl:template match="tab">
+		<xsl:apply-templates />
+</xsl:template>
 </xsl:stylesheet>

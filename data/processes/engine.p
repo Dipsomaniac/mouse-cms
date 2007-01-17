@@ -439,18 +439,19 @@ $result[^executeBlock[$hParam.id;$hParam.param;$hParam.body;$hParam.field]]
 
 ####################################################################################################
 # запуск обработчиков блоков
-@executeBlock[dataProcessID;blockParam;blockBody;blockFields]
+@executeBlock[dataProcessID;blockParam;blockBody;blockFields;result]
 # подготовка обработчика к использованию
 ^prepareProcesess[$dataProcessID]
 # запуск обработчика
-^if($crdDataProcess.hash.[$dataProcessID].main is junction){
-	$result[^crdDataProcess.hash.[$dataProcessID].main[
-		$.param[$blockParam]
-		$.body[$blockBody]
-		$.table[$blockFields]
-		]]
-}{
-	$result[]
+^if(def $blockParam.method){	^rem{ если определен атрибут блока method то в обработчике вызывается этот метод }
+	$blockParam.method[$[$blockParam.method]]
+	$result[^blockParam.method[$.param[$blockParam]$.body[$blockBody]$.table[$blockFields]]]
+}{	^rem{ иначе просто запускается обработчик }
+	^if($crdDataProcess.hash.[$dataProcessID].main is junction){
+		$result[^crdDataProcess.hash.[$dataProcessID].main[$.param[$blockParam]$.body[$blockBody]$.table[$blockFields]]]
+	}{
+		$result[]
+	}
 }
 #end @executeBlock[]
 
@@ -471,13 +472,9 @@ $result[^executeBlock[$hParam.id;$hParam.param;$hParam.body;$hParam.field]]
 		$dataProcessBody[^taint[as-is][$dataProcessFile.text]]
 	
 #		компиляция обработчика в текущем (класс engine) контексте
+^process{@${dataProcessMain}^[lparams]
+$dataProcessBody}[$.main[$dataProcessMain]$.file[$dataProcessFileName]]
 
-		^process{@${dataProcessMain}^[lparams]
-			$dataProcessBody}[
-			$.main[$dataProcessMain]
-			$.file[$dataProcessFileName]
-		]
-					
 #		добавление информации в хеш о main dataProcess
 		$crdDataProcess.hash.[$dataProcessID].main[$$dataProcessMain]
 	}{

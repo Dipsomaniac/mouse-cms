@@ -72,7 +72,7 @@
 							</div>
 							<div id="div_{@name}">
 								<textarea name="{@name}" id="textarea_{@name}" class="input-textarea-large"><xsl:value-of select="."/></textarea>
-								<xsl:if test="@ws"><a href="javascript://toggle/this" onClick="popXTextArea('{@name}');return false;">Править в визуальном редакторе</a></xsl:if>
+								<xsl:if test="@ws"><a href="javascript://toggle/this" onClick="popXTextArea('{@name}','/wymeditor/editor.html?name={@name}');return false;">Править в визуальном редакторе</a></xsl:if>
 							</div>
 					</xsl:when>
 					<xsl:when test="@type='select'">

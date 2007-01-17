@@ -61,9 +61,9 @@ function DeleteChecked(s,url,parent)
     }
 }
 
-function popXTextArea(name)
+function popXTextArea(name,location)
 {
-    w_location='/wymeditor/editor.html?name='+name;
+    w_location=location;
     w_name='Редактирование';
     w_width=(window.innerWidth)-300;
     w_height=(window.innerHeight)-100;
