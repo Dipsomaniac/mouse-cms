@@ -301,32 +301,6 @@
 
 <xsl:template match="forum">
 <xsl:apply-templates select="buttons" /><hr/>
-	<div id="forum_repeat" class="form-builder-tab">
-	<form action="" method="post" name="form_forum_repeat" enctype="multipart/form-data">
-		<div class="divider">
-			<label for="" class="title" id="title_name">Заголовок</label>
-			<small class="help">Заголовок сообщения</small>
-			<div class="container">
-				<input type="text" name="title" value="{param/@title}" class="input-text-long" />
-			</div>
-		</div>
-		<div class="divider">
-			<label for="" class="title" id="title_name">Содержание</label>
-			<small class="help">Текст сообщения</small>
-			<div class="container">
-				<textarea name="body" id="message_body" class="input-textarea-large"><xsl:value-of select="param"/></textarea>
-<!--				<a href="javascript://toggle/this" onClick="popXTextArea('body');return false;">Править в визуальном редакторе</a> -->
-			</div>
-		</div>
-		<input type="hidden" name="dt_published" value="{@dt}" />
-		<input type="hidden" name="parent_id" value="{@parent_id}" />
-		<xsl:if test="@id"><input type="hidden" name="id" value="{@id}" /></xsl:if>
-		<input type="hidden" name="thread_id" value="{./thread_id}" />
-		<xsl:apply-templates select="input" />
-		<input type="submit" class="input-button" name="submit" value="Отправить" />
-		<br/><br/><hr/>
-		</form>
-	</div>
 	<div id="forum_search" class="form-builder-tab">
 		<form action="" method="post" name="form_forum_search" enctype="multipart/form-data">
 			<div class="divider">
