@@ -335,32 +335,21 @@
 
 
 <xsl:template match="forum">
-<xsl:apply-templates select="buttons" /><hr/>
+<xsl:apply-templates select="buttons" />
 	<div id="forum_search" class="form-builder-tab">
 		<form action="" method="post" name="form_forum_search" enctype="multipart/form-data">
-			<div class="divider">
-				<label for="" class="title" id="title_name">Строка поиска</label>
-				<small class="help">Ключевые слова</small>
-				<div class="container">
-					<input type="text" name="search" value="" class="input-text-long" />
-				</div>
-			</div>
-			<div class="divider">
-				<label for="" class="title" id="title_name">Автор</label>
-				<small class="help">Фильтр по автору</small>
-				<div class="container">
-					<input type="text" name="author" value="" class="input-text-medium" />
-				</div>
-			</div>
-		<br/>
-		<input type="hidden" name="action" value="search" />
-		<input type="submit" class="input-button" name="submit" value="Найти" />
+		<ul>
+			<xsl:text> </xsl:text>
+			<img src="/themes/mouse/icons/16_help.gif" title="Поиск"/><xsl:text> </xsl:text>
+			<input type="text" name="search" value="" class="input-text-long" /><xsl:text> </xsl:text>
+			<img src="/themes/mouse/icons/16_user.gif" title="Автор"/><xsl:text> </xsl:text>
+			<input type="text" name="author" value="" class="input-text-medium" /><xsl:text> </xsl:text>
+			<input type="hidden" name="action" value="search" />
+			<img src="/themes/mouse/icons/16_search.gif" title="Найти" class="input-image" onClick="document.form_forum_search.submit()"/>
+		</ul>
 		</form>
+		<br/>
 	</div>
-	<script type="text/javascript">
-		<xsl:if test="not(param)">$('#forum_repeat').hide()</xsl:if>
-		$('#forum_search').hide()
-	</script>
 	<xsl:apply-templates select="article"/>
 	<ul>
 		<div class="forum-info">
