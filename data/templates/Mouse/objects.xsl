@@ -154,6 +154,10 @@
 				<input type="checkbox" name="check_{@id}" class="input-checkbox" onClick="markRow({@id})" />
 				<span style="cursor: default;" onClick="if (this.parentNode.childNodes[0].tagName=='INPUT') {e=this.parentNode.childNodes[0]} else {e=this.parentNode.childNodes[1]} if (e.checked) {e.checked=false} else {e.checked=true}">
 				</span>
+				<img src="/themes/mouse/icons/16_edit.gif" class="input-image" onClick="doEdit('{../tr_attr}id={@id}','#container')"/>
+				<xsl:if test="is_published=0">
+					<img src="/themes/mouse/icons/16_npub.gif" title="Не опубликован" class="input-image" onClick="setFilter('is_published', '0')"/>
+				</xsl:if>
 			</div>
 					<div class="div-system-info" id="sysinfo_{@id}">
 						<xsl:value-of select="." />
@@ -187,9 +191,39 @@
 <tr id="perpage">
 	<td colspan="100">
 		<div class="form">
-    		<label for="sys-perpage">Объектов на страницу:</label>
-    		<input type="text" id="sys-perpage" name="sys_perpage" value="{@limit}" class="input-text-short" size="2" />
-   			<input type="button" value="Показать" class="input-button" onClick="Go('{../scroller_attr}number=' + document.getElementsByName('sys_perpage')[0].value , '#container')" />
+    		<label for="sys-perpage">Объектов на страницу: </label>
+    		<select name="sys_perpage" class="input-text-short" onChange="Go('{../scroller_attr}number=' + document.getElementsByName('sys_perpage')[0].value , '#container')">
+    			<option value="10">
+    				<xsl:if test="@limit=10">
+						<xsl:attribute name="selected">selected</xsl:attribute> 
+					</xsl:if>
+    				<xsl:text>10</xsl:text>
+    			</option>
+    			<option value="20">
+    				<xsl:if test="@limit=20">
+						<xsl:attribute name="selected">selected</xsl:attribute> 
+					</xsl:if>
+    				<xsl:text>20</xsl:text>
+    			</option>
+    			<option value="30">
+    				<xsl:if test="@limit=30">
+						<xsl:attribute name="selected">selected</xsl:attribute> 
+					</xsl:if>
+    				<xsl:text>30</xsl:text>
+    			</option>
+    			<option value="40">
+    				<xsl:if test="@limit=40">
+						<xsl:attribute name="selected">selected</xsl:attribute> 
+					</xsl:if>
+    				<xsl:text>40</xsl:text>
+    			</option>
+    			<option value="50">
+    				<xsl:if test="@limit=50">
+						<xsl:attribute name="selected">selected</xsl:attribute> 
+					</xsl:if>
+    				<xsl:text>50</xsl:text>
+    			</option>
+    		</select>
 		</div>
 			<div class="total">
 				<xsl:text>Показаны: </xsl:text>
@@ -269,6 +303,8 @@
 	<div class="post">
 		<xsl:if test="@image"><img src="{/../block_path}{@image}"/></xsl:if>		
 		<div class="post-info">
+			<span>Автор: <xsl:value-of select="@author"/></span>, 
+			<span>Дата:  <xsl:value-of select="@date"/></span>
 			<h3><span>
 				<xsl:choose>
 					<xsl:when test="@in">
@@ -281,11 +317,10 @@
 					</xsl:otherwise>
 				</xsl:choose>
 			</span></h3>
-			<span>Автор: <xsl:value-of select="@author"/></span>, 
-			<span>Дата:  <xsl:value-of select="@date"/></span>
 		</div>
 		<div class="post-content">
-			<xsl:copy-of select="./node()" />
+<!--			<xsl:copy-of select="./node()" /> -->
+				<xsl:apply-templates />
 		</div>
 	</div>
 </xsl:template>

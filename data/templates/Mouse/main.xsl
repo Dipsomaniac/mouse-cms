@@ -99,8 +99,7 @@
 <xsl:template match="/document/navigation/branche[@is_show_in_menu=1]" mode="topmenu"> 
 		<li>
 			<xsl:if test="not(@in=1) or (@hit=0)">
-				<a href="{@full_path}" title="{@document_name}"><xsl:value-of select="@name"/>
-				<xsl:call-template name="topmenu" /></a>
+				<a href="{@full_path}" title="{@document_name}"><xsl:value-of select="@name"/><xsl:call-template name="topmenu" /></a>
 			</xsl:if>
 			<xsl:if test="(@in=1) and not(@hit=0)">
 				<b><xsl:value-of select="@name"/></b>
@@ -152,9 +151,10 @@
 	<div id="Ajax"></div>
 </xsl:template>
 
-<xsl:template match="quote">
+<xsl:template match="quote|blockquote">
 	<p class="p1"><span><xsl:value-of select="."/></span></p>
 </xsl:template>
+
 
 <xsl:template match="author">
 		<p class="p2"><span><xsl:value-of select="."/></span></p>
