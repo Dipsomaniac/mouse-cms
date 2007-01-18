@@ -334,10 +334,10 @@ $crdTemplate[^mLoader[$.name[template]$.h(1)]]
 		Флажки: 
 			^^if(^^hFields.is_show_on_sitemap.int(0)){SM }
 			^^if(^^hFields.is_show_in_menu.int(0)){Mn }
-			^^if(^^hFields.is_published.int(0)){Pb } 
 		Изменен: ^$hFields.dt_update <br/>
 		^^if(def ^$hFields.url){Объект-ссылка: ^$hFields.url }
 		^^if(^^hFields.link_to_object_id.int(0)){Блоки объекта: ^$hFields.link_to_object_id }
+		<is_published>^^hFields.is_published.int(0)</is_published>
 		]
 		$.names[^table::create{name	id	object
 ID	id
@@ -429,9 +429,9 @@ $crdDataType[^mLoader[$.name[data_type]$.h(1)]]
 		$.code[
 			Описание: ^$hFields.description <br/>
 			^^if(^$hFields.is_not_empty){Содержит данные <br/>}
-			^^if(^$hFields.is_published){Опубликован <br/>}
 			Изменен: ^$hFields.dt_update <br/>
 			Атрибуты: ^$hFields.attr <br/>
+			<is_published>^^hFields.is_published.int(0)</is_published>
 		]
 		$.names[^table::create{name	id	object
 ID	id
@@ -810,6 +810,7 @@ $crdArticleType[^mLoader[$.name[article_type]$.h(1)]]
 			Анонс: ^$hFields.lead <br/>
 			^^if(^$hFields.is_not_empty){Содержит данные <br/>}
 			Создана: ^$hFields.dt_published <br/>
+			<is_published>^^hFields.is_published.int(0)</is_published>
 		]
 		$.names[^table::create{name	id	object
 ID	id
